@@ -5,16 +5,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Diagnostics template.
  *
- * @package   ICC_GG_Redis_Object_Cache_Enabler
+ * @package   ICC_GG_WordPress_Super_Cache
  * @category  General
  * @author    Ivan Carlos
  * @copyright 2007-2026 Ivan Carlos Consultoria
- * @license   http://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
+ * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
 
 global $wp_object_cache;
 
-/** @var \ICC_GG_Redis_Object_Cache_Enabler_Plugin $roc */
+/** @var \ICC_GG_WordPress_Super_Cache_Plugin $roc */
 $info = [];
 $filesystem = $roc->test_filesystem_writing();
 $dropin = $roc->validate_object_cache_dropin();
@@ -51,13 +51,22 @@ if ( defined( 'PHP_VERSION' ) ) {
 	$info['PHP Version'] = PHP_VERSION;
 }
 
-$info['Plugin Version'] = ICC_GG_REDIS_OBJECT_CACHE_ENABLER_VERSION;
+$info['Plugin Version'] = ICC_GG_WORDPRESS_SUPER_CACHE_VERSION;
 $info['Redis Version'] = $roc->get_redis_version() ?: 'Unknown';
 
 $info['Multisite'] = is_multisite() ? 'Yes' : 'No';
 
-$info['Metrics'] = \ICC_GG_Redis_Object_Cache_Enabler_Metrics::is_active() ? 'Enabled' : 'Disabled';
-$info['Metrics recorded'] = wp_json_encode( \ICC_GG_Redis_Object_Cache_Enabler_Metrics::count() );
+$info['Metrics'] = \ICC_GG_WordPress_Super_Cache_Metrics::is_active() ? 'Enabled' : 'Disabled';
+$info['Metrics recorded'] = wp_json_encode( \ICC_GG_WordPress_Super_Cache_Metrics::count() );
+
+$nginx = ICC_GG_WordPress_Super_Cache_Nginx_Cache::instance();
+$nginx_stats = $nginx->get_cache_stats();
+
+$info['Nginx'] = $nginx->get_status();
+$info['Nginx Path'] = $nginx->get_cache_path() !== '' ? $nginx->get_cache_path() : '(not set)';
+$info['Nginx Auto Purge'] = $nginx->auto_purge_enabled() ? 'Enabled' : 'Disabled';
+$info['Nginx Files'] = number_format_i18n( $nginx_stats['files'] );
+$info['Nginx Size'] = size_format( $nginx_stats['size'] );
 
 $info['Filesystem'] = is_wp_error( $filesystem ) ? $filesystem->get_error_message() : 'Writable';
 
@@ -89,12 +98,16 @@ $constants = [
 	'WP_REDIS_MAXTTL',
 	'WP_REDIS_PREFIX',
 	'WP_CACHE_KEY_SALT',
-	'ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH',
+	'ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH',
 	'WP_REDIS_METRICS_MAX_TIME',
 	'WP_REDIS_GLOBAL_GROUPS',
 	'WP_REDIS_IGNORED_GROUPS',
 	'WP_REDIS_UNFLUSHABLE_GROUPS',
 	'WP_REDIS_SELECTIVE_FLUSH',
+	'ICC_GG_SUPER_CACHE_NGINX_ENABLED',
+	'ICC_GG_SUPER_CACHE_NGINX_PATH',
+	'ICC_GG_SUPER_CACHE_NGINX_AUTO_PURGE',
+	'NGINX_CACHE_PATH',
 ];
 
 foreach ( $constants as $constant ) {

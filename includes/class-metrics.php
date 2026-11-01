@@ -5,17 +5,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Metrics collection class.
  *
- * @package   ICC_GG_Redis_Object_Cache_Enabler
+ * @package   ICC_GG_WordPress_Super_Cache
  * @category  General
  * @author    Ivan Carlos
  * @copyright 2007-2026 Ivan Carlos Consultoria
- * @license   http://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
+ * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
 
 /**
  * Metrics collection class
  */
-class ICC_GG_Redis_Object_Cache_Enabler_Metrics
+class ICC_GG_WordPress_Super_Cache_Metrics
 {
 	/**
 	 * Unique identifier
@@ -85,7 +85,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Metrics
 		}
 
 		add_action( 'shutdown', [ self::class, 'record' ] );
-		add_action( 'icc_gg_redis_object_cache_enabler_discard_metrics', [ self::class, 'discard' ] );
+		add_action( 'icc_gg_wordpress_super_cache_discard_metrics', [ self::class, 'discard' ] );
 	}
 
 	/**
@@ -109,7 +109,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Metrics
 		global $wp_object_cache;
 
 		return self::is_enabled()
-			&& ICC_GG_Redis_Object_Cache_Enabler_Plugin::instance()->get_redis_status()
+			&& ICC_GG_WordPress_Super_Cache_Plugin::instance()->get_redis_status()
 			&& method_exists( $wp_object_cache, 'info' )
 			&& method_exists( $wp_object_cache, 'redis_instance' );
 	}
@@ -168,7 +168,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Metrics
 	 * Retrieves metrics from redis
 	 *
 	 * @param int $seconds Number of seconds of the oldest entry to retrieve.
-	 * @return ICC_GG_Redis_Object_Cache_Enabler_Metrics[]
+	 * @return ICC_GG_WordPress_Super_Cache_Metrics[]
 	 */
 	public static function get( $seconds = null )
 	{
@@ -184,7 +184,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Metrics
 
 		try {
 			$raw_metrics = $wp_object_cache->redis_instance()->zrangebyscore(
-				$wp_object_cache->build_key( 'metrics', 'icc-gg-redis-object-cache-enabler' ),
+				$wp_object_cache->build_key( 'metrics', 'icc-gg-wordpress-super-cache' ),
 				time() - $seconds,
 				time() - MINUTE_IN_SECONDS,
 				[ 'withscores' => true ]
@@ -223,7 +223,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Metrics
 
 		try {
 			$wp_object_cache->redis_instance()->zadd(
-				$wp_object_cache->build_key( 'metrics', 'icc-gg-redis-object-cache-enabler' ),
+				$wp_object_cache->build_key( 'metrics', 'icc-gg-wordpress-super-cache' ),
 				$this->timestamp,
 				// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 				serialize( $this )
@@ -249,7 +249,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Metrics
 
 		try {
 			$wp_object_cache->redis_instance()->zremrangebyscore(
-				$wp_object_cache->build_key( 'metrics', 'icc-gg-redis-object-cache-enabler' ),
+				$wp_object_cache->build_key( 'metrics', 'icc-gg-wordpress-super-cache' ),
 				0,
 				time() - self::max_time()
 			);
@@ -274,7 +274,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Metrics
 
 		try {
 			return $wp_object_cache->redis_instance()->zcount(
-				$wp_object_cache->build_key( 'metrics', 'icc-gg-redis-object-cache-enabler' ),
+				$wp_object_cache->build_key( 'metrics', 'icc-gg-wordpress-super-cache' ),
 				'-inf',
 				'+inf'
 			);

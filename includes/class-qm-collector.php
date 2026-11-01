@@ -5,17 +5,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Query Monitor data collector class.
  *
- * @package   ICC_GG_Redis_Object_Cache_Enabler
+ * @package   ICC_GG_WordPress_Super_Cache
  * @category  General
  * @author    Ivan Carlos
  * @copyright 2007-2026 Ivan Carlos Consultoria
- * @license   http://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
+ * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
 
 /**
  * Query Monitor data collector class definition
  */
-class ICC_GG_Redis_Object_Cache_Enabler_QM_Collector extends QM_Collector
+class ICC_GG_WordPress_Super_Cache_QM_Collector extends QM_Collector
 {
 	/**
 	 * Collector id
@@ -31,7 +31,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_QM_Collector extends QM_Collector
 	 */
 	public function name()
 	{
-		return __( 'Object Cache', 'icc-gg-redis-object-cache-enabler' );
+		return __( 'Object Cache', 'icc-gg-wordpress-super-cache' );
 	}
 
 	/**
@@ -55,7 +55,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_QM_Collector extends QM_Collector
 
 		$this->process_defaults();
 
-		$roc = ICC_GG_Redis_Object_Cache_Enabler_Plugin::instance();
+		$roc = ICC_GG_WordPress_Super_Cache_Plugin::instance();
 
 		$this->data['status'] = $roc->get_status();
 		$this->data['has_dropin'] = $roc->object_cache_dropin_exists();
@@ -76,7 +76,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_QM_Collector extends QM_Collector
 		$this->data['meta'] = $info->meta;
 
 		if ( defined( 'WP_REDIS_DISABLED' ) && WP_REDIS_DISABLED ) {
-			$this->data['meta'][ __( 'Disabled', 'icc-gg-redis-object-cache-enabler' ) ] = __( 'Yes', 'icc-gg-redis-object-cache-enabler' );
+			$this->data['meta'][ __( 'Disabled', 'icc-gg-wordpress-super-cache' ) ] = __( 'Yes', 'icc-gg-wordpress-super-cache' );
 		}
 
 		$this->data['groups'] = [

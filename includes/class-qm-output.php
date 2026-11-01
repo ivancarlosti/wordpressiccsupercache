@@ -5,24 +5,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Query Monitor output class.
  *
- * @package   ICC_GG_Redis_Object_Cache_Enabler
+ * @package   ICC_GG_WordPress_Super_Cache
  * @category  General
  * @author    Ivan Carlos
  * @copyright 2007-2026 Ivan Carlos Consultoria
- * @license   http://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
+ * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
 
 /**
  * Query Monitor output logic class definition
  */
-class ICC_GG_Redis_Object_Cache_Enabler_QM_Output extends QM_Output_Html
+class ICC_GG_WordPress_Super_Cache_QM_Output extends QM_Output_Html
 {
 	/**
 	 * Constructor
 	 *
-	 * @param ICC_GG_Redis_Object_Cache_Enabler_QM_Collector $collector The corresponding collector instance.
+	 * @param ICC_GG_WordPress_Super_Cache_QM_Collector $collector The corresponding collector instance.
 	 */
-	public function __construct( ICC_GG_Redis_Object_Cache_Enabler_QM_Collector $collector )
+	public function __construct( ICC_GG_WordPress_Super_Cache_QM_Collector $collector )
 	{
 		parent::__construct( $collector );
 
@@ -37,7 +37,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_QM_Output extends QM_Output_Html
 	 */
 	public function name()
 	{
-		return __( 'Object Cache', 'icc-gg-redis-object-cache-enabler' );
+		return __( 'Object Cache', 'icc-gg-wordpress-super-cache' );
 	}
 
 	/**
@@ -105,7 +105,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_QM_Output extends QM_Output_Html
 			$this->before_non_tabular_output();
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $this->build_notice(
-				esc_html__( 'The Redis Object Cache drop-in is not installed. Use WP CLI or go to "Settings -> Redis" to enable drop-in.', 'icc-gg-redis-object-cache-enabler' )
+				esc_html__( 'The Redis Object Cache drop-in is not installed. Use WP CLI or go to "Settings -> Redis" to enable drop-in.', 'icc-gg-wordpress-super-cache' )
 			);
 			$this->after_non_tabular_output();
 
@@ -116,13 +116,13 @@ class ICC_GG_Redis_Object_Cache_Enabler_QM_Output extends QM_Output_Html
 			$this->before_non_tabular_output();
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo $this->build_notice(
-				esc_html__( 'WordPress is using a foreign object cache drop-in and Redis Object Cache is not being used. Use WP CLI or go to "Settings -> Redis" to enable drop-in.', 'icc-gg-redis-object-cache-enabler' )
+				esc_html__( 'WordPress is using a foreign object cache drop-in and Redis Object Cache is not being used. Use WP CLI or go to "Settings -> Redis" to enable drop-in.', 'icc-gg-wordpress-super-cache' )
 			);
 			$this->after_non_tabular_output();
 
 			return;
 		}
 
-		require_once ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH . '/includes/ui/query-monitor.php';
+		require_once ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/ui/query-monitor.php';
 	}
 }

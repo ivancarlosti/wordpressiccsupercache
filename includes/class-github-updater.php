@@ -3,50 +3,50 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 /**
- * GitHub plugin updater for ICC.gg Redis Object Cache Enabler.
+ * GitHub plugin updater for ICC.gg WordPress Super Cache.
  *
  * Checks the GitHub Releases API for newer versions and injects the result
  * into the WordPress update transient so the plugin behaves like a plugin
  * hosted on wordpress.org, including the native WordPress 5.5+
  * "Enable auto-updates" / "Disable auto-updates" toggle.
  *
- * @package   ICC_GG_Redis_Object_Cache_Enabler
+ * @package   ICC_GG_WordPress_Super_Cache
  * @author    Ivan Carlos
  * @copyright 2007-2026 Ivan Carlos Consultoria
- * @license   http://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
+ * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
 
-if ( ! class_exists( 'ICC_GG_Redis_Object_Cache_Enabler_Github_Updater' ) ) {
+if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 
-	class ICC_GG_Redis_Object_Cache_Enabler_Github_Updater {
+	class ICC_GG_WordPress_Super_Cache_Github_Updater {
 
 		/**
 		 * GitHub repository in owner/repository format.
 		 *
 		 * @var string
 		 */
-		const GITHUB_REPO = 'ivancarlosti/wordpressiccredisobjectcache';
+		const GITHUB_REPO = 'ivancarlosti/wordpressiccsupercache';
 
 		/**
 		 * GitHub Releases API endpoint for the latest release.
 		 *
 		 * @var string
 		 */
-		const GITHUB_API_URL = 'https://api.github.com/repos/ivancarlosti/wordpressiccredisobjectcache/releases/latest';
+		const GITHUB_API_URL = 'https://api.github.com/repos/ivancarlosti/wordpressiccsupercache/releases/latest';
 
 		/**
 		 * Site transient key used to cache the latest release data.
 		 *
 		 * @var string
 		 */
-		const CACHE_KEY = 'icc_gg_redis_object_cache_enabler_github_release';
+		const CACHE_KEY = 'icc_gg_wordpress_super_cache_github_release';
 
 		/**
 		 * Site transient key used to mark a recently failed request.
 		 *
 		 * @var string
 		 */
-		const FAILED_CACHE_KEY = 'icc_gg_redis_object_cache_enabler_github_failed_request';
+		const FAILED_CACHE_KEY = 'icc_gg_wordpress_super_cache_github_failed_request';
 
 		/**
 		 * How long to cache the latest release data, in seconds.
@@ -56,14 +56,14 @@ if ( ! class_exists( 'ICC_GG_Redis_Object_Cache_Enabler_Github_Updater' ) ) {
 		const CACHE_DURATION = 43200;
 
 		/**
-		 * Plugin basename, e.g. icc-gg-redis-object-cache-enabler/icc-gg-redis-object-cache-enabler.php.
+		 * Plugin basename, e.g. icc-gg-wordpress-super-cache/icc-gg-wordpress-super-cache.php.
 		 *
 		 * @var string
 		 */
 		private $plugin_file;
 
 		/**
-		 * Plugin slug (folder name), e.g. icc-gg-redis-object-cache-enabler.
+		 * Plugin slug (folder name), e.g. icc-gg-wordpress-super-cache.
 		 *
 		 * @var string
 		 */
@@ -255,7 +255,7 @@ if ( ! class_exists( 'ICC_GG_Redis_Object_Cache_Enabler_Github_Updater' ) ) {
 					'timeout' => 15,
 					'headers' => array(
 						'Accept'     => 'application/vnd.github.v3+json',
-						'User-Agent' => 'icc-gg-redis-object-cache-enabler/' . $this->current_version,
+						'User-Agent' => 'icc-gg-wordpress-super-cache/' . $this->current_version,
 					),
 				)
 			);

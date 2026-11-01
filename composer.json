@@ -1,8 +1,8 @@
 {
-    "name": "ivancarlosti/wordpressiccredisobjectcache",
-    "description": "A persistent object cache backend powered by Redis. Supports Predis, PhpRedis, Relay, replication, sentinels, clustering and WP-CLI.",
+    "name": "ivancarlosti/wordpressiccsupercache",
+    "description": "Redis object cache and Nginx page cache in one WordPress plugin. Supports Predis, PhpRedis, Relay, replication, sentinels, clustering and WP-CLI.",
     "type": "wordpress-plugin",
-    "license": "GPL-2.0-or-later",
+    "license": "GPL-3.0-or-later",
     "authors": [
         {
             "name": "Ivan Carlos",

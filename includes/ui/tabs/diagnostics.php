@@ -5,22 +5,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Diagnostics tab template.
  *
- * @package   ICC_GG_Redis_Object_Cache_Enabler
+ * @package   ICC_GG_WordPress_Super_Cache
  * @category  General
  * @author    Ivan Carlos
  * @copyright 2007-2026 Ivan Carlos Consultoria
- * @license   http://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
+ * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
 
 ?>
 
-<div class="card" id="icc-gg-redis-object-cache-enabler-diagnostics"><?php require __DIR__ . '/../../diagnostics.php'; ?></div>
+<div class="card" id="icc-gg-wordpress-super-cache-diagnostics"><?php require __DIR__ . '/../../diagnostics.php'; ?></div>
 
-<p id="icc-gg-redis-object-cache-enabler-copy-button">
+<p id="icc-gg-wordpress-super-cache-copy-button">
 	<span class="copy-button-wrapper">
-		<button type="button" class="button copy-button" data-clipboard-target="#icc-gg-redis-object-cache-enabler-diagnostics">
-			<?php esc_html_e( 'Copy diagnostics to clipboard', 'icc-gg-redis-object-cache-enabler' ); ?>
+		<button type="button" class="button copy-button" data-clipboard-target="#icc-gg-wordpress-super-cache-diagnostics">
+			<?php esc_html_e( 'Copy diagnostics to clipboard', 'icc-gg-wordpress-super-cache' ); ?>
 		</button>
-		<span class="success hidden" aria-hidden="true"><?php esc_html_e( 'Copied!', 'icc-gg-redis-object-cache-enabler' ); ?></span>
+		<span class="success hidden" aria-hidden="true"><?php esc_html_e( 'Copied!', 'icc-gg-wordpress-super-cache' ); ?></span>
 	</span>
 </p>

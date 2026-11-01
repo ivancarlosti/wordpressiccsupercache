@@ -5,14 +5,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Predis client class.
  *
- * @package   ICC_GG_Redis_Object_Cache_Enabler
+ * @package   ICC_GG_WordPress_Super_Cache
  * @category  General
  * @author    Ivan Carlos
  * @copyright 2007-2026 Ivan Carlos Consultoria
- * @license   http://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
+ * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
 
-class ICC_GG_Redis_Object_Cache_Enabler_Predis
+class ICC_GG_WordPress_Super_Cache_Predis
 {
 	/**
 	 * The Redis client.
@@ -35,7 +35,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Predis
 
 		// Load bundled Predis library.
 		if ( ! class_exists( '\Predis\Client' ) ) {
-			require_once ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH . '/dependencies/predis/predis/autoload.php';
+			require_once ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/dependencies/predis/predis/autoload.php';
 		}
 
 		$servers = false;

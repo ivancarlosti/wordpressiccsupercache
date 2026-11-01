@@ -5,15 +5,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Query Monitor output template.
  *
- * @package   ICC_GG_Redis_Object_Cache_Enabler
+ * @package   ICC_GG_WordPress_Super_Cache
  * @category  General
  * @author    Ivan Carlos
  * @copyright 2007-2026 Ivan Carlos Consultoria
- * @license   http://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
+ * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
 
 /**
- * @var \ICC_GG_Redis_Object_Cache_Enabler_QM_Output $this
+ * @var \ICC_GG_WordPress_Super_Cache_QM_Output $this
  * @var array<mixed> $data
  */
 
@@ -22,27 +22,27 @@ echo $this->before_non_tabular_output();
 ?>
 
 	<section>
-		<h3><?php esc_html_e( 'Status', 'icc-gg-redis-object-cache-enabler' ); ?></h3>
+		<h3><?php esc_html_e( 'Status', 'icc-gg-wordpress-super-cache' ); ?></h3>
 		<p class="qm-ltr"><code><?php echo esc_html( $data['status'] ); ?></code></p>
 	</section>
 
 	<section>
-		<h3><?php esc_html_e( 'Hit Ratio', 'icc-gg-redis-object-cache-enabler' ); ?></h3>
+		<h3><?php esc_html_e( 'Hit Ratio', 'icc-gg-wordpress-super-cache' ); ?></h3>
 		<p class="qm-ltr"><code><?php echo esc_html( $data['ratio'] ); ?>%</code></p>
 	</section>
 
 	<section>
-		<h3><?php esc_html_e( 'Hits', 'icc-gg-redis-object-cache-enabler' ); ?></h3>
+		<h3><?php esc_html_e( 'Hits', 'icc-gg-wordpress-super-cache' ); ?></h3>
 		<p class="qm-ltr"><code><?php echo (int) $data['hits']; ?></code></p>
 	</section>
 
 	<section>
-		<h3><?php esc_html_e( 'Misses', 'icc-gg-redis-object-cache-enabler' ); ?></h3>
+		<h3><?php esc_html_e( 'Misses', 'icc-gg-wordpress-super-cache' ); ?></h3>
 		<p class="qm-ltr"><code><?php echo (int) $data['misses']; ?></code></p>
 	</section>
 
 	<section>
-		<h3><?php esc_html_e( 'Size', 'icc-gg-redis-object-cache-enabler' ); ?></h3>
+		<h3><?php esc_html_e( 'Size', 'icc-gg-wordpress-super-cache' ); ?></h3>
 		<p class="qm-ltr"><code><?php echo esc_html( size_format( $data['bytes'], 2 ) ); ?></code></p>
 	</section>
 
@@ -52,7 +52,7 @@ echo $this->before_non_tabular_output();
 	<div class="qm-boxed qm-boxed-wrap">
 
 		<section>
-			<h3><?php esc_html_e( 'Errors', 'icc-gg-redis-object-cache-enabler' ); ?></h3>
+			<h3><?php esc_html_e( 'Errors', 'icc-gg-wordpress-super-cache' ); ?></h3>
 
 			<table>
 				<tbody>
@@ -75,7 +75,7 @@ echo $this->before_non_tabular_output();
 
 	<?php if ( ! empty( $data['groups']['global'] ) ) : ?>
 		<section>
-			<h3><?php esc_html_e( 'Global Groups', 'icc-gg-redis-object-cache-enabler' ); ?></h3>
+			<h3><?php esc_html_e( 'Global Groups', 'icc-gg-wordpress-super-cache' ); ?></h3>
 
 			<ul class="qm-ltr">
 				<?php foreach ( $data['groups']['global'] as $group ) : ?>
@@ -89,7 +89,7 @@ echo $this->before_non_tabular_output();
 
 	<?php if ( ! empty( $data['groups']['non_persistent'] ) ) : ?>
 		<section>
-			<h3><?php esc_html_e( 'Non-persistent Groups', 'icc-gg-redis-object-cache-enabler' ); ?></h3>
+			<h3><?php esc_html_e( 'Non-persistent Groups', 'icc-gg-wordpress-super-cache' ); ?></h3>
 
 			<ul class="qm-ltr">
 				<?php foreach ( $data['groups']['non_persistent'] as $group ) : ?>
@@ -103,7 +103,7 @@ echo $this->before_non_tabular_output();
 
 	<?php if ( ! empty( $data['groups']['unflushable'] ) ) : ?>
 		<section>
-			<h3><?php esc_html_e( 'Unflushable Groups', 'icc-gg-redis-object-cache-enabler' ); ?></h3>
+			<h3><?php esc_html_e( 'Unflushable Groups', 'icc-gg-wordpress-super-cache' ); ?></h3>
 
 			<ul class="qm-ltr">
 				<?php foreach ( $data['groups']['unflushable'] as $group ) : ?>
@@ -117,7 +117,7 @@ echo $this->before_non_tabular_output();
 
 	<?php if ( ! empty( $data['meta'] ) ) : ?>
 		<section>
-			<h3><?php esc_html_e( 'Metadata', 'icc-gg-redis-object-cache-enabler' ); ?></h3>
+			<h3><?php esc_html_e( 'Metadata', 'icc-gg-wordpress-super-cache' ); ?></h3>
 
 			<table>
 				<tbody>

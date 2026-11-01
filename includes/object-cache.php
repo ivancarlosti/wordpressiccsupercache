@@ -3,17 +3,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 /**
- * Plugin Name: ICC.gg Redis Object Cache Enabler Drop-In
- * Plugin URI: https://github.com/ivancarlosti/wordpressiccredisobjectcache
+ * Plugin Name: ICC.gg WordPress Super Cache Drop-In
+ * Plugin URI: https://github.com/ivancarlosti/wordpressiccsupercache
  * Description: A persistent object cache backend powered by Redis. Supports Predis, PhpRedis, Relay, replication, sentinels, clustering and WP-CLI.
- * Version: 1.0.0
+ * Version: 2.0.0
  * Author: ivancarlosti
  * Author URI: https://ivancarlos.com.br
- * License: GPL-2.0-or-later
- * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * License: GPL-3.0-or-later
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.txt
  * Requires PHP: 8.1
  *
- * @package ICC_GG_Redis_Object_Cache_Enabler
+ * @package ICC_GG_WordPress_Super_Cache
  */
 
 // phpcs:disable Generic.WhiteSpace.ScopeIndent.IncorrectExact, Generic.WhiteSpace.ScopeIndent.Incorrect
@@ -536,7 +536,7 @@ class WP_Object_Cache
 			$this->global_groups = array_map( [ $this, 'sanitize_key_part' ], WP_REDIS_GLOBAL_GROUPS );
 		}
 
-		$this->global_groups[] = 'icc-gg-redis-object-cache-enabler';
+		$this->global_groups[] = 'icc-gg-wordpress-super-cache';
 
 		if ( defined( 'WP_REDIS_IGNORED_GROUPS' ) && is_array( WP_REDIS_IGNORED_GROUPS ) ) {
 			$this->ignored_groups = array_map( [ $this, 'sanitize_key_part' ], WP_REDIS_IGNORED_GROUPS );
@@ -867,9 +867,9 @@ class WP_Object_Cache
 		if ( ! class_exists( 'Predis\Client' ) ) {
 			$predis = '/dependencies/predis/predis/autoload.php';
 
-			$pluginDir = defined( 'WP_PLUGIN_DIR' ) ? WP_PLUGIN_DIR . '/icc-gg-redis-object-cache-enabler' : null;
-			$contentDir = defined( 'WP_CONTENT_DIR' ) ? WP_CONTENT_DIR . '/plugins/icc-gg-redis-object-cache-enabler' : null;
-			$pluginPath = defined( 'ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH' ) ? ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH : null;
+			$pluginDir = defined( 'WP_PLUGIN_DIR' ) ? WP_PLUGIN_DIR . '/icc-gg-wordpress-super-cache' : null;
+			$contentDir = defined( 'WP_CONTENT_DIR' ) ? WP_CONTENT_DIR . '/plugins/icc-gg-wordpress-super-cache' : null;
+			$pluginPath = defined( 'ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH' ) ? ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH : null;
 
 			if ( $pluginDir && is_readable( $pluginDir . $predis ) ) {
 				require_once $pluginDir . $predis;
@@ -879,7 +879,7 @@ class WP_Object_Cache
 				require_once $pluginPath . $predis;
 			} else {
 				throw new Exception(
-					'Predis library not found. Re-install ICC.gg Redis Object Cache Enabler plugin or delete the object-cache.php.'
+					'Predis library not found. Re-install ICC.gg WordPress Super Cache plugin or delete the object-cache.php.'
 				);
 			}
 		}
@@ -975,7 +975,7 @@ class WP_Object_Cache
 		$client = 'Credis';
 
 		$creds_path = sprintf(
-			'%s/icc-gg-redis-object-cache-enabler/dependencies/colinmollenhour/credis/',
+			'%s/icc-gg-wordpress-super-cache/dependencies/colinmollenhour/credis/',
 			defined( 'WP_PLUGIN_DIR' ) ? WP_PLUGIN_DIR : WP_CONTENT_DIR . '/plugins'
 		);
 
@@ -1005,21 +1005,21 @@ class WP_Object_Cache
 				require_once $path;
 			} else {
 				throw new Exception(
-					'Credis library not found. Re-install ICC.gg Redis Object Cache Enabler plugin or delete object-cache.php.'
+					'Credis library not found. Re-install ICC.gg WordPress Super Cache plugin or delete object-cache.php.'
 				);
 			}
 		}
 
 		if ( defined( 'WP_REDIS_SHARDS' ) ) {
 			throw new Exception(
-				'Sharding not supported by bundled Credis library. Please review your ICC.gg Redis Object Cache Enabler configuration.'
+				'Sharding not supported by bundled Credis library. Please review your ICC.gg WordPress Super Cache configuration.'
 			);
 		}
 
 		if ( defined( 'WP_REDIS_SENTINEL' ) ) {
 			if ( is_array( WP_REDIS_SERVERS ) && count( WP_REDIS_SERVERS ) > 1 ) {
 				throw new Exception(
-					'Multiple sentinel servers are not supported by the bundled Credis library. Please review your ICC.gg Redis Object Cache Enabler configuration.'
+					'Multiple sentinel servers are not supported by the bundled Credis library. Please review your ICC.gg WordPress Super Cache configuration.'
 				);
 			}
 
@@ -1251,7 +1251,7 @@ class WP_Object_Cache
 			 * @param string $group      The cache group.
 			 * @param mixed  $orig_exp   The original expiration value before validation.
 			 */
-			$expire = apply_filters( 'icc_gg_redis_object_cache_enabler_expiration', $expire, $key, $group, $orig_exp );
+			$expire = apply_filters( 'icc_gg_wordpress_super_cache_expiration', $expire, $key, $group, $orig_exp );
 
 			$san_key = $this->sanitize_key_part( $key );
 			$derived_key = $derived_keys[ $key ] = $this->fast_build_key( $san_key, $san_group );
@@ -1371,7 +1371,7 @@ class WP_Object_Cache
 				 * @param string $group      The cache group.
 				 * @param mixed  $orig_exp   The original expiration value before validation.
 				 */
-				$expiration = apply_filters( 'icc_gg_redis_object_cache_enabler_expiration', $expiration, $key, $group, $orig_exp );
+				$expiration = apply_filters( 'icc_gg_wordpress_super_cache_expiration', $expiration, $key, $group, $orig_exp );
 				$start_time = microtime( true );
 
 				if ( $add ) {
@@ -1479,7 +1479,7 @@ class WP_Object_Cache
 			 * @param string $group        The group value appended to the $key.
 			 * @param float  $execute_time Execution time for the request in seconds.
 			 */
-			do_action( 'icc_gg_redis_object_cache_enabler_delete', $key, $group, $execute_time );
+			do_action( 'icc_gg_wordpress_super_cache_delete', $key, $group, $execute_time );
 		}
 
 		return (bool) $result;
@@ -1564,7 +1564,7 @@ class WP_Object_Cache
 				 * @param string $group        The group value appended to the $key.
 				 * @param float  $execute_time Execution time for the request in seconds.
 				 */
-				do_action( 'icc_gg_redis_object_cache_enabler_delete', $key, $group, $execute_time );
+				do_action( 'icc_gg_wordpress_super_cache_delete', $key, $group, $execute_time );
 			}
 		}
 
@@ -1735,7 +1735,7 @@ class WP_Object_Cache
 				 * @param string     $salt         The defined key prefix.
 				 * @param float      $execute_time Execution time for the request in seconds.
 				 */
-				do_action( 'icc_gg_redis_object_cache_enabler_flush', $results, 0, $selective, $salt, $execute_time );
+				do_action( 'icc_gg_wordpress_super_cache_flush', $results, 0, $selective, $salt, $execute_time );
 			}
 		}
 
@@ -1805,7 +1805,7 @@ class WP_Object_Cache
 			 * @param float $execute_time Execution time for the request in seconds.
 			 * @since 2.2.3
 			 */
-			do_action( 'icc_gg_redis_object_cache_enabler_flush_group', $results, $salt, $execute_time );
+			do_action( 'icc_gg_wordpress_super_cache_flush_group', $results, $salt, $execute_time );
 		}
 
 		foreach ( $results as $result ) {
@@ -2021,11 +2021,11 @@ LUA;
 			 * @param bool   $found        Whether the key was found in the cache.
 			 * @param float  $execute_time Execution time for the request in seconds.
 			 */
-			do_action( 'icc_gg_redis_object_cache_enabler_get', $key, $value, $group, $force, $found, $execute_time );
+			do_action( 'icc_gg_wordpress_super_cache_get', $key, $value, $group, $force, $found, $execute_time );
 		}
 
 		if ( function_exists( 'apply_filters' ) && function_exists( 'has_filter' ) ) {
-			if ( has_filter( 'icc_gg_redis_object_cache_enabler_get_value' ) ) {
+			if ( has_filter( 'icc_gg_wordpress_super_cache_get_value' ) ) {
 				/**
 				 * Filters the return value
 				 *
@@ -2036,7 +2036,7 @@ LUA;
 				 * @param bool   $force Whether a forced refetch has taken place rather than relying on the local cache.
 				 * @param bool   $found Whether the key was found in the cache.
 				 */
-				return apply_filters( 'icc_gg_redis_object_cache_enabler_get_value', $value, $key, $group, $force, $found );
+				return apply_filters( 'icc_gg_wordpress_super_cache_get_value', $value, $key, $group, $force, $found );
 			}
 		}
 
@@ -2161,11 +2161,11 @@ LUA;
 			 * @param bool   $force        Whether a forced refetch has taken place rather than relying on the local cache.
 			 * @param float  $execute_time Execution time for the request in seconds.
 			 */
-			do_action( 'icc_gg_redis_object_cache_enabler_get_multiple', $keys, $cache, $group, $force, $execute_time );
+			do_action( 'icc_gg_wordpress_super_cache_get_multiple', $keys, $cache, $group, $force, $execute_time );
 		}
 
 		if ( function_exists( 'apply_filters' ) && function_exists( 'has_filter' ) ) {
-			if ( has_filter( 'icc_gg_redis_object_cache_enabler_get_value' ) ) {
+			if ( has_filter( 'icc_gg_wordpress_super_cache_get_value' ) ) {
 				foreach ( $cache as $key => $value ) {
 					/**
 					 * Filters the return value
@@ -2176,7 +2176,7 @@ LUA;
 					 * @param string $group The group value appended to the $key.
 					 * @param bool   $force Whether a forced refetch has taken place rather than relying on the local cache.
 					 */
-					$cache[ $key ] = apply_filters( 'icc_gg_redis_object_cache_enabler_get_value', $value, $key, $group, $force );
+					$cache[ $key ] = apply_filters( 'icc_gg_wordpress_super_cache_get_value', $value, $key, $group, $force );
 				}
 			}
 		}
@@ -2219,7 +2219,7 @@ LUA;
 			 * @param string $group      The cache group.
 			 * @param mixed  $orig_exp   The original expiration value before validation.
 			 */
-			$expiration = apply_filters( 'icc_gg_redis_object_cache_enabler_expiration', $expiration, $key, $group, $orig_exp );
+			$expiration = apply_filters( 'icc_gg_wordpress_super_cache_expiration', $expiration, $key, $group, $orig_exp );
 
 			try {
 				if ( $expiration ) {
@@ -2256,7 +2256,7 @@ LUA;
 			 * @param int    $expiration   The time in seconds the entry expires. 0 for no expiry.
 			 * @param float  $execute_time Execution time for the request in seconds.
 			 */
-			do_action( 'icc_gg_redis_object_cache_enabler_set', $key, $value, $group, $expiration, $execute_time );
+			do_action( 'icc_gg_wordpress_super_cache_set', $key, $value, $group, $expiration, $execute_time );
 		}
 
 		return $result;
@@ -2325,7 +2325,7 @@ LUA;
 			 * @param string $group      The cache group.
 			 * @param mixed  $orig_exp   The original expiration value before validation.
 			 */
-			$expiration = $expirations[ $key ] = apply_filters( 'icc_gg_redis_object_cache_enabler_expiration', $expiration, $key, $group, $orig_exp );
+			$expiration = $expirations[ $key ] = apply_filters( 'icc_gg_wordpress_super_cache_expiration', $expiration, $key, $group, $orig_exp );
 
 			if ( $expiration ) {
 				$tx->setex( $derived_key, $expiration, $this->maybe_serialize( $value ) );
@@ -2376,7 +2376,7 @@ LUA;
 				 * @param int    $expiration   The time in seconds the entry expires. 0 for no expiry.
 				 * @param float  $execute_time Execution time for the request in seconds.
 				 */
-				do_action( 'icc_gg_redis_object_cache_enabler_set', $key, $value, $group, $expirations[ $key ], $execute_time );
+				do_action( 'icc_gg_wordpress_super_cache_set', $key, $value, $group, $expirations[ $key ], $execute_time );
 			}
 		}
 
@@ -2811,7 +2811,7 @@ LUA;
 		 * @since 2.1.7
 		 * @param string[] $groups List of groups to be ignored.
 		 */
-		$groups = apply_filters( 'icc_gg_redis_object_cache_enabler_add_non_persistent_groups', (array) $groups );
+		$groups = apply_filters( 'icc_gg_wordpress_super_cache_add_non_persistent_groups', (array) $groups );
 
 		$this->ignored_groups = array_unique( array_merge( $this->ignored_groups, $groups ) );
 		$this->cache_group_types();
@@ -3008,7 +3008,7 @@ LUA;
 			 * @param \Exception $exception The exception.
 			 * @param string     $message   The exception message.
 			 */
-			do_action( 'icc_gg_redis_object_cache_enabler_error', $exception, $exception->getMessage() );
+			do_action( 'icc_gg_wordpress_super_cache_error', $exception, $exception->getMessage() );
 		}
 
 		if ( ! $this->fail_gracefully ) {
@@ -3027,7 +3027,7 @@ LUA;
 	{
 		wp_load_translations_early();
 
-		$domain = 'icc-gg-redis-object-cache-enabler';
+		$domain = 'icc-gg-wordpress-super-cache';
 		$locale = defined( 'WPLANG' ) ? WPLANG : 'en_US';
 		$mofile = WP_LANG_DIR . "/plugins/{$domain}-{$locale}.mo";
 
@@ -3049,32 +3049,32 @@ LUA;
 			|| defined( 'WP_ADMIN' )
 			|| ( defined( 'WP_DEBUG' ) && WP_DEBUG );
 
-		$message = '<h1>' . __( 'Error establishing a Redis connection', 'icc-gg-redis-object-cache-enabler' ) . "</h1>\n";
+		$message = '<h1>' . __( 'Error establishing a Redis connection', 'icc-gg-wordpress-super-cache' ) . "</h1>\n";
 
 		if ( $verbose ) {
 			$message .= "<p><code>" . $exception->getMessage() . "</code></p>\n";
 
 			$message .= '<p>' . sprintf(
 				// translators: %s = Formatted wp-config.php file name.
-				__( 'WordPress is unable to establish a connection to Redis. This means that the connection information in your %s file are incorrect, or that the Redis server is not reachable.', 'icc-gg-redis-object-cache-enabler' ),
+				__( 'WordPress is unable to establish a connection to Redis. This means that the connection information in your %s file are incorrect, or that the Redis server is not reachable.', 'icc-gg-wordpress-super-cache' ),
 				'<code>wp-config.php</code>'
 			) . "</p>\n";
 
 			$message .= "<ul>\n";
-			$message .= '<li>' . __( 'Is the correct Redis host and port set?', 'icc-gg-redis-object-cache-enabler' ) . "</li>\n";
-			$message .= '<li>' . __( 'Is the Redis server running?', 'icc-gg-redis-object-cache-enabler' ) . "</li>\n";
+			$message .= '<li>' . __( 'Is the correct Redis host and port set?', 'icc-gg-wordpress-super-cache' ) . "</li>\n";
+			$message .= '<li>' . __( 'Is the Redis server running?', 'icc-gg-wordpress-super-cache' ) . "</li>\n";
 			$message .= "</ul>\n";
 
 			$message .= '<p>' . sprintf(
 				// translators: %s = Link to installation instructions.
-				__( 'If you need help, please read the <a href="%s">installation instructions</a>.', 'icc-gg-redis-object-cache-enabler' ),
-				'https://github.com/ivancarlosti/wordpressiccredisobjectcache'
+				__( 'If you need help, please read the <a href="%s">installation instructions</a>.', 'icc-gg-wordpress-super-cache' ),
+				'https://github.com/ivancarlosti/wordpressiccsupercache'
 			) . "</p>\n";
 		}
 
 		$message .= '<p>' . sprintf(
 			// translators: %1$s = Formatted object-cache.php file name, %2$s = Formatted wp-content directory name.
-			__( 'To disable Redis, delete the %1$s file in the %2$s directory.', 'icc-gg-redis-object-cache-enabler' ),
+			__( 'To disable Redis, delete the %1$s file in the %2$s directory.', 'icc-gg-wordpress-super-cache' ),
 			'<code>object-cache.php</code>',
 			'<code>/wp-content/</code>'
 		) . "</p>\n";

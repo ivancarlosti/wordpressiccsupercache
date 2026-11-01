@@ -5,17 +5,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * UI tab class.
  *
- * @package   ICC_GG_Redis_Object_Cache_Enabler
+ * @package   ICC_GG_WordPress_Super_Cache
  * @category  General
  * @author    Ivan Carlos
  * @copyright 2007-2026 Ivan Carlos Consultoria
- * @license   http://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
+ * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
 
 /**
  * Tab class definition
  */
-class ICC_GG_Redis_Object_Cache_Enabler_UI_Tab
+class ICC_GG_WordPress_Super_Cache_UI_Tab
 {
 	/**
 	 * Tab slug
@@ -73,7 +73,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_UI_Tab
 			[
 				'slug' => $slug,
 				'label' => $label,
-				'file' => ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH . "/includes/ui/tabs/{$slug}.php",
+				'file' => ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . "/includes/ui/tabs/{$slug}.php",
 			]
 		);
 
@@ -160,7 +160,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_UI_Tab
 	{
 		return sprintf(
 			// translators: %s = Tab label.
-			__( '%s are disabled for this site.', 'icc-gg-redis-object-cache-enabler' ),
+			__( '%s are disabled for this site.', 'icc-gg-wordpress-super-cache' ),
 			$this->label
 		);
 	}
@@ -172,7 +172,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_UI_Tab
 	 */
 	public function display()
 	{
-		$roc = ICC_GG_Redis_Object_Cache_Enabler_Plugin::instance();
+		$roc = ICC_GG_WordPress_Super_Cache_Plugin::instance();
 
 		include $this->file;
 	}
@@ -193,7 +193,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_UI_Tab
 		 * @param string $nav_id   The id attribute of the current tab's nav element.
 		 * @param Tab    $instance The current tab.
 		 */
-		return apply_filters( 'icc_gg_redis_object_cache_enabler_tab_nav_id', $nav_id, $this );
+		return apply_filters( 'icc_gg_wordpress_super_cache_tab_nav_id', $nav_id, $this );
 	}
 
 	/**
@@ -222,7 +222,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_UI_Tab
 		 * @param array $classes  Array of css classes.
 		 * @param Tab   $instance The current tab.
 		 */
-		return implode( ' ', apply_filters( 'icc_gg_redis_object_cache_enabler_tab_nav_classes', $classes, $this ) );
+		return implode( ' ', apply_filters( 'icc_gg_wordpress_super_cache_tab_nav_classes', $classes, $this ) );
 	}
 
 	/**
@@ -241,7 +241,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_UI_Tab
 		 * @param string $tab_id   The id attribute of the current tab element.
 		 * @param Tab    $instance The current tab.
 		 */
-		return apply_filters( 'icc_gg_redis_object_cache_enabler_tab_id', $tab_id, $this );
+		return apply_filters( 'icc_gg_wordpress_super_cache_tab_id', $tab_id, $this );
 	}
 
 	/**
@@ -267,7 +267,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_UI_Tab
 		 * @param array $classes  Array of css classes.
 		 * @param Tab   $instance The current tab.
 		 */
-		return implode( ' ', apply_filters( 'icc_gg_redis_object_cache_enabler_tab_classes', $classes, $this ) );
+		return implode( ' ', apply_filters( 'icc_gg_wordpress_super_cache_tab_classes', $classes, $this ) );
 	}
 
 }

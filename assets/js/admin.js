@@ -1,17 +1,17 @@
 ( function ( $, root, undefined ) {
-    root.icc_gg_redis_object_cache_enabler = root.icc_gg_redis_object_cache_enabler || {};
-    var icc_gg_redis_object_cache_enabler = root.icc_gg_redis_object_cache_enabler;
+    root.icc_gg_wordpress_super_cache = root.icc_gg_wordpress_super_cache || {};
+    var icc_gg_wordpress_super_cache = root.icc_gg_wordpress_super_cache;
 
-    $.extend( icc_gg_redis_object_cache_enabler, {
+    $.extend( icc_gg_wordpress_super_cache, {
         metrics: {
             computed: null,
         },
         chart: null,
         chart_defaults: {
             noData: {
-                text: root.icc_gg_redis_object_cache_enabler_metrics
-                    ? icc_gg_redis_object_cache_enabler.l10n.no_data
-                    : icc_gg_redis_object_cache_enabler.l10n.no_cache,
+                text: root.icc_gg_wordpress_super_cache_metrics
+                    ? icc_gg_wordpress_super_cache.l10n.no_data
+                    : icc_gg_wordpress_super_cache.l10n.no_cache,
                 align: 'center',
                 verticalAlign: 'middle',
                 offsetY: -25,
@@ -27,7 +27,7 @@
                 dashArray: [0, 8],
             },
             colors: [
-                icc_gg_redis_object_cache_enabler.is_wp7 ? '#3858e9' : '#0096dd',
+                icc_gg_wordpress_super_cache.is_wp7 ? '#3858e9' : '#0096dd',
                 '#72777c',
             ],
             annotations: {
@@ -42,7 +42,7 @@
             },
             chart: {
                 type: 'line',
-                height: $( '#metrics-pane #widget-redis-stats' ).length ? '300px' : '100%',
+                height: $( '#redis-pane #widget-redis-stats' ).length ? '300px' : '100%',
                 toolbar: { show: false },
                 zoom: { enabled: false },
                 animations: { enabled: false },
@@ -104,9 +104,9 @@
     } );
 
     // Build the charts by deep extending the chart defaults
-    $.extend( icc_gg_redis_object_cache_enabler, {
+    $.extend( icc_gg_wordpress_super_cache, {
         charts: {
-            time: $.extend( true, {}, icc_gg_redis_object_cache_enabler.chart_defaults, {
+            time: $.extend( true, {}, icc_gg_wordpress_super_cache.chart_defaults, {
                 yaxis: {
                     labels: {
                         formatter: function ( value ) {
@@ -117,12 +117,12 @@
                 tooltip: {
                     custom: function ({ series, seriesIndex, dataPointIndex, w }) {
                         return [
-                            icc_gg_redis_object_cache_enabler.templates.tooltip_title({
+                            icc_gg_wordpress_super_cache.templates.tooltip_title({
                                 title: new Date( w.globals.seriesX[ seriesIndex ][ dataPointIndex ] )
                                     .toTimeString().slice( 0, 5 ),
                             }),
-                            icc_gg_redis_object_cache_enabler.templates.series_group({
-                                color: icc_gg_redis_object_cache_enabler.chart_defaults.colors[0],
+                            icc_gg_wordpress_super_cache.templates.series_group({
+                                color: icc_gg_wordpress_super_cache.chart_defaults.colors[0],
                                 name: w.globals.seriesNames[0],
                                 value: series[0][ dataPointIndex ].toFixed(2) + ' ms',
                             }),
@@ -130,7 +130,7 @@
                     },
                 },
             } ),
-            bytes: $.extend( true, {}, icc_gg_redis_object_cache_enabler.chart_defaults, {
+            bytes: $.extend( true, {}, icc_gg_wordpress_super_cache.chart_defaults, {
                 yaxis: {
                     labels: {
                         formatter: function ( value ) {
@@ -147,11 +147,11 @@
                         var bytes = parseFloat( (value / Math.pow( 1024, i ) ).toFixed( i ? 2 : 0 ) ) + ' ' + ['B', 'KB', 'MB', 'GB', 'TB'][i];
 
                         return [
-                            icc_gg_redis_object_cache_enabler.templates.tooltip_title({
+                            icc_gg_wordpress_super_cache.templates.tooltip_title({
                                 title: new Date( w.globals.seriesX[ seriesIndex ][ dataPointIndex ] ).toTimeString().slice( 0, 5 ),
                             }),
-                            icc_gg_redis_object_cache_enabler.templates.series_group({
-                                color: icc_gg_redis_object_cache_enabler.chart_defaults.colors[0],
+                            icc_gg_wordpress_super_cache.templates.series_group({
+                                color: icc_gg_wordpress_super_cache.chart_defaults.colors[0],
                                 name: w.globals.seriesNames[0],
                                 value: bytes,
                             }),
@@ -159,7 +159,7 @@
                     },
                 },
             } ),
-            ratio: $.extend( true, {}, icc_gg_redis_object_cache_enabler.chart_defaults, {
+            ratio: $.extend( true, {}, icc_gg_wordpress_super_cache.chart_defaults, {
                 yaxis: {
                     max: 100,
                     labels: {
@@ -171,12 +171,12 @@
                 tooltip: {
                     custom: function ({ series, seriesIndex, dataPointIndex, w }) {
                         return [
-                            icc_gg_redis_object_cache_enabler.templates.tooltip_title({
+                            icc_gg_wordpress_super_cache.templates.tooltip_title({
                                 title: new Date( w.globals.seriesX[ seriesIndex ][ dataPointIndex ] )
                                     .toTimeString().slice( 0, 5 ),
                             }),
-                            icc_gg_redis_object_cache_enabler.templates.series_group({
-                                color: icc_gg_redis_object_cache_enabler.chart_defaults.colors[0],
+                            icc_gg_wordpress_super_cache.templates.series_group({
+                                color: icc_gg_wordpress_super_cache.chart_defaults.colors[0],
                                 name: w.globals.seriesNames[0],
                                 value: Math.round( series[0][ dataPointIndex ] * 100 ) / 100 + '%',
                             }),
@@ -184,16 +184,16 @@
                     },
                 },
             } ),
-            calls: $.extend( true, {}, icc_gg_redis_object_cache_enabler.chart_defaults, {
+            calls: $.extend( true, {}, icc_gg_wordpress_super_cache.chart_defaults, {
                 tooltip: {
                     custom: function ({ series, seriesIndex, dataPointIndex, w }) {
                         return [
-                            icc_gg_redis_object_cache_enabler.templates.tooltip_title({
+                            icc_gg_wordpress_super_cache.templates.tooltip_title({
                                 title: new Date( w.globals.seriesX[ seriesIndex ][ dataPointIndex ] )
                                     .toTimeString().slice( 0, 5 ),
                             }),
-                            icc_gg_redis_object_cache_enabler.templates.series_group({
-                                color: icc_gg_redis_object_cache_enabler.chart_defaults.colors[0],
+                            icc_gg_wordpress_super_cache.templates.series_group({
+                                color: icc_gg_wordpress_super_cache.chart_defaults.colors[0],
                                 name: w.globals.seriesNames[0],
                                 value: Math.round( series[0][ dataPointIndex ] ),
                             }),
@@ -284,36 +284,36 @@
     };
 
     var render_chart = function ( id ) {
-        if ( icc_gg_redis_object_cache_enabler.chart ) {
-            icc_gg_redis_object_cache_enabler.chart.updateOptions( icc_gg_redis_object_cache_enabler.charts[ id ] );
+        if ( icc_gg_wordpress_super_cache.chart ) {
+            icc_gg_wordpress_super_cache.chart.updateOptions( icc_gg_wordpress_super_cache.charts[ id ] );
             return;
         }
 
         var chart = new ApexCharts(
             document.querySelector( '#redis-stats-chart' ),
-            icc_gg_redis_object_cache_enabler.charts[ id ]
+            icc_gg_wordpress_super_cache.charts[ id ]
         );
 
         chart.render();
-        root.icc_gg_redis_object_cache_enabler.chart = chart;
+        root.icc_gg_wordpress_super_cache.chart = chart;
     };
 
     var setup_charts = function () {
         var metrics = {};
 
-        for ( var type in icc_gg_redis_object_cache_enabler.charts ) {
-            if ( ! icc_gg_redis_object_cache_enabler.charts.hasOwnProperty( type ) ) {
+        for ( var type in icc_gg_wordpress_super_cache.charts ) {
+            if ( ! icc_gg_wordpress_super_cache.charts.hasOwnProperty( type ) ) {
                 continue;
             }
 
-            metrics[type] = icc_gg_redis_object_cache_enabler.metrics.computed.map(
+            metrics[type] = icc_gg_wordpress_super_cache.metrics.computed.map(
                 function ( entry ) {
                     return [ entry.date, entry[type] ];
                 }
             );
 
-            icc_gg_redis_object_cache_enabler.charts[type].series = [{
-                name: icc_gg_redis_object_cache_enabler.l10n[type],
+            icc_gg_wordpress_super_cache.charts[type].series = [{
+                name: icc_gg_wordpress_super_cache.l10n[type],
                 type: 'area',
                 data: metrics[type],
             }];
@@ -322,11 +322,11 @@
 
     // executed on page load
     $(function () {
-        var $tabs = $( '#icc-gg-redis-object-cache-enabler .nav-tab-wrapper' );
-        var $panes = $( '#icc-gg-redis-object-cache-enabler .content-column .tab-content' );
+        var $tabs = $( '#icc-gg-wordpress-super-cache .nav-tab-wrapper' );
+        var $panes = $( '#icc-gg-wordpress-super-cache .content-column .tab-content' );
 
         $tabs.find( 'a' ).on(
-            'click.icc-gg-redis-object-cache-enabler',
+            'click.icc-gg-wordpress-super-cache',
             function ( event ) {
                 var toggle = $( this ).data( 'toggle' );
 
@@ -342,7 +342,7 @@
             }
         );
 
-        var firstRender = window.location.hash.indexOf('metrics') === -1;
+        var firstRender = window.location.hash.indexOf('redis') === -1;
 
         var show_tab = function ( name ) {
             $tabs.find( '.nav-tab-active' ).removeClass( 'nav-tab-active' );
@@ -351,7 +351,7 @@
             $( '#' + name + '-tab' ).addClass( 'nav-tab-active' );
             $( '#' + name + '-pane' ).addClass( 'active' );
 
-            if (name === 'metrics' && firstRender) {
+            if (name === 'redis' && firstRender) {
                 firstRender = false;
                 render_chart( 'time' );
             }
@@ -370,14 +370,14 @@
         $( window ).on( 'hashchange', show_current_tab );
 
         if ( $( '#widget-redis-stats' ).length ) {
-            icc_gg_redis_object_cache_enabler.metrics.computed = compute_metrics( root.icc_gg_redis_object_cache_enabler_metrics );
+            icc_gg_wordpress_super_cache.metrics.computed = compute_metrics( root.icc_gg_wordpress_super_cache_metrics );
 
             setup_charts();
             render_chart( 'time' );
         }
 
         $( '#widget-redis-stats ul a[data-chart]' ).on(
-            'click.icc-gg-redis-object-cache-enabler',
+            'click.icc-gg-wordpress-super-cache',
             function ( event ) {
                 event.preventDefault();
 
@@ -390,12 +390,12 @@
             }
         );
 
-        if ( $( '#icc-gg-redis-object-cache-enabler-copy-button' ).length ) {
+        if ( $( '#icc-gg-wordpress-super-cache-copy-button' ).length ) {
             if ( typeof ClipboardJS === 'undefined' ) {
-                $( '#icc-gg-redis-object-cache-enabler-copy-button' ).remove();
+                $( '#icc-gg-wordpress-super-cache-copy-button' ).remove();
             } else {
                 var successTimeout;
-                var clipboard = new ClipboardJS( '#icc-gg-redis-object-cache-enabler-copy-button .copy-button' );
+                var clipboard = new ClipboardJS( '#icc-gg-wordpress-super-cache-copy-button .copy-button' );
 
                 clipboard.on( 'success', function( e ) {
                     var triggerElement = $( e.trigger ),
@@ -420,4 +420,4 @@
         }
     });
 
-} ( window[ icc_gg_redis_object_cache_enabler.jQuery ], window ) );
+} ( window[ icc_gg_wordpress_super_cache.jQuery ], window ) );

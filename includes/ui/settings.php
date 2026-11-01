@@ -5,27 +5,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Admin settings page template.
  *
- * @package   ICC_GG_Redis_Object_Cache_Enabler
+ * @package   ICC_GG_WordPress_Super_Cache
  * @category  General
  * @author    Ivan Carlos
  * @copyright 2007-2026 Ivan Carlos Consultoria
- * @license   http://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
+ * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
 ?>
-<div id="icc-gg-redis-object-cache-enabler" class="wrap">
+<div id="icc-gg-wordpress-super-cache" class="wrap">
 
 	<h1>
-		<?php esc_html_e( 'ICC.gg Redis Object Cache Enabler', 'icc-gg-redis-object-cache-enabler' ); ?>
+		<?php esc_html_e( 'ICC.gg WordPress Super Cache', 'icc-gg-wordpress-super-cache' ); ?>
 	</h1>
 
-	<?php is_network_admin() && settings_errors(); ?>
+	<?php settings_errors(); ?>
 
 	<div class="columns">
 
 		<div class="content-column">
 
 			<h2 class="nav-tab-wrapper">
-				<?php foreach ( ICC_GG_Redis_Object_Cache_Enabler_UI::get_tabs() as $ui_tab ) : ?>
+				<?php foreach ( ICC_GG_WordPress_Super_Cache_UI::get_tabs() as $ui_tab ) : ?>
 					<?php if ( $ui_tab->is_disabled() ) : ?>
 
 						<span
@@ -51,7 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</h2>
 
 			<div class="tab-content">
-				<?php foreach ( ICC_GG_Redis_Object_Cache_Enabler_UI::get_tabs() as $ui_tab ) : ?>
+				<?php foreach ( ICC_GG_WordPress_Super_Cache_UI::get_tabs() as $ui_tab ) : ?>
 					<?php if ( ! $ui_tab->is_disabled() ) : ?>
 						<div id="<?php echo esc_attr( $ui_tab->id() ); ?>"
 							class="<?php echo esc_attr( $ui_tab->classes() ); ?>"
@@ -68,11 +68,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<hr style="margin-top: 30px;">
 	<p style="text-align: center; color: #666; font-size: 12px;">
-		<?php esc_html_e( 'ICC.gg Redis Object Cache Enabler - A persistent object cache backend powered by Redis. Supports Predis, PhpRedis, Relay, replication, sentinels, clustering and WP-CLI.', 'icc-gg-redis-object-cache-enabler' ); ?><br>
-		<a href="https://github.com/ivancarlosti/wordpressiccredisobjectcache" target="_blank" rel="noopener noreferrer">
-			github.com/ivancarlosti/wordpressiccredisobjectcache
+		<?php esc_html_e( 'ICC.gg WordPress Super Cache - Redis object cache and Nginx page cache in one plugin. Enable, configure and purge each layer independently.', 'icc-gg-wordpress-super-cache' ); ?><br>
+		<a href="https://github.com/ivancarlosti/wordpressiccsupercache" target="_blank" rel="noopener noreferrer">
+			github.com/ivancarlosti/wordpressiccsupercache
 		</a><br>
-		<?php echo esc_html( sprintf( 'v%s', ICC_GG_REDIS_OBJECT_CACHE_ENABLER_VERSION ) ); ?>
+		<?php echo esc_html( sprintf( 'v%s', ICC_GG_WORDPRESS_SUPER_CACHE_VERSION ) ); ?>
 	</p>
 
 </div>

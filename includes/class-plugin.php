@@ -5,17 +5,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Main plugin class.
  *
- * @package   ICC_GG_Redis_Object_Cache_Enabler
+ * @package   ICC_GG_WordPress_Super_Cache
  * @category  General
  * @author    Ivan Carlos
  * @copyright 2007-2026 Ivan Carlos Consultoria
- * @license   http://www.gnu.org/licenses/gpl-2.0.txt GPL-2.0+
+ * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
 
 /**
  * Main plugin class definition
  */
-class ICC_GG_Redis_Object_Cache_Enabler_Plugin
+class ICC_GG_WordPress_Super_Cache_Plugin
 {
 	/**
 	 * Settings page uri
@@ -41,19 +41,20 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		'disable-cache',
 		'flush-cache',
 		'update-dropin',
+		'purge-nginx-cache',
 	];
 
 	/**
 	 * Plugin instance property
 	 *
-	 * @var ICC_GG_Redis_Object_Cache_Enabler_Plugin|null
+	 * @var ICC_GG_WordPress_Super_Cache_Plugin|null
 	 */
 	private static $instance;
 
 	/**
 	 * Plugin instantiation method
 	 *
-	 * @return ICC_GG_Redis_Object_Cache_Enabler_Plugin
+	 * @return ICC_GG_WordPress_Super_Cache_Plugin
 	 */
 	public static function instance()
 	{
@@ -72,14 +73,15 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 		if ( is_multisite() ) {
-			$this->page = 'settings.php?page=icc-gg-redis-object-cache-enabler';
-			$this->screen = 'settings_page_icc-gg-redis-object-cache-enabler-network';
+			$this->page = 'settings.php?page=icc-gg-wordpress-super-cache';
+			$this->screen = 'settings_page_icc-gg-wordpress-super-cache-network';
 		} else {
-			$this->page = 'options-general.php?page=icc-gg-redis-object-cache-enabler';
-			$this->screen = 'settings_page_icc-gg-redis-object-cache-enabler';
+			$this->page = 'options-general.php?page=icc-gg-wordpress-super-cache';
+			$this->screen = 'settings_page_icc-gg-wordpress-super-cache';
 		}
 
-		ICC_GG_Redis_Object_Cache_Enabler_Metrics::init();
+		ICC_GG_WordPress_Super_Cache_Metrics::init();
+		ICC_GG_WordPress_Super_Cache_Nginx_Cache::instance();
 
 		$this->add_actions_and_filters();
 	}
@@ -107,19 +109,19 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 
 		add_action( 'admin_bar_menu', [ $this, 'render_admin_bar' ], 998 );
 
-		add_action( 'load-settings_page_icc-gg-redis-object-cache-enabler', [ $this, 'do_admin_actions' ] );
+		add_action( sprintf( 'load-%s', $this->screen ), [ $this, 'do_admin_actions' ] );
 
 		add_action( 'wp_dashboard_setup', [ $this, 'setup_dashboard_widget' ] );
 		add_action( 'wp_network_dashboard_setup', [ $this, 'setup_dashboard_widget' ] );
 
-		add_action( 'wp_ajax_icc_gg_redis_object_cache_enabler_flush_cache', [ $this, 'ajax_flush_cache' ] );
+		add_action( 'wp_ajax_icc_gg_wordpress_super_cache_flush_cache', [ $this, 'ajax_flush_cache' ] );
 
 		add_filter( 'plugin_row_meta', [ $this, 'add_plugin_row_meta' ], 10, 2 );
-		add_filter( sprintf( '%splugin_action_links_%s', is_multisite() ? 'network_admin_' : '', ICC_GG_REDIS_OBJECT_CACHE_ENABLER_BASENAME ), [ $this, 'add_plugin_actions_links' ] );
+		add_filter( sprintf( '%splugin_action_links_%s', is_multisite() ? 'network_admin_' : '', ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME ), [ $this, 'add_plugin_actions_links' ] );
 
 		add_action( 'wp_head', [ $this, 'register_shutdown_hooks' ] );
 
-		add_action( 'icc_gg_redis_object_cache_enabler_enable', [ $this, 'maybe_delete_transients' ] );
+		add_action( 'icc_gg_wordpress_super_cache_enable', [ $this, 'maybe_delete_transients' ] );
 
 		add_filter( 'qm/collectors', [ $this, 'register_qm_collector' ], 25 );
 		add_filter( 'qm/outputter/html', [ $this, 'register_qm_output' ] );
@@ -136,8 +138,8 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 	 */
 	public function init()
 	{
-		if ( is_admin() && ! wp_next_scheduled( 'icc_gg_redis_object_cache_enabler_discard_metrics' ) ) {
-			wp_schedule_event( time(), 'hourly', 'icc_gg_redis_object_cache_enabler_discard_metrics' );
+		if ( is_admin() && ! wp_next_scheduled( 'icc_gg_wordpress_super_cache_discard_metrics' ) ) {
+			wp_schedule_event( time(), 'hourly', 'icc_gg_wordpress_super_cache_discard_metrics' );
 		}
 	}
 
@@ -150,10 +152,10 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 	{
 		add_submenu_page(
 			is_multisite() ? 'settings.php' : 'options-general.php',
-			__( 'ICC.gg Redis Object Cache Enabler', 'icc-gg-redis-object-cache-enabler' ),
-			__( 'Redis', 'icc-gg-redis-object-cache-enabler' ),
+			__( 'ICC.gg WordPress Super Cache', 'icc-gg-wordpress-super-cache' ),
+			__( 'Super Cache', 'icc-gg-wordpress-super-cache' ),
 			$this->manage_redis_capability(),
-			'icc-gg-redis-object-cache-enabler',
+			'icc-gg-wordpress-super-cache',
 			[ $this, 'show_admin_page' ]
 		);
 	}
@@ -182,29 +184,28 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 			}
 		}
 
-		if ( wp_next_scheduled( 'icc_gg_redis_object_cache_enabler_gather_metrics' ) ) {
-			wp_clear_scheduled_hook( 'icc_gg_redis_object_cache_enabler_gather_metrics' );
+		if ( wp_next_scheduled( 'icc_gg_wordpress_super_cache_gather_metrics' ) ) {
+			wp_clear_scheduled_hook( 'icc_gg_wordpress_super_cache_gather_metrics' );
 		}
 
-		ICC_GG_Redis_Object_Cache_Enabler_UI::register_tab(
-			'overview',
-			__( 'Overview', 'icc-gg-redis-object-cache-enabler' ),
+		ICC_GG_WordPress_Super_Cache_UI::register_tab(
+			'redis',
+			__( 'Redis', 'icc-gg-wordpress-super-cache' ),
 			[ 'default' => true ]
 		);
 
-		ICC_GG_Redis_Object_Cache_Enabler_UI::register_tab(
-			'metrics',
-			__( 'Metrics', 'icc-gg-redis-object-cache-enabler' ),
-			[ 'disabled' => ! ICC_GG_Redis_Object_Cache_Enabler_Metrics::is_enabled() ]
+		ICC_GG_WordPress_Super_Cache_UI::register_tab(
+			'nginx',
+			__( 'Nginx', 'icc-gg-wordpress-super-cache' )
 		);
 
-		ICC_GG_Redis_Object_Cache_Enabler_UI::register_tab(
+		ICC_GG_WordPress_Super_Cache_UI::register_tab(
 			'diagnostics',
-			__( 'Diagnostics', 'icc-gg-redis-object-cache-enabler' )
+			__( 'Diagnostics', 'icc-gg-wordpress-super-cache' )
 		);
 
 		// Show the admin page.
-		require_once ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH . '/includes/ui/settings.php';
+		require_once ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/ui/settings.php';
 	}
 
 	/**
@@ -218,13 +219,13 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 			return;
 		}
 
-		if ( ! ICC_GG_Redis_Object_Cache_Enabler_Metrics::is_enabled() ) {
+		if ( ! ICC_GG_WordPress_Super_Cache_Metrics::is_enabled() ) {
 			return;
 		}
 
 		wp_add_dashboard_widget(
-			'dashboard_icc_gg_redis_object_cache_enabler',
-			__( 'ICC.gg Redis Object Cache Enabler', 'icc-gg-redis-object-cache-enabler' ),
+			'dashboard_icc_gg_wordpress_super_cache',
+			__( 'ICC.gg WordPress Super Cache', 'icc-gg-wordpress-super-cache' ),
 			[ $this, 'show_dashboard_widget' ],
 			null,
 			null,
@@ -240,7 +241,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 	 */
 	public function show_dashboard_widget()
 	{
-		require_once ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH . '/includes/ui/widget.php';
+		require_once ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/ui/widget.php';
 	}
 
 	/**
@@ -254,7 +255,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		$settings = sprintf(
 			'<a href="%s">%s</a>',
 			network_admin_url( $this->page ),
-			esc_html__( 'Settings', 'icc-gg-redis-object-cache-enabler' )
+			esc_html__( 'Settings', 'icc-gg-wordpress-super-cache' )
 		);
 
 		return array_merge( [ $settings ], $links );
@@ -269,14 +270,14 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 	 */
 	public function add_plugin_row_meta( array $plugin_meta, $plugin_file )
 	{
-		if ( strpos( $plugin_file, 'icc-gg-redis-object-cache-enabler.php' ) === false ) {
+		if ( strpos( $plugin_file, 'icc-gg-wordpress-super-cache.php' ) === false ) {
 			return $plugin_meta;
 		}
 
 		$plugin_meta[] = sprintf(
 			'<a href="%1$s" target="_blank" rel="noopener">%2$s</a>',
-			'https://github.com/ivancarlosti/wordpressiccredisobjectcache/releases',
-			esc_html__( 'Check for updates', 'icc-gg-redis-object-cache-enabler' )
+			'https://github.com/ivancarlosti/wordpressiccsupercache/releases',
+			esc_html__( 'Check for updates', 'icc-gg-wordpress-super-cache' )
 		);
 
 		return $plugin_meta;
@@ -306,10 +307,10 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		}
 
 		wp_enqueue_style(
-			'icc-gg-redis-object-cache-enabler',
-			trailingslashit( ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_DIR ) . 'assets/css/admin.css',
+			'icc-gg-wordpress-super-cache',
+			trailingslashit( ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_DIR ) . 'assets/css/admin.css',
 			[],
-			ICC_GG_REDIS_OBJECT_CACHE_ENABLER_VERSION
+			ICC_GG_WORDPRESS_SUPER_CACHE_VERSION
 		);
 	}
 
@@ -339,26 +340,26 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		$clipboard = file_exists( ABSPATH . WPINC . '/js/clipboard.min.js' );
 
 		wp_enqueue_script(
-			'icc-gg-redis-object-cache-enabler',
-			plugins_url( 'assets/js/admin.js', ICC_GG_REDIS_OBJECT_CACHE_ENABLER_FILE ),
+			'icc-gg-wordpress-super-cache',
+			plugins_url( 'assets/js/admin.js', ICC_GG_WORDPRESS_SUPER_CACHE_FILE ),
 			array_merge( [ 'jquery', 'underscore' ], $clipboard ? [ 'clipboard' ] : [] ),
-			ICC_GG_REDIS_OBJECT_CACHE_ENABLER_VERSION,
+			ICC_GG_WORDPRESS_SUPER_CACHE_VERSION,
 			true
 		);
 
 		wp_localize_script(
-			'icc-gg-redis-object-cache-enabler',
-			'icc_gg_redis_object_cache_enabler',
+			'icc-gg-wordpress-super-cache',
+			'icc_gg_wordpress_super_cache',
 			[
 				'jQuery' => 'jQuery',
 				'is_wp7' => version_compare( get_bloginfo( 'version' ), '7.0-dev', '>=' ),
 				'l10n' => [
-					'time' => __( 'Time', 'icc-gg-redis-object-cache-enabler' ),
-					'bytes' => __( 'Bytes', 'icc-gg-redis-object-cache-enabler' ),
-					'ratio' => __( 'Ratio', 'icc-gg-redis-object-cache-enabler' ),
-					'calls' => __( 'Calls', 'icc-gg-redis-object-cache-enabler' ),
-					'no_data' => __( 'Not enough data collected, yet.', 'icc-gg-redis-object-cache-enabler' ),
-					'no_cache' => __( 'Enable object cache to collect data.', 'icc-gg-redis-object-cache-enabler' ),
+					'time' => __( 'Time', 'icc-gg-wordpress-super-cache' ),
+					'bytes' => __( 'Bytes', 'icc-gg-wordpress-super-cache' ),
+					'ratio' => __( 'Ratio', 'icc-gg-wordpress-super-cache' ),
+					'calls' => __( 'Calls', 'icc-gg-wordpress-super-cache' ),
+					'no_data' => __( 'Not enough data collected, yet.', 'icc-gg-wordpress-super-cache' ),
+					'no_cache' => __( 'Enable object cache to collect data.', 'icc-gg-wordpress-super-cache' ),
 				],
 			]
 		);
@@ -371,7 +372,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 	 */
 	public function enqueue_redis_metrics()
 	{
-		if ( ! ICC_GG_Redis_Object_Cache_Enabler_Metrics::is_enabled() ) {
+		if ( ! ICC_GG_WordPress_Super_Cache_Metrics::is_enabled() ) {
 			return;
 		}
 
@@ -386,10 +387,10 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		}
 
 		wp_enqueue_script(
-			'icc-gg-redis-object-cache-enabler-charts',
-			plugins_url( 'assets/js/apexcharts.min.js', ICC_GG_REDIS_OBJECT_CACHE_ENABLER_FILE ),
+			'icc-gg-wordpress-super-cache-charts',
+			plugins_url( 'assets/js/apexcharts.min.js', ICC_GG_WORDPRESS_SUPER_CACHE_FILE ),
 			[],
-			ICC_GG_REDIS_OBJECT_CACHE_ENABLER_VERSION,
+			ICC_GG_WORDPRESS_SUPER_CACHE_VERSION,
 			true
 		);
 
@@ -398,12 +399,12 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		}
 
 		$min_time = $screen->id === $this->screen
-			? ICC_GG_Redis_Object_Cache_Enabler_Metrics::max_time()
+			? ICC_GG_WordPress_Super_Cache_Metrics::max_time()
 			: MINUTE_IN_SECONDS * 30;
 
-		$metrics = ICC_GG_Redis_Object_Cache_Enabler_Metrics::get( $min_time );
+		$metrics = ICC_GG_WordPress_Super_Cache_Metrics::get( $min_time );
 
-		wp_localize_script( 'icc-gg-redis-object-cache-enabler', 'icc_gg_redis_object_cache_enabler_metrics', $metrics );
+		wp_localize_script( 'icc-gg-wordpress-super-cache', 'icc_gg_wordpress_super_cache_metrics', $metrics );
 	}
 
 	/**
@@ -414,7 +415,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 	 */
 	public function register_qm_collector( array $collectors )
 	{
-		$collectors['cache'] = new ICC_GG_Redis_Object_Cache_Enabler_QM_Collector();
+		$collectors['cache'] = new ICC_GG_WordPress_Super_Cache_QM_Collector();
 
 		return $collectors;
 	}
@@ -430,10 +431,10 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		$collector = \QM_Collectors::get( 'cache' );
 
 		if (
-			$collector instanceof ICC_GG_Redis_Object_Cache_Enabler_QM_Collector &&
+			$collector instanceof ICC_GG_WordPress_Super_Cache_QM_Collector &&
 			method_exists( 'QM_Output_Html', 'before_non_tabular_output' )
 		) {
-			$output['cache'] = new ICC_GG_Redis_Object_Cache_Enabler_QM_Output( $collector );
+			$output['cache'] = new ICC_GG_WordPress_Super_Cache_QM_Output( $collector );
 		}
 
 		return $output;
@@ -450,6 +451,38 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 	}
 
 	/**
+	 * Returns the `PluginURI` values used by earlier versions of the plugin.
+	 *
+	 * Existing installations still carry a drop-in file that was written before
+	 * the plugin was renamed, so those URIs must keep validating as our own.
+	 *
+	 * @return string[]
+	 */
+	protected function legacy_plugin_uris()
+	{
+		return [
+			'https://github.com/ivancarlosti/wordpressiccredisobjectcache',
+		];
+	}
+
+	/**
+	 * Checks whether a drop-in `PluginURI` belongs to this plugin.
+	 *
+	 * @param string $uri The `PluginURI` of the drop-in.
+	 * @return bool
+	 */
+	protected function is_own_dropin_uri( $uri )
+	{
+		$plugin = get_plugin_data( ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php' );
+
+		if ( isset( $plugin['PluginURI'] ) && $uri === $plugin['PluginURI'] ) {
+			return true;
+		}
+
+		return in_array( $uri, $this->legacy_plugin_uris(), true );
+	}
+
+	/**
 	 * Validates the `object-cache.php` drop-in
 	 *
 	 * @return bool
@@ -461,7 +494,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		}
 
 		$dropin = get_plugin_data( WP_CONTENT_DIR . '/object-cache.php' );
-		$plugin = get_plugin_data( ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH . '/includes/object-cache.php' );
+		$plugin = get_plugin_data( ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php' );
 
 		/**
 		 * Filters the drop-in validation state
@@ -472,8 +505,8 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		 * @param string $plugin     The `PluginURI` of the plugin.
 		 */
 		return apply_filters(
-			'icc_gg_redis_object_cache_enabler_validate_dropin',
-			$dropin['PluginURI'] === $plugin['PluginURI'],
+			'icc_gg_wordpress_super_cache_validate_dropin',
+			$dropin['PluginURI'] === $plugin['PluginURI'] || $this->is_own_dropin_uri( $dropin['PluginURI'] ),
 			$dropin['PluginURI'],
 			$plugin['PluginURI']
 		);
@@ -491,7 +524,12 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		}
 
 		$dropin = get_plugin_data( WP_CONTENT_DIR . '/object-cache.php' );
-		$plugin = get_plugin_data( ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH . '/includes/object-cache.php' );
+		$plugin = get_plugin_data( ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php' );
+
+		// Drop-ins created by earlier versions are always updated.
+		if ( $dropin['PluginURI'] !== $plugin['PluginURI'] && $this->is_own_dropin_uri( $dropin['PluginURI'] ) ) {
+			return true;
+		}
 
 		if ( $dropin['PluginURI'] === $plugin['PluginURI'] ) {
 			return version_compare( $dropin['Version'], $plugin['Version'], '<' );
@@ -510,28 +548,28 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		global $wp_object_cache;
 
 		if ( defined( 'WP_REDIS_DISABLED' ) && WP_REDIS_DISABLED ) {
-			return __( 'Disabled', 'icc-gg-redis-object-cache-enabler' );
+			return __( 'Disabled', 'icc-gg-wordpress-super-cache' );
 		}
 
 		if ( ! $this->object_cache_dropin_exists() ) {
-			return __( 'Not enabled', 'icc-gg-redis-object-cache-enabler' );
+			return __( 'Not enabled', 'icc-gg-wordpress-super-cache' );
 		}
 
 		if ( $this->object_cache_dropin_outdated() ) {
-			return __( 'Drop-in is outdated', 'icc-gg-redis-object-cache-enabler' );
+			return __( 'Drop-in is outdated', 'icc-gg-wordpress-super-cache' );
 		}
 
 		if ( ! $this->validate_object_cache_dropin() ) {
-			return __( 'Drop-in is invalid', 'icc-gg-redis-object-cache-enabler' );
+			return __( 'Drop-in is invalid', 'icc-gg-wordpress-super-cache' );
 		}
 
 		if ( method_exists( $wp_object_cache, 'redis_status' ) ) {
 			return $wp_object_cache->redis_status()
-				? __( 'Connected', 'icc-gg-redis-object-cache-enabler' )
-				: __( 'Not connected', 'icc-gg-redis-object-cache-enabler' );
+				? __( 'Connected', 'icc-gg-wordpress-super-cache' )
+				: __( 'Not connected', 'icc-gg-wordpress-super-cache' );
 		}
 
-		return __( 'Unknown', 'icc-gg-redis-object-cache-enabler' );
+		return __( 'Unknown', 'icc-gg-wordpress-super-cache' );
 	}
 
 	/**
@@ -570,7 +608,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 	public function check_redis_connection()
 	{
 		try {
-			$predis = new ICC_GG_Redis_Object_Cache_Enabler_Predis();
+			$predis = new ICC_GG_WordPress_Super_Cache_Predis();
 			$predis->connect();
 		} catch ( Exception $error ) {
 			return $error->getMessage();
@@ -678,14 +716,14 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 				if ( $this->object_cache_dropin_outdated() ) {
 					$message = sprintf(
 						// translators: %s = Action link to update the drop-in.
-						__( 'The Redis object cache drop-in is outdated. Please <a href="%s">update the drop-in</a>.', 'icc-gg-redis-object-cache-enabler' ),
+						__( 'The Redis object cache drop-in is outdated. Please <a href="%s">update the drop-in</a>.', 'icc-gg-wordpress-super-cache' ),
 						$this->action_link( 'update-dropin' )
 					);
 				}
 			} else {
 				$message = sprintf(
 					// translators: %s = Link to settings page.
-					__( 'A foreign object cache drop-in was found. To use Redis for object caching, please <a href="%s">enable the drop-in</a>.', 'icc-gg-redis-object-cache-enabler' ),
+					__( 'A foreign object cache drop-in was found. To use Redis for object caching, please <a href="%s">enable the drop-in</a>.', 'icc-gg-wordpress-super-cache' ),
 					esc_url( network_admin_url( $this->page ) )
 				);
 			}
@@ -713,7 +751,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 			return;
 		}
 
-		$nodeTitle = __( 'Object Cache', 'icc-gg-redis-object-cache-enabler' );
+		$nodeTitle = __( 'Object Cache', 'icc-gg-wordpress-super-cache' );
 
 		$style = preg_replace( '/\s+/', ' ', $this->admin_bar_style() );
 		$script = preg_replace( '/\s+/', ' ', $this->admin_bar_script() );
@@ -722,34 +760,45 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		$redis_status = $this->get_redis_status();
 
 		$wp_admin_bar->add_node([
-			'id' => 'icc-gg-redis-object-cache-enabler',
+			'id' => 'icc-gg-wordpress-super-cache',
 			'title' => $nodeTitle,
 			'meta' => [
 				'html' => $html,
-				'class' => $redis_status === false ? 'icc-gg-redis-object-cache-enabler-error' : '',
+				'class' => $redis_status === false ? 'icc-gg-wordpress-super-cache-error' : '',
 			],
 		]);
 
 		if ( $redis_status ) {
 			$wp_admin_bar->add_node([
-				'parent' => 'icc-gg-redis-object-cache-enabler',
-				'id' => 'icc-gg-redis-object-cache-enabler-flush',
-				'title' => __( 'Flush Cache', 'icc-gg-redis-object-cache-enabler' ),
+				'parent' => 'icc-gg-wordpress-super-cache',
+				'id' => 'icc-gg-wordpress-super-cache-flush',
+				'title' => __( 'Flush Cache', 'icc-gg-wordpress-super-cache' ),
 				'href' => $this->action_link( 'flush-cache' ),
 			]);
 		}
 
+		$nginx = ICC_GG_WordPress_Super_Cache_Nginx_Cache::instance();
+
+		if ( $nginx->is_enabled() ) {
+			$wp_admin_bar->add_node([
+				'parent' => 'icc-gg-wordpress-super-cache',
+				'id' => 'icc-gg-wordpress-super-cache-purge-nginx',
+				'title' => __( 'Purge Nginx Cache', 'icc-gg-wordpress-super-cache' ),
+				'href' => $this->action_link( 'purge-nginx-cache' ),
+			]);
+		}
+
 		$wp_admin_bar->add_node([
-			'parent' => 'icc-gg-redis-object-cache-enabler',
-			'id' => 'icc-gg-redis-object-cache-enabler-metrics',
-			'title' => __( 'Settings', 'icc-gg-redis-object-cache-enabler' ),
+			'parent' => 'icc-gg-wordpress-super-cache',
+			'id' => 'icc-gg-wordpress-super-cache-metrics',
+			'title' => __( 'Settings', 'icc-gg-wordpress-super-cache' ),
 			'href' => network_admin_url( $this->page ),
 		]);
 
 		$wp_admin_bar->add_group(
 			[
-				'id' => 'icc-gg-redis-object-cache-enabler-info',
-				'parent' => 'icc-gg-redis-object-cache-enabler',
+				'id' => 'icc-gg-wordpress-super-cache-info',
+				'parent' => 'icc-gg-wordpress-super-cache',
 				'meta' => [
 					'class' => 'ab-sub-secondary',
 				],
@@ -758,7 +807,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 
 		$value = $this->get_status();
 		// translators: %s = The status of the Redis connection.
-		$title = sprintf( __( 'Status: %s', 'icc-gg-redis-object-cache-enabler' ), $value );
+		$title = sprintf( __( 'Status: %s', 'icc-gg-wordpress-super-cache' ), $value );
 
 		if ( $redis_status ) {
 			global $wp_object_cache;
@@ -778,7 +827,7 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 
 			$title = sprintf(
 				// translators: 1: Hit ratio, 2: Hits, 3: Misses. 4: Human-readable size of cache.
-				__( '(Current page) Hit Ratio: %1$s%%, Hits %2$s, Misses: %3$s, Size: %4$s', 'icc-gg-redis-object-cache-enabler' ),
+				__( '(Current page) Hit Ratio: %1$s%%, Hits %2$s, Misses: %3$s, Size: %4$s', 'icc-gg-wordpress-super-cache' ),
 				$info->ratio,
 				$hits,
 				$misses,
@@ -787,10 +836,10 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 		}
 
 		$wp_admin_bar->add_node([
-			'parent' => 'icc-gg-redis-object-cache-enabler-info',
-			'id' => 'icc-gg-redis-object-cache-enabler-info-details',
+			'parent' => 'icc-gg-wordpress-super-cache-info',
+			'id' => 'icc-gg-wordpress-super-cache-info-details',
 			'title' => $value,
-			'href' => $redis_status && ICC_GG_Redis_Object_Cache_Enabler_Metrics::is_enabled() ? network_admin_url( $this->page . '#metrics' ) : '',
+			'href' => $redis_status && ICC_GG_WordPress_Super_Cache_Metrics::is_enabled() ? network_admin_url( $this->page . '#redis' ) : '',
 			'meta' => [
 				'title' => $title,
 			],
@@ -806,12 +855,12 @@ class ICC_GG_Redis_Object_Cache_Enabler_Plugin
 	{
 		// phpcs:disable Squiz.PHP.Heredoc.NotAllowed
 		return <<<HTML
-			<style id="icc-gg-redis-object-cache-enabler-admin-bar-style">
-				#wpadminbar ul li.icc-gg-redis-object-cache-enabler-error {
+			<style id="icc-gg-wordpress-super-cache-admin-bar-style">
+				#wpadminbar ul li.icc-gg-wordpress-super-cache-error {
 					background: #b30000;
 				}
 
-				#wpadminbar:not(.mobile) .ab-top-menu > li.icc-gg-redis-object-cache-enabler-error:hover > .ab-item {
+				#wpadminbar:not(.mobile) .ab-top-menu > li.icc-gg-wordpress-super-cache-error:hover > .ab-item {
 					background: #b30000;
 					color: #fff;
 				}
@@ -828,10 +877,10 @@ HTML;
 	{
 		$nonce = wp_create_nonce();
 		$ajaxurl = esc_url( admin_url( 'admin-ajax.php' ) );
-		$flushMessage = __( 'Flushing cache...', 'icc-gg-redis-object-cache-enabler' );
+		$flushMessage = __( 'Flushing cache...', 'icc-gg-wordpress-super-cache' );
 
 		return <<<HTML
-			<script id="icc-gg-redis-object-cache-enabler-admin-bar">
+			<script id="icc-gg-wordpress-super-cache-admin-bar">
 				(function (element) {
 					if (! element) {
 						return;
@@ -840,7 +889,7 @@ HTML;
 					element.addEventListener('click', async function (event) {
 						event.preventDefault();
 
-						var node = document.querySelector('#wp-admin-bar-icc-gg-redis-object-cache-enabler');
+						var node = document.querySelector('#wp-admin-bar-icc-gg-wordpress-super-cache');
 						var textNode = node.querySelector('.ab-item:first-child');
 
 						if (! textNode.dataset.text) {
@@ -852,7 +901,7 @@ HTML;
 
 						try {
 							var data = new FormData();
-							data.append('action', 'icc_gg_redis_object_cache_enabler_flush_cache');
+							data.append('action', 'icc_gg_wordpress_super_cache_flush_cache');
 							data.append('nonce', '{$nonce}');
 
 							var response = await fetch('{$ajaxurl}', {
@@ -871,7 +920,7 @@ HTML;
 						}
 					});
 				})(
-					document.querySelector('#wp-admin-bar-icc-gg-redis-object-cache-enabler-flush > a')
+					document.querySelector('#wp-admin-bar-icc-gg-wordpress-super-cache-flush > a')
 				);
 			</script>
 HTML;
@@ -885,6 +934,12 @@ HTML;
 	public function do_admin_actions()
 	{
 		global $wp_filesystem;
+
+		if ( isset( $_POST['icc_gg_wordpress_super_cache_nginx'] ) ) {
+			$this->save_nginx_settings();
+
+			return;
+		}
 
 		if ( isset( $_GET['_wpnonce'], $_GET['action'] ) ) {
 			$action = sanitize_key( $_GET['action'] );
@@ -903,17 +958,48 @@ HTML;
 				if ( $action === 'flush-cache' ) {
 					wp_cache_flush()
 						? add_settings_error(
-							'icc-gg-redis-object-cache-enabler',
+							'icc-gg-wordpress-super-cache',
 							'flush',
-							__( 'Object cache flushed.', 'icc-gg-redis-object-cache-enabler' ),
+							__( 'Object cache flushed.', 'icc-gg-wordpress-super-cache' ),
 							'updated'
 						)
 						: add_settings_error(
-							'icc-gg-redis-object-cache-enabler',
+							'icc-gg-wordpress-super-cache',
 							'flush',
-							__( 'Object cache could not be flushed.', 'icc-gg-redis-object-cache-enabler' ),
+							__( 'Object cache could not be flushed.', 'icc-gg-wordpress-super-cache' ),
 							'error'
 						);
+				}
+
+				if ( $action === 'purge-nginx-cache' ) {
+					$result = ICC_GG_WordPress_Super_Cache_Nginx_Cache::instance()->purge_zone();
+
+					if ( true === $result ) {
+						add_settings_error(
+							'icc-gg-wordpress-super-cache',
+							'nginx',
+							__( 'Nginx cache purged.', 'icc-gg-wordpress-super-cache' ),
+							'updated'
+						);
+					} elseif ( is_wp_error( $result ) ) {
+						add_settings_error(
+							'icc-gg-wordpress-super-cache',
+							'nginx',
+							sprintf(
+								// translators: %s = The reason the Nginx cache could not be purged.
+								__( 'Nginx cache could not be purged: %s', 'icc-gg-wordpress-super-cache' ),
+								$result->get_error_message()
+							),
+							'error'
+						);
+					} else {
+						add_settings_error(
+							'icc-gg-wordpress-super-cache',
+							'nginx',
+							__( 'Nginx cache purge was skipped.', 'icc-gg-wordpress-super-cache' ),
+							'error'
+						);
+					}
 				}
 
 				// do we have filesystem credentials?
@@ -921,14 +1007,14 @@ HTML;
 
 					if ( $action === 'enable-cache' ) {
 						$result = $wp_filesystem->copy(
-							ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH . '/includes/object-cache.php',
+							ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php',
 							WP_CONTENT_DIR . '/object-cache.php',
 							true,
 							FS_CHMOD_FILE
 						);
 
 						if ( $result ) {
-							(new ICC_GG_Redis_Object_Cache_Enabler_Predis)->flush();
+							(new ICC_GG_WordPress_Super_Cache_Predis)->flush();
 						}
 
 						/**
@@ -937,19 +1023,19 @@ HTML;
 						 * @since 1.3.5
 						 * @param bool $result Whether the filesystem event (copy of the `object-cache.php` file) was successful.
 						 */
-						do_action( 'icc_gg_redis_object_cache_enabler_enable', $result );
+						do_action( 'icc_gg_wordpress_super_cache_enable', $result );
 
 						$result
 							? add_settings_error(
-								'icc-gg-redis-object-cache-enabler',
+								'icc-gg-wordpress-super-cache',
 								'dropin',
-								__( 'Object cache enabled.', 'icc-gg-redis-object-cache-enabler' ),
+								__( 'Object cache enabled.', 'icc-gg-wordpress-super-cache' ),
 								'updated'
 							)
 							: add_settings_error(
-								'icc-gg-redis-object-cache-enabler',
+								'icc-gg-wordpress-super-cache',
 								'dropin',
-								__( 'Object cache could not be enabled.', 'icc-gg-redis-object-cache-enabler' ),
+								__( 'Object cache could not be enabled.', 'icc-gg-wordpress-super-cache' ),
 								'error'
 							);
 					}
@@ -958,7 +1044,7 @@ HTML;
 						$result = $wp_filesystem->delete( WP_CONTENT_DIR . '/object-cache.php' );
 
 						if ( $result ) {
-							(new ICC_GG_Redis_Object_Cache_Enabler_Predis)->flush();
+							(new ICC_GG_WordPress_Super_Cache_Predis)->flush();
 						}
 
 						/**
@@ -967,26 +1053,26 @@ HTML;
 						 * @since 1.3.5
 						 * @param bool $result Whether the filesystem event (deletion of the `object-cache.php` file) was successful.
 						 */
-						do_action( 'icc_gg_redis_object_cache_enabler_disable', $result );
+						do_action( 'icc_gg_wordpress_super_cache_disable', $result );
 
 						$result
 							? add_settings_error(
-								'icc-gg-redis-object-cache-enabler',
+								'icc-gg-wordpress-super-cache',
 								'dropin',
-								__( 'Object cache disabled.', 'icc-gg-redis-object-cache-enabler' ),
+								__( 'Object cache disabled.', 'icc-gg-wordpress-super-cache' ),
 								'updated'
 							)
 							: add_settings_error(
-								'icc-gg-redis-object-cache-enabler',
+								'icc-gg-wordpress-super-cache',
 								'dropin',
-								__( 'Object cache could not be disabled.', 'icc-gg-redis-object-cache-enabler' ),
+								__( 'Object cache could not be disabled.', 'icc-gg-wordpress-super-cache' ),
 								'error'
 							);
 					}
 
 					if ( $action === 'update-dropin' ) {
 						$result = $wp_filesystem->copy(
-							ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH . '/includes/object-cache.php',
+							ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php',
 							WP_CONTENT_DIR . '/object-cache.php',
 							true,
 							FS_CHMOD_FILE
@@ -998,36 +1084,92 @@ HTML;
 						 * @since 1.3.5
 						 * @param bool $result Whether the filesystem event (copy of the `object-cache.php` file) was successful.
 						 */
-						do_action( 'icc_gg_redis_object_cache_enabler_update_dropin', $result );
+						do_action( 'icc_gg_wordpress_super_cache_update_dropin', $result );
 
 						$result
 							? add_settings_error(
-								'icc-gg-redis-object-cache-enabler',
+								'icc-gg-wordpress-super-cache',
 								'dropin',
-								__( 'Updated object cache drop-in and enabled Redis object cache.', 'icc-gg-redis-object-cache-enabler' ),
+								__( 'Updated object cache drop-in and enabled Redis object cache.', 'icc-gg-wordpress-super-cache' ),
 								'updated'
 							)
 							: add_settings_error(
-								'icc-gg-redis-object-cache-enabler',
+								'icc-gg-wordpress-super-cache',
 								'dropin',
-								__( 'Object cache drop-in could not be updated.', 'icc-gg-redis-object-cache-enabler' ),
+								__( 'Object cache drop-in could not be updated.', 'icc-gg-wordpress-super-cache' ),
 								'error'
 							);
 					}
 				}
 
-				$messages = get_settings_errors( 'icc-gg-redis-object-cache-enabler' );
+				$messages = get_settings_errors( 'icc-gg-wordpress-super-cache' );
 
 				if ( count( $messages ) !== 0 ) {
 					set_transient( 'settings_errors', $messages, 30 );
 
+					$fragment = $action === 'purge-nginx-cache' ? '#nginx' : '';
+
 					wp_safe_redirect(
-						network_admin_url( add_query_arg( 'settings-updated', 1, $this->page ) )
+						network_admin_url( add_query_arg( 'settings-updated', 1, $this->page ) . $fragment )
 					);
 					exit;
 				}
 			}
 		}
+	}
+
+	/**
+	 * Saves the Nginx cache settings submitted from the Nginx tab.
+	 *
+	 * @return void
+	 */
+	protected function save_nginx_settings()
+	{
+		check_admin_referer( 'icc_gg_wordpress_super_cache_nginx' );
+
+		if ( ! $this->current_user_can_manage_redis() ) {
+			return;
+		}
+
+		$nginx = ICC_GG_WordPress_Super_Cache_Nginx_Cache::instance();
+
+		$settings = $nginx->sanitize_settings(
+			wp_unslash( $_POST['icc_gg_wordpress_super_cache_nginx'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		);
+
+		update_option( ICC_GG_WordPress_Super_Cache_Nginx_Cache::OPTION_KEY, $settings );
+
+		$nginx->flush_settings_cache();
+		$nginx->flush_stats_cache();
+
+		$path_error = $settings['path'] === '' ? null : $nginx->is_valid_path();
+
+		if ( is_wp_error( $path_error ) ) {
+			add_settings_error(
+				'icc-gg-wordpress-super-cache',
+				'nginx',
+				sprintf(
+					// translators: %s = The cache zone path validation error.
+					__( 'Nginx cache settings saved, but the cache zone is unusable: %s', 'icc-gg-wordpress-super-cache' ),
+					$path_error->get_error_message()
+				),
+				'error'
+			);
+		} else {
+			add_settings_error(
+				'icc-gg-wordpress-super-cache',
+				'nginx',
+				__( 'Nginx cache settings saved.', 'icc-gg-wordpress-super-cache' ),
+				'updated'
+			);
+		}
+
+		set_transient( 'settings_errors', get_settings_errors( 'icc-gg-wordpress-super-cache' ), 30 );
+
+		wp_safe_redirect(
+			network_admin_url( add_query_arg( 'settings-updated', 1, $this->page ) . '#nginx' )
+		);
+		exit;
 	}
 
 	/**
@@ -1038,11 +1180,11 @@ HTML;
 	public function ajax_flush_cache()
 	{
 		if ( ! wp_verify_nonce( $_POST['nonce'] ?? '' ) ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-			wp_die( esc_html__( 'Invalid Nonce.', 'icc-gg-redis-object-cache-enabler' ) );
+			wp_die( esc_html__( 'Invalid Nonce.', 'icc-gg-wordpress-super-cache' ) );
 		} else if ( wp_cache_flush() ) {
-			wp_die( esc_html__( 'Object cache flushed.', 'icc-gg-redis-object-cache-enabler' ) );
+			wp_die( esc_html__( 'Object cache flushed.', 'icc-gg-wordpress-super-cache' ) );
 		} else {
-			wp_die( esc_html__( 'Object cache could not be flushed.', 'icc-gg-redis-object-cache-enabler' ) );
+			wp_die( esc_html__( 'Object cache could not be flushed.', 'icc-gg-wordpress-super-cache' ) );
 		}
 	}
 
@@ -1060,7 +1202,7 @@ HTML;
 
 	/**
 	 * Delete all transients if the cache was enabled successfully.
-	 * Callback for `icc_gg_redis_object_cache_enabler_enable` action.
+	 * Callback for `icc_gg_wordpress_super_cache_enable` action.
 	 *
 	 * @param bool $should_delete
 	 * @return void
@@ -1152,7 +1294,7 @@ HTML;
 			return;
 		}
 
-		$message = 'Performance optimized by ICC.gg Redis Object Cache Enabler.';
+		$message = 'Performance optimized by ICC.gg WordPress Super Cache.';
 
 		if ( ! WP_DEBUG_DISPLAY ) {
 			// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -1165,7 +1307,7 @@ HTML;
 
 		$debug = sprintf(
 			// translators: %1$d = number of objects. %2$s = human-readable size of cache. %3$s = name of the used client.
-			__( 'Retrieved %1$d objects (%2$s) from Redis using %3$s.', 'icc-gg-redis-object-cache-enabler' ),
+			__( 'Retrieved %1$d objects (%2$s) from Redis using %3$s.', 'icc-gg-wordpress-super-cache' ),
 			$wp_object_cache->cache_hits,
 			function_exists( 'size_format' ) ? size_format( $bytes ) : "{$bytes} bytes",
 			$wp_object_cache->diagnostics['client']
@@ -1226,17 +1368,18 @@ HTML;
 	/**
 	 * Initializes the WP filesystem API to be ready for use
 	 *
-	 * @param string $url    The URL to post the form to.
-	 * @param bool   $silent Whether to ask the user for credentials if necessary or not.
+	 * @param string       $url     The URL to post the form to.
+	 * @param bool         $silent  Whether to ask the user for credentials if necessary or not.
+	 * @param string|false $context The directory the filesystem API is used for.
 	 * @return bool
 	 */
-	public function initialize_filesystem( $url, $silent = false )
+	public function initialize_filesystem( $url, $silent = false, $context = false )
 	{
 		if ( $silent ) {
 			ob_start();
 		}
 
-		$credentials = request_filesystem_credentials( $url );
+		$credentials = request_filesystem_credentials( $url, '', false, $context );
 
 		if ( false === $credentials ) {
 			if ( $silent ) {
@@ -1246,8 +1389,8 @@ HTML;
 			return false;
 		}
 
-		if ( ! WP_Filesystem( $credentials ) ) {
-			request_filesystem_credentials( $url );
+		if ( ! WP_Filesystem( $credentials, $context ) ) {
+			request_filesystem_credentials( $url, '', false, $context );
 
 			if ( $silent ) {
 				ob_end_clean();
@@ -1284,11 +1427,11 @@ HTML;
 		global $wp_filesystem;
 
 		if ( ! $this->is_file_mod_allowed() ) {
-			return new WP_Error( 'disallowed', __( 'File modifications are not allowed.', 'icc-gg-redis-object-cache-enabler' ) );
+			return new WP_Error( 'disallowed', __( 'File modifications are not allowed.', 'icc-gg-wordpress-super-cache' ) );
 		}
 
 		if ( ! $this->initialize_filesystem( '', true ) ) {
-			return new WP_Error( 'fs', __( 'Could not initialize filesystem.', 'icc-gg-redis-object-cache-enabler' ) );
+			return new WP_Error( 'fs', __( 'Could not initialize filesystem.', 'icc-gg-wordpress-super-cache' ) );
 		}
 
 		$dropin_check = ! defined( 'WP_REDIS_DISABLE_DROPIN_CHECK' ) || ! WP_REDIS_DISABLE_DROPIN_CHECK;
@@ -1299,45 +1442,45 @@ HTML;
 			}
 
 			if ( ! $wp_filesystem->is_writable( WP_CONTENT_DIR . '/object-cache.php' ) ) {
-				return new WP_Error( 'writable', __( 'Object cache drop-in is not writable.', 'icc-gg-redis-object-cache-enabler' ) );
+				return new WP_Error( 'writable', __( 'Object cache drop-in is not writable.', 'icc-gg-wordpress-super-cache' ) );
 			}
 
 			return true;
 		}
 
-		$cachefile = ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH . '/includes/object-cache.php';
+		$cachefile = ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php';
 		$testfile = WP_CONTENT_DIR . '/object-cache.tmp';
 
 		if ( ! $wp_filesystem->exists( $cachefile ) ) {
-			return new WP_Error( 'exists', __( 'Object cache file doesn’t exist.', 'icc-gg-redis-object-cache-enabler' ) );
+			return new WP_Error( 'exists', __( 'Object cache file doesn’t exist.', 'icc-gg-wordpress-super-cache' ) );
 		}
 
 		if ( $wp_filesystem->exists( $testfile ) ) {
 			if ( ! $wp_filesystem->delete( $testfile ) ) {
-				return new WP_Error( 'delete', __( 'Test file exists, but couldn’t be deleted.', 'icc-gg-redis-object-cache-enabler' ) );
+				return new WP_Error( 'delete', __( 'Test file exists, but couldn’t be deleted.', 'icc-gg-wordpress-super-cache' ) );
 			}
 		}
 
 		if ( ! $wp_filesystem->is_writable( WP_CONTENT_DIR ) ) {
-			return new WP_Error( 'writable', __( 'Content directory is not writable.', 'icc-gg-redis-object-cache-enabler' ) );
+			return new WP_Error( 'writable', __( 'Content directory is not writable.', 'icc-gg-wordpress-super-cache' ) );
 		}
 
 		if ( ! $wp_filesystem->copy( $cachefile, $testfile, true, FS_CHMOD_FILE ) ) {
-			return new WP_Error( 'copy', __( 'Failed to copy test file.', 'icc-gg-redis-object-cache-enabler' ) );
+			return new WP_Error( 'copy', __( 'Failed to copy test file.', 'icc-gg-wordpress-super-cache' ) );
 		}
 
 		if ( ! $wp_filesystem->exists( $testfile ) ) {
-			return new WP_Error( 'exists', __( 'Copied test file doesn’t exist.', 'icc-gg-redis-object-cache-enabler' ) );
+			return new WP_Error( 'exists', __( 'Copied test file doesn’t exist.', 'icc-gg-wordpress-super-cache' ) );
 		}
 
 		$meta = get_file_data( $testfile, [ 'Version' => 'Version' ] );
 
-		if ( $meta['Version'] !== ICC_GG_REDIS_OBJECT_CACHE_ENABLER_VERSION ) {
-			return new WP_Error( 'version', __( 'Couldn’t verify test file contents.', 'icc-gg-redis-object-cache-enabler' ) );
+		if ( $meta['Version'] !== ICC_GG_WORDPRESS_SUPER_CACHE_VERSION ) {
+			return new WP_Error( 'version', __( 'Couldn’t verify test file contents.', 'icc-gg-wordpress-super-cache' ) );
 		}
 
 		if ( ! $wp_filesystem->delete( $testfile ) ) {
-			return new WP_Error( 'delete', __( 'Copied test file couldn’t be deleted.', 'icc-gg-redis-object-cache-enabler' ) );
+			return new WP_Error( 'delete', __( 'Copied test file couldn’t be deleted.', 'icc-gg-wordpress-super-cache' ) );
 		}
 
 		return true;
@@ -1366,7 +1509,7 @@ HTML;
 	 */
 	public function maybe_redirect()
 	{
-		if ( ! get_transient( '_icc_gg_redis_object_cache_enabler_activation_redirect' ) ) {
+		if ( ! get_transient( '_icc_gg_wordpress_super_cache_activation_redirect' ) ) {
 			return;
 		}
 
@@ -1374,7 +1517,7 @@ HTML;
 			return;
 		}
 
-		delete_transient( '_icc_gg_redis_object_cache_enabler_activation_redirect' );
+		delete_transient( '_icc_gg_wordpress_super_cache_activation_redirect' );
 
 		wp_safe_redirect( network_admin_url( $this->page ) );
 	}
@@ -1394,7 +1537,7 @@ HTML;
 
 		if ( $this->initialize_filesystem( '', true ) ) {
 			$result = $wp_filesystem->copy(
-				ICC_GG_REDIS_OBJECT_CACHE_ENABLER_PLUGIN_PATH . '/includes/object-cache.php',
+				ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php',
 				WP_CONTENT_DIR . '/object-cache.php',
 				true,
 				FS_CHMOD_FILE
@@ -1406,7 +1549,7 @@ HTML;
 			 * @since 1.3.5
 			 * @param bool $result Whether the filesystem event (copy of the `object-cache.php` file) was successful.
 			 */
-			do_action( 'icc_gg_redis_object_cache_enabler_update_dropin', $result );
+			do_action( 'icc_gg_wordpress_super_cache_update_dropin', $result );
 		}
 	}
 
@@ -1417,7 +1560,7 @@ HTML;
 	 */
 	public static function on_activation()
 	{
-		set_transient( '_icc_gg_redis_object_cache_enabler_activation_redirect', 1, 30 );
+		set_transient( '_icc_gg_wordpress_super_cache_activation_redirect', 1, 30 );
 	}
 
 	/**
@@ -1432,14 +1575,14 @@ HTML;
 
 		ob_start();
 
-		if ( $plugin === ICC_GG_REDIS_OBJECT_CACHE_ENABLER_BASENAME ) {
-			$timestamp = wp_next_scheduled( 'icc_gg_redis_object_cache_enabler_discard_metrics' );
+		if ( $plugin === ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME ) {
+			$timestamp = wp_next_scheduled( 'icc_gg_wordpress_super_cache_discard_metrics' );
 
 			if ( $timestamp ) {
-				wp_unschedule_event( $timestamp, 'icc_gg_redis_object_cache_enabler_discard_metrics' );
+				wp_unschedule_event( $timestamp, 'icc_gg_wordpress_super_cache_discard_metrics' );
 			}
 
-			(new ICC_GG_Redis_Object_Cache_Enabler_Predis)->flush();
+			(new ICC_GG_WordPress_Super_Cache_Predis)->flush();
 
 			if ( $this->validate_object_cache_dropin() && $this->initialize_filesystem( '', true ) ) {
 				$wp_filesystem->delete( WP_CONTENT_DIR . '/object-cache.php' );
@@ -1501,7 +1644,7 @@ HTML;
 		 * @since 2.6.0
 		 * @param string   $capability The default capability to determine if the user can manage cache.
 		 */
-		return apply_filters( 'icc_gg_redis_object_cache_enabler_manager_capability', $capability );
+		return apply_filters( 'icc_gg_wordpress_super_cache_manager_capability', $capability );
 	}
 
 	/**
