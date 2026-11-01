@@ -4,7 +4,7 @@ Tags: redis, object cache, nginx cache, caching, performance, relay
 Requires at least: 5.0
 Tested up to: 7.0
 Stable tag: 2.0.0
-Requires PHP: 8.1
+Requires PHP: 8.2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -69,6 +69,10 @@ ICC.gg WordPress Super Cache provides various WP CLI commands. For more informat
 * `wp icc-gg-wordpress-super-cache nginx-purge`
 
 == Changelog ==
+
+= Unreleased =
+
+* Requires PHP 8.2 or later (previously 8.1). The plugin now deactivates itself with an admin notice when the site runs an older PHP version.
 
 = 2.0.0 =
 

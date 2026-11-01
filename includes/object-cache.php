@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Author URI: https://ivancarlos.com.br
  * License: GPL-3.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-3.0.txt
- * Requires PHP: 8.1
+ * Requires PHP: 8.2
  *
  * @package ICC_GG_WordPress_Super_Cache
  */

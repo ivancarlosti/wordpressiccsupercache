@@ -34,7 +34,7 @@ A WordPress plugin that provides a persistent object cache backend powered by Re
 ## Requirements
 
 - WordPress 5.0+
-- PHP 8.1+
+- PHP 8.2+
 - A running Redis server (for the Redis module)
 - Nginx with `fastcgi_cache_path` or `proxy_cache_path` (optional, for the Nginx module)
 - One of the following clients:

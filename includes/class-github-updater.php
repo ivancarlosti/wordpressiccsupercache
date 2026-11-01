@@ -171,7 +171,7 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 			$item->url           = $url;
 			$item->tested        = null;
 			$item->requires      = '';
-			$item->requires_php  = '8.1';
+			$item->requires_php  = '8.2';
 
 			return $item;
 		}

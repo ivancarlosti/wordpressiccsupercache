@@ -14,7 +14,7 @@
 		"format": "./vendor/bin/php-cs-fixer fix"
 	},
 	"require": {
-		"php": ">=7.4.0"
+		"php": ">=8.2"
 	},
 	"suggest": {
 		"ext-redis": "Improved performance for communicating with redis"
