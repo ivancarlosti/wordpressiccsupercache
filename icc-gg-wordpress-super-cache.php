@@ -262,15 +262,23 @@ if ( ! function_exists( 'icc_gg_wordpress_super_cache' ) ) {
 /**
  * Initialize the GitHub updater.
  *
- * Runs on `init` and also during the WordPress cron job so the plugin can be
- * updated automatically, mirroring the updater bootstrap used by plugins that
- * rely on a custom update server.
+ * Runs on `init`, and also during cron and WP-CLI so the plugin can be updated
+ * automatically and through `wp plugin update`, mirroring the updater bootstrap
+ * used by plugins that rely on a custom update server.
  *
  * @return void
  */
 function icc_gg_wordpress_super_cache_init_github_updater() {
 	$doing_cron = defined( 'DOING_CRON' ) && DOING_CRON;
-	if ( ! current_user_can( 'manage_options' ) && ! $doing_cron ) {
+	$doing_cli  = defined( 'WP_CLI' ) && WP_CLI;
+
+	/*
+	 * The updater only filters admin, CLI and cron reads of the
+	 * `update_plugins` transient, so there is nothing to gain on front-end
+	 * requests. The capability gate used before also hid the update from users
+	 * who may update plugins but do not manage the site's options.
+	 */
+	if ( ! is_admin() && ! $doing_cron && ! $doing_cli ) {
 		return;
 	}
 

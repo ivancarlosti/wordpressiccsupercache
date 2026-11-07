@@ -70,7 +70,23 @@ traffic. The files live in [`docs/screenshots`](docs/screenshots), together with
 2. Activate the plugin through the WordPress admin panel
 3. Go to **Settings → Super Cache** to configure and enable the object cache
 
-## Quick Setup
+## Updating
+
+The plugin updates itself from [GitHub Releases](https://github.com/ivancarlosti/wordpressiccsupercache/releases):
+
+1. Open **Plugins → Installed Plugins** and click **Check for updates** in the plugin row. That link performs a
+   real, forced request to the GitHub API — the 12 hour release cache is bypassed, so the answer is fresh.
+2. The result is reported in a notice: a newer release offers **Update now** (the native WordPress upgrader)
+   plus a link to the release notes, otherwise the plugin confirms you are already running the latest version.
+3. Nothing else changes: updates also show up in **Dashboard → Updates**, work with
+   `wp plugin update icc-gg-wordpress-super-cache` and can be applied automatically by WordPress cron.
+4. Use the `icc-gg-wordpress-super-cache.zip` asset when updating by hand — it extracts into the expected
+   plugin folder. The other archives in a release (`wordpressiccsupercache-<version>.zip`, the generated
+   source archive) extract into a versioned folder and would install as a *second* copy.
+
+The **Check for updates** link in the settings footer reports the cached result, and when GitHub cannot be
+reached the last known answer is kept while retries are throttled for one hour.
+
 
 1. Activate the plugin and open **Settings → Super Cache**
 2. (Optional) Define your connection settings in `wp-config.php` — see the [Configuration](#configuration) section below

@@ -35,6 +35,14 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 		const GITHUB_API_URL = 'https://api.github.com/repos/ivancarlosti/wordpressiccsupercache/releases/latest';
 
 		/**
+		 * Plugin slug, which is also the root folder inside the WordPress ZIP
+		 * asset attached to every release.
+		 *
+		 * @var string
+		 */
+		const PLUGIN_SLUG = 'icc-gg-wordpress-super-cache';
+
+		/**
 		 * Site transient key used to cache the latest release data.
 		 *
 		 * @var string
@@ -47,6 +55,16 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 		 * @var string
 		 */
 		const FAILED_CACHE_KEY = 'icc_gg_wordpress_super_cache_github_failed_request';
+
+		/**
+		 * Transient key prefix used to hand the result of a manual update check
+		 * to the admin notice shown on the next page load.
+		 *
+		 * The current user ID is appended to keep the notice per-user.
+		 *
+		 * @var string
+		 */
+		const RESULT_CACHE_KEY = 'icc_gg_wordpress_super_cache_update_check';
 
 		/**
 		 * How long to cache the latest release data, in seconds.
@@ -102,6 +120,116 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 		}
 
 		/**
+		 * Delete the cached GitHub release data so the next lookup is a real
+		 * request to the API.
+		 *
+		 * The failure marker is cleared as well, otherwise a single failed
+		 * request would keep blocking lookups for the following hour.
+		 *
+		 * @return void
+		 */
+		public static function flush_cache() {
+			delete_site_transient( self::CACHE_KEY );
+			delete_site_transient( self::FAILED_CACHE_KEY );
+		}
+
+		/**
+		 * Force a fresh GitHub Releases lookup and refresh the WordPress update
+		 * transient, so the Plugins screen reflects the result right away.
+		 *
+		 * @return array{state:string,version:string,installed:string,url:string}
+		 */
+		public static function check_for_updates() {
+			self::flush_cache();
+
+			$release = self::get_latest_release();
+
+			/*
+			 * Re-save the update transient: the `pre_set` filter injects the
+			 * freshly fetched release, which makes WordPress render its native
+			 * "There is a new version available" row immediately instead of
+			 * waiting for the throttled `wp_update_plugins()` request.
+			 */
+			$transient = get_site_transient( 'update_plugins' );
+
+			if ( is_object( $transient ) ) {
+				set_site_transient( 'update_plugins', $transient );
+			}
+
+			if ( ! is_object( $release ) || empty( $release->tag_name ) ) {
+				return array(
+					'state'     => 'error',
+					'version'   => '',
+					'installed' => ICC_GG_WORDPRESS_SUPER_CACHE_VERSION,
+					'url'       => '',
+				);
+			}
+
+			$version = self::normalize_version( $release->tag_name );
+
+			return array(
+				'state'     => version_compare( ICC_GG_WORDPRESS_SUPER_CACHE_VERSION, $version, '<' ) ? 'update' : 'current',
+				'version'   => $version,
+				'installed' => ICC_GG_WORDPRESS_SUPER_CACHE_VERSION,
+				'url'       => isset( $release->html_url ) ? $release->html_url : '',
+			);
+		}
+
+		/**
+		 * Return the cached release when it is newer than the installed
+		 * version, without performing an HTTP request.
+		 *
+		 * @return array{version:string,url:string}|null
+		 */
+		public static function get_cached_update() {
+			$release = get_site_transient( self::CACHE_KEY );
+
+			if ( ! is_object( $release ) || empty( $release->tag_name ) ) {
+				return null;
+			}
+
+			$version = self::normalize_version( $release->tag_name );
+
+			if ( ! version_compare( ICC_GG_WORDPRESS_SUPER_CACHE_VERSION, $version, '<' ) ) {
+				return null;
+			}
+
+			return array(
+				'version' => $version,
+				'url'     => isset( $release->html_url ) ? $release->html_url : '',
+			);
+		}
+
+		/**
+		 * URL that performs a forced update check.
+		 *
+		 * @return string
+		 */
+		public static function check_url() {
+			return wp_nonce_url(
+				self_admin_url( 'admin-post.php?action=icc_gg_wordpress_super_cache_check_updates' ),
+				'icc_gg_wordpress_super_cache_check_updates'
+			);
+		}
+
+		/**
+		 * URL that starts the native WordPress plugin upgrade.
+		 *
+		 * @return string
+		 */
+		public static function update_url() {
+			return wp_nonce_url(
+				self_admin_url(
+					sprintf(
+						'update.php?action=upgrade-plugin&plugin=%s',
+						rawurlencode( ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME )
+					)
+				),
+				'upgrade-plugin_' . ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME
+			);
+		}
+
+		/**
 		 * Inject the latest GitHub release into the update_plugins transient.
 		 *
 		 * Populates both `response` (update available) and `no_update` (already
@@ -120,7 +248,7 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 				$transient = new stdClass();
 			}
 
-			$release = $this->get_latest_release();
+			$release = self::get_latest_release();
 
 			if ( ! $release ) {
 				/*
@@ -142,12 +270,14 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 				return $transient;
 			}
 
-			$new_version = $this->normalize_version( $release->tag_name );
-			$item        = $this->build_item( $new_version, $this->get_package_url( $release ), isset( $release->html_url ) ? $release->html_url : '' );
+			$new_version = self::normalize_version( $release->tag_name );
+			$item        = $this->build_item( $new_version, self::get_package_url( $release ), isset( $release->html_url ) ? $release->html_url : '' );
 
 			if ( version_compare( $this->current_version, $new_version, '<' ) ) {
+				unset( $transient->no_update[ $this->plugin_file ] );
 				$transient->response[ $this->plugin_file ] = $item;
 			} else {
+				unset( $transient->response[ $this->plugin_file ] );
 				$transient->no_update[ $this->plugin_file ] = $item;
 			}
 
@@ -207,7 +337,7 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 				return $data;
 			}
 
-			$release = $this->get_latest_release();
+			$release = self::get_latest_release();
 			if ( ! $release ) {
 				return $data;
 			}
@@ -226,10 +356,10 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 			return (object) array(
 				'name'          => isset( $plugin_data['Name'] ) ? $plugin_data['Name'] : $this->plugin_slug,
 				'slug'          => $this->plugin_slug,
-				'version'       => $this->normalize_version( $release->tag_name ),
+				'version'       => self::normalize_version( $release->tag_name ),
 				'author'        => isset( $plugin_data['Author'] ) ? $plugin_data['Author'] : '',
 				'homepage'      => isset( $release->html_url ) ? $release->html_url : '',
-				'download_link' => $this->get_package_url( $release ),
+				'download_link' => self::get_package_url( $release ),
 				'sections'      => $sections,
 			);
 		}
@@ -239,13 +369,13 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 		 *
 		 * @return object|false Release object on success, false on failure.
 		 */
-		private function get_latest_release() {
+		private static function get_latest_release() {
 			$cached = get_site_transient( self::CACHE_KEY );
 			if ( false !== $cached ) {
 				return $cached;
 			}
 
-			if ( $this->request_recently_failed() ) {
+			if ( self::request_recently_failed() ) {
 				return false;
 			}
 
@@ -255,20 +385,20 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 					'timeout' => 15,
 					'headers' => array(
 						'Accept'     => 'application/vnd.github.v3+json',
-						'User-Agent' => 'icc-gg-wordpress-super-cache/' . $this->current_version,
+						'User-Agent' => 'icc-gg-wordpress-super-cache/' . ICC_GG_WORDPRESS_SUPER_CACHE_VERSION,
 					),
 				)
 			);
 
 			if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
-				$this->log_failed_request();
+				self::log_failed_request();
 				return false;
 			}
 
 			$release = json_decode( wp_remote_retrieve_body( $response ) );
 
 			if ( ! is_object( $release ) || empty( $release->tag_name ) ) {
-				$this->log_failed_request();
+				self::log_failed_request();
 				return false;
 			}
 
@@ -280,18 +410,41 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 		/**
 		 * Resolve the direct ZIP download URL for a release.
 		 *
-		 * Prefers a `.zip` release asset whose root is the plugin folder.
-		 * Falls back to the GitHub archive ZIP when no zip asset exists.
+		 * Prefers the asset named after the plugin slug, because WordPress
+		 * extracts that ZIP and expects the plugin folder inside it to match
+		 * the installed plugin. Any other ZIP falls back to the first `.zip`
+		 * asset, and the GitHub archive ZIP is the last resort.
 		 *
 		 * @param object $release The GitHub release object.
 		 * @return string
 		 */
-		private function get_package_url( $release ) {
+		private static function get_package_url( $release ) {
 			if ( ! empty( $release->assets ) && is_array( $release->assets ) ) {
+				$preferred = strtolower( self::PLUGIN_SLUG ) . '.zip';
+				$fallback  = '';
+
 				foreach ( $release->assets as $asset ) {
-					if ( ! empty( $asset->name ) && ! empty( $asset->browser_download_url ) && '.zip' === substr( $asset->name, -4 ) ) {
+					if ( empty( $asset->name ) || empty( $asset->browser_download_url ) ) {
+						continue;
+					}
+
+					$name = strtolower( $asset->name );
+
+					if ( '.zip' !== substr( $name, -4 ) ) {
+						continue;
+					}
+
+					if ( $preferred === $name ) {
 						return $asset->browser_download_url;
 					}
+
+					if ( '' === $fallback ) {
+						$fallback = $asset->browser_download_url;
+					}
+				}
+
+				if ( '' !== $fallback ) {
+					return $fallback;
 				}
 			}
 
@@ -309,7 +462,7 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 		 * @param string $version The tag or version string.
 		 * @return string
 		 */
-		private function normalize_version( $version ) {
+		private static function normalize_version( $version ) {
 			return ltrim( (string) $version, 'vV' );
 		}
 
@@ -318,7 +471,7 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 		 *
 		 * @return bool
 		 */
-		private function request_recently_failed() {
+		private static function request_recently_failed() {
 			$failed = get_site_transient( self::FAILED_CACHE_KEY );
 
 			return false !== $failed;
@@ -329,7 +482,7 @@ if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
 		 *
 		 * @return void
 		 */
-		private function log_failed_request() {
+		private static function log_failed_request() {
 			set_site_transient( self::FAILED_CACHE_KEY, time(), HOUR_IN_SECONDS );
 		}
 	}

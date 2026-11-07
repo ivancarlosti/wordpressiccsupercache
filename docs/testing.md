@@ -68,6 +68,41 @@ Then, through `http://localhost:8080`:
 8. **Snippets** — with `/cart/` saved as an exclusion, the **Varnish Cache** tab must show
    `req.url ~ "…^/cart…"` and the **nginx FastCGI** tab an `if ($request_uri ~* "^/cart")` line.
 
+## Update checks
+
+The plugin proxies `api.github.com/repos/ivancarlosti/wordpressiccsupercache/releases/latest` into the
+`update_plugins` transient. Force a check without waiting for the 12 hour cache:
+
+```bash
+# Drop the release cache plus the failure back-off, then run a forced check.
+wp eval 'ICC_GG_WordPress_Super_Cache_Github_Updater::flush_cache(); var_export( ICC_GG_WordPress_Super_Cache_Github_Updater::check_for_updates() );'
+
+# Inspect what WordPress now believes about the plugin.
+wp eval '$t = get_site_transient( "update_plugins" ); var_export( array(
+    "response"  => isset( $t->response[ ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME ] ) ? $t->response[ ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME ] : null,
+    "no_update" => isset( $t->no_update[ ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME ] ),
+) );'
+```
+
+`check_for_updates()` returns `state=update` (newer release found), `state=current` (already latest) or
+`state=error` (GitHub unreachable — the failure is cached for one hour and cleared by `flush_cache()`).
+Exactly one of `response` / `no_update` must be set for the plugin, and after upgrading the stale entry must
+be gone.
+
+In the browser:
+
+1. **Plugins → Installed Plugins → Check for updates** redirects back to the plugin list with a notice;
+   with an older version installed the row also gains WordPress' own "new version available" link.
+2. **Update now** from the notice (or from the settings footer) upgrades in place and does not create a
+   second plugin folder — confirm with `ls wp-content/plugins`.
+3. Set `WP_HTTP_BLOCK_EXTERNAL` in `wp-config.php` (or block `api.github.com`) and check again: the notice
+   must report that GitHub could not be reached instead of silently doing nothing.
+4. Upgrade the release asset by hand and confirm the extracted folder is `icc-gg-wordpress-super-cache/`:
+
+```bash
+unzip -l wp-content/upgrade/icc-gg-wordpress-super-cache.zip | head
+```
+
 ## WP-CLI smoke tests
 
 ```bash
@@ -80,6 +115,7 @@ wp cron event run --due-now
 wp icc-gg-wordpress-super-cache varnish-status
 wp icc-gg-wordpress-super-cache varnish-test
 wp icc-gg-wordpress-super-cache images-optimize --limit=2
+wp plugin update --dry-run icc-gg-wordpress-super-cache
 ```
 
 ## Screenshots
@@ -113,4 +149,6 @@ otherwise **Test Connection** correctly falls back to "purge accepted, headers n
   it, while **Write / Rewrite advanced-cache.php** does replace it and keeps a backup.
 - Disable the page cache and confirm `advanced-cache.php` and the must-use plugin loader are removed.
 - Trigger a post update and confirm exactly one purge per enabled backend (`wp-content/debug.log`).
+- Run **Check for updates** twice in a row: both runs must reach GitHub (no 12 hour cache) and the second
+  run must not leave a stale "update available" row behind after the plugin was upgraded.
 - Check the **Diagnostics** tab for the page cache, Varnish Cache, nginx FastCGI and image optimizer sections.

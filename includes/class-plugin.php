@@ -134,6 +134,8 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 		add_action( 'wp_ajax_icc_gg_wordpress_super_cache_flush_cache', [ $this, 'ajax_flush_cache' ] );
 		add_action( 'wp_ajax_icc_gg_wordpress_super_cache_optimize_images', [ $this, 'ajax_optimize_images' ] );
 
+		add_action( 'admin_post_icc_gg_wordpress_super_cache_check_updates', [ $this, 'handle_check_updates' ] );
+
 		add_filter( 'plugin_row_meta', [ $this, 'add_plugin_row_meta' ], 10, 2 );
 		add_filter( sprintf( '%splugin_action_links_%s', is_multisite() ? 'network_admin_' : '', ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME ), [ $this, 'add_plugin_actions_links' ] );
 
@@ -297,6 +299,10 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 	/**
 	 * Adds plugin meta links on the plugin page.
 	 *
+	 * The "Check for updates" link performs a real, forced GitHub Releases
+	 * lookup instead of opening the repository, so the result is reported in an
+	 * admin notice and in the native WordPress update row.
+	 *
 	 * @param string[] $plugin_meta An array of the plugin's metadata.
 	 * @param string   $plugin_file Path to the plugin file relative to the plugins directory.
 	 * @return string[] An array of the plugin's metadata.
@@ -307,13 +313,51 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 			return $plugin_meta;
 		}
 
+		if ( current_user_can( 'update_plugins' ) ) {
+			$plugin_meta[] = sprintf(
+				'<a href="%1$s">%2$s</a>',
+				esc_url( ICC_GG_WordPress_Super_Cache_Github_Updater::check_url() ),
+				esc_html__( 'Check for updates', 'icc-gg-wordpress-super-cache' )
+			);
+		}
+
 		$plugin_meta[] = sprintf(
-			'<a href="%1$s" target="_blank" rel="noopener">%2$s</a>',
+			'<a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a>',
 			'https://github.com/ivancarlosti/wordpressiccsupercache/releases',
-			esc_html__( 'Check for updates', 'icc-gg-wordpress-super-cache' )
+			esc_html__( 'Release notes', 'icc-gg-wordpress-super-cache' )
 		);
 
 		return $plugin_meta;
+	}
+
+	/**
+	 * Forces a GitHub Releases lookup and reports the result on the Plugins
+	 * screen.
+	 *
+	 * @return void
+	 */
+	public function handle_check_updates()
+	{
+		if ( ! current_user_can( 'update_plugins' ) ) {
+			wp_die( esc_html__( 'Sorry, you are not allowed to check for plugin updates on this site.', 'icc-gg-wordpress-super-cache' ) );
+		}
+
+		check_admin_referer( 'icc_gg_wordpress_super_cache_check_updates' );
+
+		if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
+			wp_die( esc_html__( 'The update checker is not available.', 'icc-gg-wordpress-super-cache' ) );
+		}
+
+		$result = ICC_GG_WordPress_Super_Cache_Github_Updater::check_for_updates();
+
+		set_transient(
+			ICC_GG_WordPress_Super_Cache_Github_Updater::RESULT_CACHE_KEY . '_' . get_current_user_id(),
+			$result,
+			5 * MINUTE_IN_SECONDS
+		);
+
+		wp_safe_redirect( self_admin_url( 'plugins.php' ) );
+		exit;
 	}
 
 	/**
@@ -743,6 +787,13 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 	 */
 	public function show_admin_notices()
 	{
+		/*
+		 * Report the result of a manual "Check for updates" request first: the
+		 * result transient is stored per user, so it must not be hidden by the
+		 * Redis capability check below.
+		 */
+		$this->show_update_check_notice();
+
 		// Only show admin notices to users with the right capability.
 		if ( ! $this->current_user_can_manage_redis() ) {
 			return;
@@ -774,6 +825,89 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 				printf( '<div class="update-nag notice notice-warning inline">%s</div>', wp_kses_post( $message ) );
 			}
 		}
+	}
+
+	/**
+	 * Displays the result of a manual "Check for updates" request.
+	 *
+	 * The result is stored in a short-lived per-user transient by
+	 * `handle_check_updates()` and removed once rendered.
+	 *
+	 * @return void
+	 */
+	public function show_update_check_notice()
+	{
+		if ( ! class_exists( 'ICC_GG_WordPress_Super_Cache_Github_Updater' ) ) {
+			return;
+		}
+
+		$key    = ICC_GG_WordPress_Super_Cache_Github_Updater::RESULT_CACHE_KEY . '_' . get_current_user_id();
+		$result = get_transient( $key );
+
+		if ( ! is_array( $result ) || empty( $result['state'] ) ) {
+			return;
+		}
+
+		delete_transient( $key );
+
+		$version   = isset( $result['version'] ) ? $result['version'] : '';
+		$installed = isset( $result['installed'] ) ? $result['installed'] : ICC_GG_WORDPRESS_SUPER_CACHE_VERSION;
+		$release   = isset( $result['url'] ) ? $result['url'] : '';
+
+		if ( 'update' === $result['state'] ) {
+			$message = sprintf(
+				// translators: 1: New version number, 2: Installed version number.
+				__( '<strong>ICC.gg WordPress Super Cache %1$s is available.</strong> You are running version %2$s.', 'icc-gg-wordpress-super-cache' ),
+				esc_html( $version ),
+				esc_html( $installed )
+			);
+
+			$actions = '';
+
+			if ( current_user_can( 'update_plugins' ) ) {
+				$actions .= sprintf(
+					'<a class="button button-primary" href="%1$s">%2$s</a>',
+					esc_url( ICC_GG_WordPress_Super_Cache_Github_Updater::update_url() ),
+					esc_html__( 'Update now', 'icc-gg-wordpress-super-cache' )
+				);
+			}
+
+			if ( '' !== $release ) {
+				$actions .= sprintf(
+					' <a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a>',
+					esc_url( $release ),
+					esc_html__( 'Release notes', 'icc-gg-wordpress-super-cache' )
+				);
+			}
+
+			printf(
+				'<div class="notice notice-warning"><p>%1$s</p><p>%2$s</p></div>',
+				wp_kses_post( $message ),
+				wp_kses_post( $actions )
+			);
+
+			return;
+		}
+
+		if ( 'current' === $result['state'] ) {
+			printf(
+				'<div class="notice notice-success is-dismissible"><p>%s</p></div>',
+				esc_html(
+					sprintf(
+						// translators: %s: Installed version number.
+						__( 'ICC.gg WordPress Super Cache is up to date (version %s).', 'icc-gg-wordpress-super-cache' ),
+						$installed
+					)
+				)
+			);
+
+			return;
+		}
+
+		printf(
+			'<div class="notice notice-error"><p>%s</p></div>',
+			esc_html__( 'The update check could not reach GitHub. Please try again in a few minutes.', 'icc-gg-wordpress-super-cache' )
+		);
 	}
 
 	/**
