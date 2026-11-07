@@ -191,7 +191,7 @@ class ICC_GG_WordPress_Super_Cache_CLI_Commands extends WP_CLI_Command
 	}
 
 	/**
-	 * Shows the Nginx page cache status.
+	 * Shows the nginx FastCGI page cache status.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -204,7 +204,7 @@ class ICC_GG_WordPress_Super_Cache_CLI_Commands extends WP_CLI_Command
 		$nginx = ICC_GG_WordPress_Super_Cache_Nginx_Cache::instance();
 		$stats = $nginx->get_cache_stats();
 
-		WP_CLI::line( sprintf( '%s: %s', __( 'Nginx', 'icc-gg-wordpress-super-cache' ), $nginx->get_status() ) );
+		WP_CLI::line( sprintf( '%s: %s', __( 'nginx FastCGI', 'icc-gg-wordpress-super-cache' ), $nginx->get_status() ) );
 
 		WP_CLI::line(
 			sprintf(
@@ -227,7 +227,7 @@ class ICC_GG_WordPress_Super_Cache_CLI_Commands extends WP_CLI_Command
 	}
 
 	/**
-	 * Purges the Nginx page cache zone.
+	 * Purges the nginx FastCGI page cache zone.
 	 *
 	 * ## EXAMPLES
 	 *
@@ -240,11 +240,11 @@ class ICC_GG_WordPress_Super_Cache_CLI_Commands extends WP_CLI_Command
 		$result = ICC_GG_WordPress_Super_Cache_Nginx_Cache::instance()->purge_zone();
 
 		if ( true === $result ) {
-			WP_CLI::success( __( 'Nginx cache purged.', 'icc-gg-wordpress-super-cache' ) );
+			WP_CLI::success( __( 'nginx FastCGI cache purged.', 'icc-gg-wordpress-super-cache' ) );
 		} elseif ( is_wp_error( $result ) ) {
 			WP_CLI::error( $result->get_error_message() );
 		} else {
-			WP_CLI::warning( __( 'Nginx cache purge was skipped.', 'icc-gg-wordpress-super-cache' ) );
+			WP_CLI::warning( __( 'nginx FastCGI cache purge was skipped.', 'icc-gg-wordpress-super-cache' ) );
 		}
 	}
 
@@ -436,7 +436,7 @@ class ICC_GG_WordPress_Super_Cache_CLI_Commands extends WP_CLI_Command
 		$varnish = ICC_GG_WordPress_Super_Cache_Varnish_Cache::instance();
 		$endpoint = $varnish->endpoint_url();
 
-		WP_CLI::line( sprintf( '%s: %s', __( 'Varnish', 'icc-gg-wordpress-super-cache' ), $varnish->get_status() ) );
+		WP_CLI::line( sprintf( '%s: %s', __( 'Varnish Cache', 'icc-gg-wordpress-super-cache' ), $varnish->get_status() ) );
 		WP_CLI::line( sprintf( '%s: %s', __( 'Endpoint', 'icc-gg-wordpress-super-cache' ), is_wp_error( $endpoint ) ? '(invalid)' : $endpoint ) );
 		WP_CLI::line( sprintf( '%s: %s', __( 'Method', 'icc-gg-wordpress-super-cache' ), strtoupper( (string) $varnish->get_setting( 'method' ) ) ) );
 	}

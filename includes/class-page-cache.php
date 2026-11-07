@@ -113,8 +113,8 @@ class ICC_GG_WordPress_Super_Cache_Page_Cache
 			'icc_gg_wordpress_super_cache_page_cache_backends',
 			[
 				self::LOCAL => __( 'Page Cache', 'icc-gg-wordpress-super-cache' ),
-				self::VARNISH => __( 'Varnish', 'icc-gg-wordpress-super-cache' ),
-				self::NGINX => __( 'Nginx', 'icc-gg-wordpress-super-cache' ),
+				self::VARNISH => __( 'Varnish Cache', 'icc-gg-wordpress-super-cache' ),
+				self::NGINX => __( 'nginx FastCGI', 'icc-gg-wordpress-super-cache' ),
 			]
 		);
 	}

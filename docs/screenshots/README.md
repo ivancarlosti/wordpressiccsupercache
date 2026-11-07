@@ -6,13 +6,13 @@ the site and the local page cache warmed by real traffic.
 
 | File | Screen | What it demonstrates |
 |---|---|---|
-| [`admin-overview.png`](admin-overview.png) | Full admin page | The tab bar in order: Redis, Page Cache, Varnish, Nginx, Optimize Images, Diagnostics |
-| [`admin-page-cache.png`](admin-page-cache.png) | Page Cache tab | Loader, `WP_CACHE`, cached page count and size, expiry, behaviour, exclusions, **Clear Cache** and maintenance actions |
-| [`admin-varnish.png`](admin-varnish.png) | Varnish tab | Purge endpoint, a passing **Test Connection** with the `X-Varnish`, `Via`, `Age` and `X-Cache` headers it received, and the VCL snippet |
-| [`admin-nginx.png`](admin-nginx.png) | Nginx tab | Cache zone path, auto purge, the exclusivity hint and the FastCGI configuration to paste |
+| [`admin-overview.png`](admin-overview.png) | Full admin page | The tab bar in order: Redis Object Cache, Page Cache, Varnish Cache, nginx FastCGI, Optimize Images, Diagnostics |
+| [`admin-page-cache.png`](admin-page-cache.png) | Page Cache tab | Loader, `advanced-cache.php` state, `WP_CACHE`, cached page count and size, expiry, behaviour, prefilled exclusions, **Clear Cache** and the maintenance actions (**Regenerate Page Cache Loader**, **Write / Rewrite advanced-cache.php**) |
+| [`admin-varnish.png`](admin-varnish.png) | Varnish Cache tab | Purge endpoint, a passing **Test Connection** with the `X-Varnish`, `Via`, `Age` and `X-Cache` headers it received, the purge VCL snippet and the exclusions snippet |
+| [`admin-nginx.png`](admin-nginx.png) | nginx FastCGI tab | Cache zone path, auto purge, the exclusivity hint and the FastCGI configuration, including the generated exclusion bypasses |
 | [`admin-images.png`](admin-images.png) | Optimize Images tab | `3 of 6 images optimized`, supported formats detected at runtime, quality, dimensions, size cap and the batch optimizer |
 | [`admin-conflict.png`](admin-conflict.png) | Page cache conflict | Two backends forced on by a `wp-config.php` constant: the page-level warning plus the per-tab override hint |
-| [`admin-bar.png`](admin-bar.png) | Admin bar | The **Clear Page Cache** entry for the enabled backend, the settings shortcuts and **Not enabled** for the disabled ones |
+| [`admin-bar.png`](admin-bar.png) | Admin bar | The **Clear Page Cache** entry for the enabled backend, the settings shortcuts (including **Varnish Cache Settings** and **nginx FastCGI Settings**) and **Not enabled** for the disabled ones |
 
 ## Regenerating
 

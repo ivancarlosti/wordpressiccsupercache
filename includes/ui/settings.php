@@ -81,7 +81,7 @@ $icc_page_cache_conflicts = $icc_page_cache_registry->enabled_backends();
 
 	<hr style="margin-top: 30px;">
 	<p style="text-align: center; color: #666; font-size: 12px;">
-		<?php esc_html_e( 'ICC.gg WordPress Super Cache - Redis object cache and Nginx page cache in one plugin. Enable, configure and purge each layer independently.', 'icc-gg-wordpress-super-cache' ); ?><br>
+		<?php esc_html_e( 'ICC.gg WordPress Super Cache - Redis object cache, Varnish Cache and nginx FastCGI page cache in one plugin. Enable, configure and purge each layer independently.', 'icc-gg-wordpress-super-cache' ); ?><br>
 		<a href="https://github.com/ivancarlosti/wordpressiccsupercache" target="_blank" rel="noopener noreferrer">
 			github.com/ivancarlosti/wordpressiccsupercache
 		</a><br>

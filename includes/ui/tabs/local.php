@@ -38,13 +38,43 @@ $local_mode_labels = [
 	'mu-plugin' => __( 'Must-use plugin loader', 'icc-gg-wordpress-super-cache' ),
 	'none' => __( 'No loader installed', 'icc-gg-wordpress-super-cache' ),
 ];
+
+$local_loader_state = $local->loader_state();
+$local_dropin_state = $local_loader_state['dropin'];
+$local_mu_state = $local_loader_state['mu_plugin'];
+
+$local_loader_state_labels = [
+	'missing' => __( 'Not installed', 'icc-gg-wordpress-super-cache' ),
+	'foreign' => __( 'Installed by another plugin', 'icc-gg-wordpress-super-cache' ),
+	'outdated' => __( 'Outdated, needs rewriting', 'icc-gg-wordpress-super-cache' ),
+	'invalid' => __( 'Damaged or unreadable', 'icc-gg-wordpress-super-cache' ),
+	'valid' => __( 'Up to date', 'icc-gg-wordpress-super-cache' ),
+];
+
+$local_dropin_backup = $local->dropin_backup_path();
+$local_has_dropin_backup = file_exists( $local_dropin_backup );
+$local_dropin_broken = in_array( $local_dropin_state, [ 'foreign', 'outdated', 'invalid' ], true );
 ?>
 
 <?php if ( $local_enabled && 'none' === $local_mode ) : ?>
 	<div class="notice notice-error">
 		<p>
 			<strong><?php esc_html_e( 'The page cache is enabled but no loader is installed:', 'icc-gg-wordpress-super-cache' ); ?></strong>
-			<?php esc_html_e( 'Save the settings or regenerate the loader so pages start being cached.', 'icc-gg-wordpress-super-cache' ); ?>
+			<?php if ( 'foreign' === $local_dropin_state ) : ?>
+				<?php esc_html_e( 'wp-content/advanced-cache.php was installed by another plugin. Use "Write / Rewrite advanced-cache.php" in Maintenance to replace it; the current file is copied to a backup first.', 'icc-gg-wordpress-super-cache' ); ?>
+			<?php elseif ( $local_dropin_broken ) : ?>
+				<?php esc_html_e( 'wp-content/advanced-cache.php does not match this plugin version. Use "Write / Rewrite advanced-cache.php" in Maintenance to restore it; the current file is copied to a backup first.', 'icc-gg-wordpress-super-cache' ); ?>
+			<?php else : ?>
+				<?php esc_html_e( 'Save the settings or use "Write / Rewrite advanced-cache.php" in Maintenance so pages start being cached.', 'icc-gg-wordpress-super-cache' ); ?>
+			<?php endif; ?>
+		</p>
+	</div>
+<?php elseif ( $local_enabled && $local_dropin_broken ) : ?>
+	<div class="notice notice-warning">
+		<p>
+			<strong><?php esc_html_e( 'The advanced-cache.php drop-in is not the one this plugin expects:', 'icc-gg-wordpress-super-cache' ); ?></strong>
+			<?php echo esc_html( isset( $local_loader_state_labels[ $local_dropin_state ] ) ? $local_loader_state_labels[ $local_dropin_state ] : $local_dropin_state ); ?>.
+			<?php esc_html_e( 'WordPress loads that file on every request, so rewrite it from Maintenance; the current file is copied to a backup first.', 'icc-gg-wordpress-super-cache' ); ?>
 		</p>
 	</div>
 <?php endif; ?>
@@ -98,6 +128,56 @@ $local_mode_labels = [
 				);
 				?>
 			</p>
+		</td>
+	</tr>
+
+	<tr>
+		<th><?php esc_html_e( 'advanced-cache.php:', 'icc-gg-wordpress-super-cache' ); ?></th>
+		<td>
+			<span class="<?php echo 'valid' === $local_dropin_state || 'missing' === $local_dropin_state ? 'success' : 'warning'; ?>">
+				<?php echo esc_html( isset( $local_loader_state_labels[ $local_dropin_state ] ) ? $local_loader_state_labels[ $local_dropin_state ] : $local_dropin_state ); ?>
+			</span>
+
+			<p class="description">
+				<code><?php echo esc_html( $local->dropin_path() ); ?></code>
+			</p>
+
+			<?php if ( 'foreign' === $local_dropin_state ) : ?>
+				<p class="description">
+					<?php esc_html_e( 'Another plugin owns this file. Rewriting it replaces that plugin loader, so keep the backup until the site is confirmed to work.', 'icc-gg-wordpress-super-cache' ); ?>
+				</p>
+			<?php endif; ?>
+
+			<?php if ( $local_has_dropin_backup ) : ?>
+				<p class="description">
+					<?php
+					echo wp_kses(
+						sprintf(
+							/* translators: %s = Path of the advanced-cache.php backup. */
+							__( 'Backup of the replaced file: <code>%s</code>', 'icc-gg-wordpress-super-cache' ),
+							esc_html( $local_dropin_backup )
+						),
+						[ 'code' => [] ]
+					);
+					?>
+				</p>
+			<?php endif; ?>
+
+			<?php if ( 'missing' !== $local_mu_state && 'foreign' !== $local_mu_state ) : ?>
+				<p class="description">
+					<?php
+					echo wp_kses(
+						sprintf(
+							/* translators: 1: State of the must-use plugin loader, 2: Path of the must-use plugin loader. */
+							__( 'Must-use plugin loader: %1$s (<code>%2$s</code>)', 'icc-gg-wordpress-super-cache' ),
+							esc_html( isset( $local_loader_state_labels[ $local_mu_state ] ) ? $local_loader_state_labels[ $local_mu_state ] : $local_mu_state ),
+							esc_html( $local->mu_plugin_path() )
+						),
+						[ 'code' => [] ]
+					);
+					?>
+				</p>
+			<?php endif; ?>
 		</td>
 	</tr>
 
@@ -222,7 +302,7 @@ $local_checkboxes = [
 				</label>
 
 				<p class="description">
-					<?php esc_html_e( 'Only one page cache backend can be enabled at a time: enabling this one requires disabling the Varnish and Nginx page caches first.', 'icc-gg-wordpress-super-cache' ); ?>
+					<?php esc_html_e( 'Only one page cache backend can be enabled at a time: enabling this one requires disabling the Varnish Cache and nginx FastCGI page caches first.', 'icc-gg-wordpress-super-cache' ); ?>
 				</p>
 
 				<?php if ( $local->is_overridden( 'enabled' ) ) : ?>
@@ -328,6 +408,24 @@ $local_checkboxes = [
 
 				<p class="description">
 					<?php esc_html_e( 'One path or URL per line, for example /cart/ or /my-account/*. Wildcards are supported, and a line can start with regex: to use a regular expression.', 'icc-gg-wordpress-super-cache' ); ?>
+				</p>
+
+				<p class="description">
+					<?php esc_html_e( 'The plugin already fills in the WordPress paths that should never be cached. The engine also skips /wp-admin, wp-login.php, wp-json, wp-cron.php, xmlrpc.php, feeds and trackbacks even when they are missing from this list.', 'icc-gg-wordpress-super-cache' ); ?>
+				</p>
+
+				<p class="description">
+					<?php esc_html_e( 'These exclusions only apply to this local page cache. Varnish Cache and nginx FastCGI answer before WordPress runs, so they need the same paths in their own configuration; the snippets on their tabs are generated from this list.', 'icc-gg-wordpress-super-cache' ); ?>
+				</p>
+
+				<p>
+					<a class="button button-secondary" href="<?php echo esc_attr( $roc->action_link( 'reset-local-exclusions' ) ); ?>">
+						<?php esc_html_e( 'Restore default exclusions', 'icc-gg-wordpress-super-cache' ); ?>
+					</a>
+				</p>
+
+				<p class="description">
+					<?php esc_html_e( 'Restoring the defaults replaces the current list, including your own entries. Save the form first if you want to keep a copy.', 'icc-gg-wordpress-super-cache' ); ?>
 				</p>
 			</td>
 		</tr>
@@ -437,11 +535,27 @@ $local_checkboxes = [
 		<?php esc_html_e( 'Regenerate Page Cache Loader', 'icc-gg-wordpress-super-cache' ); ?>
 	</a>
 
+	<a class="button" href="<?php echo esc_attr( $roc->action_link( 'write-page-cache-loader' ) ); ?>">
+		<?php esc_html_e( 'Write / Rewrite advanced-cache.php', 'icc-gg-wordpress-super-cache' ); ?>
+	</a>
+
 	<?php if ( $local_has_backup ) : ?>
 		<a class="button" href="<?php echo esc_attr( $roc->action_link( 'revert-wp-config' ) ); ?>">
 			<?php esc_html_e( 'Revert wp-config.php Backup', 'icc-gg-wordpress-super-cache' ); ?>
 		</a>
 	<?php endif; ?>
+</p>
+
+<p class="description">
+	<?php esc_html_e( '"Regenerate Page Cache Loader" refreshes the engine files and rewrites the loader only when it already belongs to this plugin.', 'icc-gg-wordpress-super-cache' ); ?>
+</p>
+
+<p class="description">
+	<?php esc_html_e( '"Write / Rewrite advanced-cache.php" writes the loader even when the file is missing, damaged, outdated or owned by another plugin. The current file is copied to advanced-cache.icc-gg-backup.php before it is replaced.', 'icc-gg-wordpress-super-cache' ); ?>
+</p>
+
+<p class="description">
+	<?php esc_html_e( 'When WP_CACHE cannot be added to wp-config.php, both buttons write the must-use plugin loader (wp-content/mu-plugins/icc-gg-page-cache.php) instead.', 'icc-gg-wordpress-super-cache' ); ?>
 </p>
 
 <p class="description">

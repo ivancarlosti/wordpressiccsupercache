@@ -72,7 +72,7 @@ $varnish_test = get_transient( 'icc_gg_wordpress_super_cache_varnish_test' );
 
 </table>
 
-<h2 class="title"><?php esc_html_e( 'Varnish Settings', 'icc-gg-wordpress-super-cache' ); ?></h2>
+<h2 class="title"><?php esc_html_e( 'Varnish Cache Settings', 'icc-gg-wordpress-super-cache' ); ?></h2>
 
 <form method="post" action="">
 	<?php wp_nonce_field( 'icc_gg_wordpress_super_cache_varnish' ); ?>
@@ -80,7 +80,7 @@ $varnish_test = get_transient( 'icc_gg_wordpress_super_cache_varnish_test' );
 	<table class="form-table">
 
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Varnish', 'icc-gg-wordpress-super-cache' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Varnish Cache', 'icc-gg-wordpress-super-cache' ); ?></th>
 			<td>
 				<input type="hidden" name="icc_gg_wordpress_super_cache_varnish[enabled]" value="0" />
 				<input
@@ -96,7 +96,7 @@ $varnish_test = get_transient( 'icc_gg_wordpress_super_cache_varnish_test' );
 				</label>
 
 				<p class="description">
-					<?php esc_html_e( 'Only one page cache backend can be enabled at a time: enabling Varnish requires disabling the local page cache and the Nginx cache first.', 'icc-gg-wordpress-super-cache' ); ?>
+					<?php esc_html_e( 'Only one page cache backend can be enabled at a time: enabling Varnish Cache requires disabling the local page cache and the nginx FastCGI cache first.', 'icc-gg-wordpress-super-cache' ); ?>
 				</p>
 
 				<?php if ( $varnish->is_overridden( 'enabled' ) ) : ?>
@@ -238,13 +238,25 @@ $varnish_test = get_transient( 'icc_gg_wordpress_super_cache_varnish_test' );
 
 </form>
 
-<h2 class="title"><?php esc_html_e( 'Varnish Configuration', 'icc-gg-wordpress-super-cache' ); ?></h2>
+<h2 class="title"><?php esc_html_e( 'Varnish Cache Configuration', 'icc-gg-wordpress-super-cache' ); ?></h2>
 
 <p>
 	<?php esc_html_e( 'The plugin only sends purge requests; Varnish has to accept them. Add this to the vcl_recv subroutine of your VCL:', 'icc-gg-wordpress-super-cache' ); ?>
 </p>
 
 <pre class="icc-gg-wordpress-super-cache-code"><?php echo esc_html( $varnish->vcl_snippet() ); ?></pre>
+
+<h2 class="title"><?php esc_html_e( 'Varnish Cache Exclusions', 'icc-gg-wordpress-super-cache' ); ?></h2>
+
+<p>
+	<?php esc_html_e( 'Varnish answers before WordPress runs, so the URL exclusions on the Page Cache tab are not applied to it. Merge this into the same vcl_recv subroutine, before the lookups, so the excluded paths and logged in visitors always reach WordPress:', 'icc-gg-wordpress-super-cache' ); ?>
+</p>
+
+<pre class="icc-gg-wordpress-super-cache-code"><?php echo esc_html( $varnish->vcl_bypass_snippet() ); ?></pre>
+
+<p class="description">
+	<?php esc_html_e( 'PURGE and BAN remove whatever Varnish stored; they do not respect the exclusion list either. The snippet above is generated from the saved exclusions, so update your VCL when you change them.', 'icc-gg-wordpress-super-cache' ); ?>
+</p>
 
 <p class="description">
 	<?php esc_html_e( 'The same values can be defined in wp-config.php with the ICC_GG_SUPER_CACHE_VARNISH_ENABLED, ICC_GG_SUPER_CACHE_VARNISH_HOST, ICC_GG_SUPER_CACHE_VARNISH_PORT, ICC_GG_SUPER_CACHE_VARNISH_KEY and ICC_GG_SUPER_CACHE_VARNISH_AUTO_PURGE constants.', 'icc-gg-wordpress-super-cache' ); ?>

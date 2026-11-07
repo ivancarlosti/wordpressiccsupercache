@@ -47,6 +47,8 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 		'purge-local-cache',
 		'preload-local-cache',
 		'replace-advanced-cache',
+		'write-page-cache-loader',
+		'reset-local-exclusions',
 		'revert-wp-config',
 		'enable-varnish-cache',
 		'disable-varnish-cache',
@@ -206,7 +208,7 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 
 		ICC_GG_WordPress_Super_Cache_UI::register_tab(
 			'redis',
-			__( 'Redis', 'icc-gg-wordpress-super-cache' ),
+			__( 'Redis Object Cache', 'icc-gg-wordpress-super-cache' ),
 			[ 'default' => true ]
 		);
 
@@ -217,12 +219,12 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 
 		ICC_GG_WordPress_Super_Cache_UI::register_tab(
 			'varnish',
-			__( 'Varnish', 'icc-gg-wordpress-super-cache' )
+			__( 'Varnish Cache', 'icc-gg-wordpress-super-cache' )
 		);
 
 		ICC_GG_WordPress_Super_Cache_UI::register_tab(
 			'nginx',
-			__( 'Nginx', 'icc-gg-wordpress-super-cache' )
+			__( 'nginx FastCGI', 'icc-gg-wordpress-super-cache' )
 		);
 
 		ICC_GG_WordPress_Super_Cache_UI::register_tab(
@@ -843,7 +845,7 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 			$wp_admin_bar->add_node([
 				'parent' => 'icc-gg-wordpress-super-cache',
 				'id' => 'icc-gg-wordpress-super-cache-purge-nginx',
-				'title' => __( 'Purge Nginx Cache', 'icc-gg-wordpress-super-cache' ),
+				'title' => __( 'Purge nginx FastCGI Cache', 'icc-gg-wordpress-super-cache' ),
 				'href' => $this->action_link( 'purge-nginx-cache' ),
 			]);
 		}
@@ -867,8 +869,8 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 
 		$tab_links = [
 			'local' => __( 'Page Cache Settings', 'icc-gg-wordpress-super-cache' ),
-			'varnish' => __( 'Varnish Settings', 'icc-gg-wordpress-super-cache' ),
-			'nginx' => __( 'Nginx Settings', 'icc-gg-wordpress-super-cache' ),
+			'varnish' => __( 'Varnish Cache Settings', 'icc-gg-wordpress-super-cache' ),
+			'nginx' => __( 'nginx FastCGI Settings', 'icc-gg-wordpress-super-cache' ),
 			'images' => __( 'Optimize Images', 'icc-gg-wordpress-super-cache' ),
 		];
 
@@ -1088,7 +1090,7 @@ HTML;
 						add_settings_error(
 							'icc-gg-wordpress-super-cache',
 							'nginx',
-							__( 'Nginx cache purged.', 'icc-gg-wordpress-super-cache' ),
+							__( 'nginx FastCGI cache purged.', 'icc-gg-wordpress-super-cache' ),
 							'updated'
 						);
 					} elseif ( is_wp_error( $result ) ) {
@@ -1096,8 +1098,8 @@ HTML;
 							'icc-gg-wordpress-super-cache',
 							'nginx',
 							sprintf(
-								// translators: %s = The reason the Nginx cache could not be purged.
-								__( 'Nginx cache could not be purged: %s', 'icc-gg-wordpress-super-cache' ),
+								// translators: %s = The reason the nginx FastCGI cache could not be purged.
+								__( 'nginx FastCGI cache could not be purged: %s', 'icc-gg-wordpress-super-cache' ),
 								$result->get_error_message()
 							),
 							'error'
@@ -1106,7 +1108,7 @@ HTML;
 						add_settings_error(
 							'icc-gg-wordpress-super-cache',
 							'nginx',
-							__( 'Nginx cache purge was skipped.', 'icc-gg-wordpress-super-cache' ),
+							__( 'nginx FastCGI cache purge was skipped.', 'icc-gg-wordpress-super-cache' ),
 							'error'
 						);
 					}
@@ -1231,7 +1233,7 @@ HTML;
 	}
 
 	/**
-	 * Saves the Nginx cache settings submitted from the Nginx tab.
+	 * Saves the nginx FastCGI cache settings submitted from the nginx FastCGI tab.
 	 *
 	 * @return void
 	 */
@@ -1276,7 +1278,7 @@ HTML;
 				'nginx',
 				sprintf(
 					// translators: %s = The cache zone path validation error.
-					__( 'Nginx cache settings saved, but the cache zone is unusable: %s', 'icc-gg-wordpress-super-cache' ),
+					__( 'nginx FastCGI cache settings saved, but the cache zone is unusable: %s', 'icc-gg-wordpress-super-cache' ),
 					$path_error->get_error_message()
 				),
 				'error'
@@ -1285,7 +1287,7 @@ HTML;
 			add_settings_error(
 				'icc-gg-wordpress-super-cache',
 				'nginx',
-				__( 'Nginx cache settings saved.', 'icc-gg-wordpress-super-cache' ),
+				__( 'nginx FastCGI cache settings saved.', 'icc-gg-wordpress-super-cache' ),
 				'updated'
 			);
 		}
@@ -1323,6 +1325,8 @@ HTML;
 			'purge-local-cache' => '#local',
 			'preload-local-cache' => '#local',
 			'replace-advanced-cache' => '#local',
+			'write-page-cache-loader' => '#local',
+			'reset-local-exclusions' => '#local',
 			'revert-wp-config' => '#local',
 			'enable-varnish-cache' => '#varnish',
 			'disable-varnish-cache' => '#varnish',
@@ -1381,6 +1385,8 @@ HTML;
 			'purge-local-cache' => 'handle_local_cache_action',
 			'preload-local-cache' => 'handle_local_cache_action',
 			'replace-advanced-cache' => 'handle_local_cache_action',
+			'write-page-cache-loader' => 'handle_local_cache_action',
+			'reset-local-exclusions' => 'handle_local_cache_action',
 			'revert-wp-config' => 'handle_local_cache_action',
 			'enable-varnish-cache' => 'handle_varnish_action',
 			'disable-varnish-cache' => 'handle_varnish_action',
@@ -1431,6 +1437,14 @@ HTML;
 						'error',
 						'page_cache'
 					);
+
+					if ( in_array( $result->get_error_code(), [ 'foreign_dropin', 'foreign_mu_plugin' ], true ) ) {
+						$this->add_action_message(
+							__( 'Use "Write / Rewrite advanced-cache.php" in the Maintenance section of the Page Cache tab to replace it; the current file is copied to a backup first.', 'icc-gg-wordpress-super-cache' ),
+							'error',
+							'page_cache'
+						);
+					}
 
 					break;
 				}
@@ -1530,6 +1544,72 @@ HTML;
 
 				$this->add_action_message(
 					__( 'The page cache loader was regenerated.', 'icc-gg-wordpress-super-cache' ),
+					'updated',
+					'page_cache'
+				);
+
+				break;
+
+			case 'write-page-cache-loader':
+				$result = $local->force_write_loader();
+
+				if ( is_wp_error( $result ) ) {
+					$this->add_action_message( $result->get_error_message(), 'error', 'page_cache' );
+
+					break;
+				}
+
+				$state = $local->loader_state();
+
+				if ( 'mu-plugin' === $state['mode'] ) {
+					$this->add_action_message(
+						__( 'The must-use plugin loader was written because WP_CACHE could not be added to wp-config.php.', 'icc-gg-wordpress-super-cache' ),
+						'updated',
+						'page_cache'
+					);
+				} else {
+					$this->add_action_message(
+						__( 'advanced-cache.php was written.', 'icc-gg-wordpress-super-cache' ),
+						'updated',
+						'page_cache'
+					);
+				}
+
+				$backup = $local->get_last_backup_path();
+
+				if ( '' !== $backup ) {
+					$this->add_action_message(
+						sprintf(
+							// translators: %s = Path of the backup file.
+							__( 'The previous file was backed up to %s.', 'icc-gg-wordpress-super-cache' ),
+							$backup
+						),
+						'updated',
+						'page_cache'
+					);
+				}
+
+				if ( ! $local->is_enabled() ) {
+					$this->add_action_message(
+						__( 'The page cache is disabled, so caching stays off until it is enabled.', 'icc-gg-wordpress-super-cache' ),
+						'error',
+						'page_cache'
+					);
+				}
+
+				break;
+
+			case 'reset-local-exclusions':
+				$result = $local->reset_exclusions();
+
+				if ( is_wp_error( $result ) ) {
+					$this->add_action_message( $result->get_error_message(), 'error', 'page_cache' );
+
+					break;
+				}
+
+				$this->add_action_message(
+					__( 'The default URL exclusions were restored.', 'icc-gg-wordpress-super-cache' ),
 					'updated',
 					'page_cache'
 				);

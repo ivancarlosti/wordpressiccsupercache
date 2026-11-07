@@ -546,7 +546,7 @@ class ICC_GG_WordPress_Super_Cache_Varnish_Cache
 			$lines[] = '        }';
 		}
 
-		$lines[] = '        ban req.http.host == req.http.X-Purge-Host && req.url ~ req.http.X-Purge-Path;';
+		$lines[] = '        ban("req.http.host == " + req.http.X-Purge-Host + " && req.url ~ " + req.http.X-Purge-Path);';
 		$lines[] = '        return (synth(200, "Purged"));';
 		$lines[] = '    }';
 		$lines[] = '';
@@ -559,6 +559,49 @@ class ICC_GG_WordPress_Super_Cache_Varnish_Cache
 		}
 
 		$lines[] = '        return (purge);';
+		$lines[] = '    }';
+		$lines[] = '}';
+
+		return implode( "\n", $lines );
+	}
+
+	/**
+	 * Returns a VCL snippet that keeps dynamic requests out of the cache.
+	 *
+	 * The page cache exclusions are applied by the PHP engine, which Varnish
+	 * never reaches on a hit, so the same paths have to be repeated in VCL.
+	 * The snippet is meant to be merged into the existing `vcl_recv`.
+	 *
+	 * @return string
+	 */
+	public function vcl_bypass_snippet()
+	{
+		$lines = [
+			'sub vcl_recv {',
+			'    if (req.method != "GET" && req.method != "HEAD"',
+			'        && req.method != "PURGE" && req.method != "BAN") {',
+			'        return (pass);',
+			'    }',
+			'',
+			'    if (req.http.Authorization) {',
+			'        return (pass);',
+			'    }',
+		];
+
+		$patterns = ICC_GG_WordPress_Super_Cache_Local_Cache::instance()->exclusion_regexes();
+
+		if ( $patterns ) {
+			$lines[] = '';
+			$lines[] = '    # The URL exclusions from the Page Cache tab.';
+			$lines[] = '    if (req.url ~ "' . implode( '|', $patterns ) . '") {';
+			$lines[] = '        return (pass);';
+			$lines[] = '    }';
+		}
+
+		$lines[] = '';
+		$lines[] = '    # Never cache a request carrying a WordPress session or comment cookie.';
+		$lines[] = '    if (req.http.Cookie ~ "wordpress_logged_in|comment_author|wp-postpass") {';
+		$lines[] = '        return (pass);';
 		$lines[] = '    }';
 		$lines[] = '}';
 

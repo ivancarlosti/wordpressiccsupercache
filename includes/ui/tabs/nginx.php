@@ -25,10 +25,27 @@ $nginx_stats = $nginx_path_usable ? $nginx->get_cache_stats() : [ 'files' => 0, 
 
 $nginx_example_path = $nginx_path !== '' ? $nginx_path : '/var/cache/nginx/site';
 
+// nginx answers before PHP runs, so the Page Cache exclusions have to be
+// repeated here: the plugin cannot apply them for a FastCGI cache.
+$nginx_exclusions = ICC_GG_WordPress_Super_Cache_Local_Cache::instance()->exclusion_regexes();
+
+$nginx_exclusion_conf = '';
+
+foreach ( $nginx_exclusions as $nginx_exclusion ) {
+	$nginx_exclusion_conf .= sprintf(
+		"    if (\$request_uri ~* \"%s\") { set \$icc_gg_skip_cache 1; }\n",
+		$nginx_exclusion
+	);
+}
+
+if ( '' === $nginx_exclusion_conf ) {
+	$nginx_exclusion_conf = "    # No URL exclusions are configured on the Page Cache tab.\n";
+}
+
 $nginx_example_conf = sprintf(
 	<<<'CONF'
 # Object cache zones are declared in the http {} block of nginx.conf.
-fastcgi_cache_path %s levels=1:2 keys_zone=icc_gg_super_cache:100m inactive=60m use_temp_path=off;
+fastcgi_cache_path %1$s levels=1:2 keys_zone=icc_gg_super_cache:100m inactive=60m use_temp_path=off;
 
 server {
     # Bypass the cache for logged in users, POST requests and query strings.
@@ -39,6 +56,8 @@ server {
         set $icc_gg_skip_cache 1;
     }
 
+    # The URL exclusions from the Page Cache tab, repeated for nginx.
+%2$s
     location ~ \.php$ {
         fastcgi_cache icc_gg_super_cache;
         fastcgi_cache_key "$scheme$request_method$host$request_uri";
@@ -49,7 +68,8 @@ server {
     }
 }
 CONF,
-	$nginx_example_path
+	$nginx_example_path,
+	$nginx_exclusion_conf
 );
 
 ?>
@@ -57,7 +77,7 @@ CONF,
 <?php if ( $nginx_enabled && ! $nginx_path_usable ): ?>
 	<div class="notice notice-error">
 		<p>
-			<strong><?php esc_html_e( 'The Nginx cache zone is unusable:', 'icc-gg-wordpress-super-cache' ); ?></strong>
+			<strong><?php esc_html_e( 'The nginx FastCGI cache zone is unusable:', 'icc-gg-wordpress-super-cache' ); ?></strong>
 			<?php echo esc_html( $nginx_path_valid instanceof \WP_Error ? $nginx_path_valid->get_error_message() : '' ); ?>
 		</p>
 	</div>
@@ -141,7 +161,7 @@ CONF,
 	<table class="form-table">
 
 		<tr>
-			<th scope="row"><?php esc_html_e( 'Nginx Cache', 'icc-gg-wordpress-super-cache' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'nginx FastCGI Cache', 'icc-gg-wordpress-super-cache' ); ?></th>
 			<td>
 				<input type="hidden" name="icc_gg_wordpress_super_cache_nginx[enabled]" value="0" />
 				<input
@@ -153,11 +173,11 @@ CONF,
 					<?php disabled( $nginx->is_overridden( 'enabled' ) ); ?>
 				/>
 				<label for="icc-gg-wordpress-super-cache-nginx-enabled">
-					<?php esc_html_e( 'Enable the Nginx cache integration', 'icc-gg-wordpress-super-cache' ); ?>
+					<?php esc_html_e( 'Enable the nginx FastCGI cache integration', 'icc-gg-wordpress-super-cache' ); ?>
 				</label>
 
 				<p class="description">
-					<?php esc_html_e( 'Only one page cache backend can be enabled at a time: enabling Nginx requires disabling the local page cache and Varnish first.', 'icc-gg-wordpress-super-cache' ); ?>
+					<?php esc_html_e( 'Only one page cache backend can be enabled at a time: enabling nginx FastCGI requires disabling the local page cache and Varnish Cache first.', 'icc-gg-wordpress-super-cache' ); ?>
 				</p>
 
 				<?php if ( $nginx->is_overridden( 'enabled' ) ) : ?>
@@ -223,11 +243,11 @@ CONF,
 	</table>
 
 	<p class="submit">
-		<?php submit_button( __( 'Save Nginx Settings', 'icc-gg-wordpress-super-cache' ), 'primary', 'submit', false ); ?>
+		<?php submit_button( __( 'Save nginx FastCGI Settings', 'icc-gg-wordpress-super-cache' ), 'primary', 'submit', false ); ?>
 
 		<?php if ( $nginx_enabled && $nginx_path_usable ) : ?>
 			<a href="<?php echo esc_attr( $roc->action_link( 'purge-nginx-cache' ) ); ?>" class="button button-secondary">
-				<?php esc_html_e( 'Purge Nginx Cache', 'icc-gg-wordpress-super-cache' ); ?>
+				<?php esc_html_e( 'Purge nginx FastCGI Cache', 'icc-gg-wordpress-super-cache' ); ?>
 			</a>
 		<?php endif; ?>
 	</p>
@@ -235,14 +255,22 @@ CONF,
 </form>
 
 <h2 class="title">
-	<?php esc_html_e( 'Nginx Configuration', 'icc-gg-wordpress-super-cache' ); ?>
+	<?php esc_html_e( 'nginx FastCGI Configuration', 'icc-gg-wordpress-super-cache' ); ?>
 </h2>
 
 <p>
-	<?php esc_html_e( 'The plugin only purges the cache zone; Nginx itself has to be configured to store responses in it. A minimal FastCGI configuration looks like this:', 'icc-gg-wordpress-super-cache' ); ?>
+	<?php esc_html_e( 'The plugin only purges the cache zone; nginx itself has to be configured to store responses in it. A minimal FastCGI configuration looks like this:', 'icc-gg-wordpress-super-cache' ); ?>
 </p>
 
 <pre class="icc-gg-wordpress-super-cache-code"><?php echo esc_html( $nginx_example_conf ); ?></pre>
+
+<p class="description">
+	<?php esc_html_e( 'nginx answers before WordPress runs, so the URL exclusions on the Page Cache tab are not applied to a FastCGI cache. The example above repeats them with fastcgi_cache_bypass and fastcgi_no_cache; keep it in sync when you edit the exclusion list.', 'icc-gg-wordpress-super-cache' ); ?>
+</p>
+
+<p class="description">
+	<?php esc_html_e( 'The plugin purges by deleting the files of the cache zone, so no extra PURGE endpoint or location block is required.', 'icc-gg-wordpress-super-cache' ); ?>
+</p>
 
 <p class="description">
 	<?php esc_html_e( 'The same values can be defined in wp-config.php with the ICC_GG_SUPER_CACHE_NGINX_ENABLED, ICC_GG_SUPER_CACHE_NGINX_PATH and ICC_GG_SUPER_CACHE_NGINX_AUTO_PURGE constants.', 'icc-gg-wordpress-super-cache' ); ?>

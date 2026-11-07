@@ -59,6 +59,13 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 	const SYNC_TRANSIENT = 'icc_gg_wordpress_super_cache_local_sync';
 
 	/**
+	 * Option flag recording that the default URL exclusions were prefilled.
+	 *
+	 * @var string
+	 */
+	const EXCLUSIONS_MIGRATED = 'icc_gg_wordpress_super_cache_local_exclusions_migrated';
+
+	/**
 	 * Directory inside `wp-content` holding the engine and its configuration.
 	 *
 	 * @var string
@@ -94,6 +101,13 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 	private $last_error = null;
 
 	/**
+	 * Path of the backup taken while force rewriting a loader, if any.
+	 *
+	 * @var string
+	 */
+	private $last_backup_path = '';
+
+	/**
 	 * Create (if needed) and return a singleton of self.
 	 *
 	 * @return ICC_GG_WordPress_Super_Cache_Local_Cache
@@ -116,6 +130,7 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 
 		add_action( self::PRELOAD_HOOK, [ $this, 'run_preload_event' ] );
 		add_action( 'admin_init', [ $this, 'maybe_sync_runtime' ] );
+		add_action( 'admin_init', [ $this, 'maybe_migrate_settings' ] );
 	}
 
 	/**
@@ -159,10 +174,159 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 			'debug_header' => true,
 			'preload' => false,
 			'preload_batch' => 5,
-			'exclude_urls' => '',
+			'exclude_urls' => $this->default_exclude_urls(),
 			'exclude_agents' => '',
 			'exclude_cookies' => '',
 		];
+	}
+
+	/**
+	 * Returns the URL exclusion patterns shipped with the plugin.
+	 *
+	 * The engine hard-codes a few WordPress paths on top of this list, but
+	 * prefilling them makes the effective configuration visible and editable.
+	 *
+	 * @return string Newline separated list of patterns.
+	 */
+	public function default_exclude_urls()
+	{
+		$patterns = [
+			'/wp-admin',
+			'/wp-admin/*',
+			'/wp-login.php',
+			'/wp-json',
+			'/wp-json/*',
+			'/wp-cron.php',
+			'/xmlrpc.php',
+			'/wp-comments-post.php',
+			'/wp-signup.php',
+			'/wp-activate.php',
+			'/wp-trackback.php',
+			'/wp-sitemap.xml',
+			'/feed/*',
+			'/comments/feed/*',
+			'/?s=*',
+		];
+
+		/**
+		 * Filters the URL exclusions used as defaults and restored by the
+		 * "Restore default exclusions" action.
+		 *
+		 * @since 2.6.0
+		 * @param string[] $patterns One exclusion pattern per entry.
+		 */
+		$patterns = apply_filters( 'icc_gg_wordpress_super_cache_local_default_exclude_urls', $patterns );
+
+		return implode( "\n", array_filter( array_map( 'strval', (array) $patterns ), 'strlen' ) );
+	}
+
+	/**
+	 * Adds the default URL exclusions to settings saved by older versions.
+	 *
+	 * Existing lines are never removed: this only fills the gaps once, so a
+	 * site that upgraded does not suddenly lose the paths it relies on.
+	 *
+	 * @return void
+	 */
+	public function maybe_migrate_settings()
+	{
+		if ( get_option( self::EXCLUSIONS_MIGRATED ) ) {
+			return;
+		}
+
+		$stored = get_option( self::OPTION_KEY, null );
+
+		if ( ! is_array( $stored ) ) {
+			// Not configured yet: `defaults()` already ships the prefill.
+			update_option( self::EXCLUSIONS_MIGRATED, 1 );
+
+			return;
+		}
+
+		$current = isset( $stored['exclude_urls'] ) ? $this->split_lines( $stored['exclude_urls'] ) : [];
+		$missing = array_values( array_diff( $this->split_lines( $this->default_exclude_urls() ), $current ) );
+
+		if ( $missing ) {
+			$stored['exclude_urls'] = implode( "\n", array_merge( $current, $missing ) );
+
+			update_option( self::OPTION_KEY, $stored );
+
+			$this->flush_settings_cache();
+
+			if ( $this->is_enabled() ) {
+				$this->write_runtime_files();
+			}
+		}
+
+		update_option( self::EXCLUSIONS_MIGRATED, 1 );
+	}
+
+	/**
+	 * Restores the default URL exclusions, dropping customised ones.
+	 *
+	 * @return true|WP_Error
+	 */
+	public function reset_exclusions()
+	{
+		$settings = $this->get_settings();
+
+		$settings['exclude_urls'] = $this->default_exclude_urls();
+
+		update_option( self::OPTION_KEY, $settings );
+
+		$this->flush_settings_cache();
+
+		return $this->write_runtime_files();
+	}
+
+	/**
+	 * Compiles the URL exclusions into PCRE patterns.
+	 *
+	 * Used to generate the Varnish and nginx snippets, which must repeat the
+	 * exclusions because those caches answer before PHP runs.
+	 *
+	 * @return string[] Patterns without delimiters, safe to embed in quotes.
+	 */
+	public function exclusion_regexes()
+	{
+		$lines = $this->split_lines( $this->get_setting( 'exclude_urls' ) );
+
+		$patterns = [];
+
+		foreach ( $lines as $line ) {
+			if ( 0 === stripos( $line, 'regex:' ) ) {
+				$regex = trim( substr( $line, 6 ) );
+
+				if ( '' !== $regex ) {
+					// Only the quote needs escaping: Varnish and nginx both
+					// pass backslashes through to PCRE.
+					$patterns[] = str_replace( '"', '\\"', $regex );
+				}
+
+				continue;
+			}
+
+			$quoted = preg_quote( $line, '"' );
+
+			// Only PCRE metacharacters need escaping: a `\-` or `\#` in the
+			// snippet looks broken and `\<`/`\>` would mean "word boundary".
+			$quoted = strtr(
+				$quoted,
+				[
+					'\-' => '-',
+					'\=' => '=',
+					'\!' => '!',
+					'\<' => '<',
+					'\>' => '>',
+					'\:' => ':',
+					'\#' => '#',
+				]
+			);
+
+			$patterns[] = '^' . str_replace( '\*', '.*', $quoted );
+		}
+
+		return array_values( array_unique( $patterns ) );
 	}
 
 	/**
@@ -541,6 +705,110 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 	}
 
 	/**
+	 * Returns the state of every loader this plugin can install.
+	 *
+	 * @return array {
+	 *     @type string $dropin    One of `missing`, `foreign`, `outdated`, `invalid` or `valid`.
+	 *     @type string $mu_plugin One of `missing`, `foreign`, `outdated`, `invalid` or `valid`.
+	 *     @type string $mode      Bootstrap mode in use: `advanced-cache`, `mu-plugin` or `none`.
+	 * }
+	 */
+	public function loader_state()
+	{
+		$dropin = 'missing';
+
+		if ( $this->dropin_exists() ) {
+			if ( ! $this->dropin_is_ours() ) {
+				$dropin = 'foreign';
+			} elseif ( $this->dropin_outdated() ) {
+				$dropin = 'outdated';
+			} elseif ( ! $this->dropin_is_valid() ) {
+				$dropin = 'invalid';
+			} else {
+				$dropin = 'valid';
+			}
+		}
+
+		$mu_plugin = 'missing';
+
+		if ( $this->mu_plugin_exists() ) {
+			if ( ! $this->mu_plugin_is_ours() ) {
+				$mu_plugin = 'foreign';
+			} elseif ( $this->mu_plugin_outdated() ) {
+				$mu_plugin = 'outdated';
+			} elseif ( ! $this->mu_plugin_is_valid() ) {
+				$mu_plugin = 'invalid';
+			} else {
+				$mu_plugin = 'valid';
+			}
+		}
+
+		return [
+			'dropin' => $dropin,
+			'mu_plugin' => $mu_plugin,
+			'mode' => $this->bootstrap_mode(),
+		];
+	}
+
+	/**
+	 * Whether the installed `advanced-cache.php` matches the current template.
+	 *
+	 * A file can carry our header and still be broken (truncated upload, an
+	 * old runtime directory, a merge conflict), which is why the contents are
+	 * compared and not only the header.
+	 *
+	 * @return bool
+	 */
+	public function dropin_is_valid()
+	{
+		return $this->loader_is_valid( $this->dropin_path(), 'advanced-cache.php' );
+	}
+
+	/**
+	 * Whether the installed must-use plugin loader matches the current template.
+	 *
+	 * @return bool
+	 */
+	public function mu_plugin_is_valid()
+	{
+		return $this->loader_is_valid( $this->mu_plugin_path(), 'mu-plugin-loader.php' );
+	}
+
+	/**
+	 * Compares a generated loader file with the template it came from.
+	 *
+	 * @param string $path     Loader path.
+	 * @param string $template Template file name inside `includes/`.
+	 * @return bool
+	 */
+	protected function loader_is_valid( $path, $template )
+	{
+		if ( ! is_readable( $path ) || $this->plugin_uri() !== $this->read_loader_header( $path, 'PluginURI' ) ) {
+			return false;
+		}
+
+		$expected = $this->loader_contents( $template );
+		$current = @file_get_contents( $path );
+
+		if ( is_wp_error( $expected ) || false === $current ) {
+			return false;
+		}
+
+		return $current === $expected;
+	}
+
+	/**
+	 * Whether an installed loader was modified or is out of date.
+	 *
+	 * @return bool
+	 */
+	public function loaders_are_stale()
+	{
+		return ( $this->dropin_is_ours() && ! $this->dropin_is_valid() )
+			|| ( $this->mu_plugin_is_ours() && ! $this->mu_plugin_is_valid() );
+	}
+
+	/**
 	 * Sanitizes the submitted settings.
 	 *
 	 * The `enabled` flag is deliberately not handled here: it is owned by the
@@ -732,6 +1000,36 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 	}
 
 	/**
+	 * Renders one of the generated loader templates.
+	 *
+	 * @param string $template Template file name inside `includes/`.
+	 * @return string|WP_Error
+	 */
+	protected function loader_contents( $template )
+	{
+		$source = ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/' . $template;
+		$contents = is_readable( $source ) ? @file_get_contents( $source ) : false;
+
+		if ( false === $contents ) {
+			return new WP_Error( 'fs', __( 'The loader template could not be read.', 'icc-gg-wordpress-super-cache' ) );
+		}
+
+		$directory = str_replace( [ '\\', "'" ], [ '\\\\', "\\'" ], $this->runtime_dir() );
+
+		return str_replace(
+			[
+				'{{ICC_GG_PAGE_CACHE_DIR}}',
+				'{{ICC_GG_PAGE_CACHE_VERSION}}',
+			],
+			[
+				$directory,
+				ICC_GG_WORDPRESS_SUPER_CACHE_VERSION,
+			],
+			$contents
+		);
+	}
+
+	/**
 	 * Writes one of the generated loader files.
 	 *
 	 * @param string $template    Template file name inside `includes/`.
@@ -744,28 +1042,92 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 			return new WP_Error( 'fs', __( 'Filesystem API could not be initialized.', 'icc-gg-wordpress-super-cache' ) );
 		}
 
-		$source = ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/' . $template;
-		$contents = @file_get_contents( $source );
+		$contents = $this->loader_contents( $template );
 
-		if ( false === $contents ) {
-			return new WP_Error( 'fs', __( 'The loader template could not be read.', 'icc-gg-wordpress-super-cache' ) );
+		if ( is_wp_error( $contents ) ) {
+			return $contents;
 		}
 
-		$directory = str_replace( [ '\\', "'" ], [ '\\\\', "\\'" ], $this->runtime_dir() );
-
-		$contents = str_replace(
-			[
-				'{{ICC_GG_PAGE_CACHE_DIR}}',
-				'{{ICC_GG_PAGE_CACHE_VERSION}}',
-			],
-			[
-				$directory,
-				ICC_GG_WORDPRESS_SUPER_CACHE_VERSION,
-			],
-			$contents
-		);
-
 		return $this->put_file( $destination, $contents );
+	}
+
+	/**
+	 * Returns the backup path used before a loader is replaced.
+	 *
+	 * @param string $path Loader path.
+	 * @return string
+	 */
+	public function loader_backup_path( $path )
+	{
+		$path = (string) $path;
+
+		if ( '.php' === substr( $path, -4 ) ) {
+			return substr( $path, 0, -4 ) . '.icc-gg-backup.php';
+		}
+
+		return $path . '.icc-gg-backup';
+	}
+
+	/**
+	 * Returns the backup path of the `advanced-cache.php` drop-in.
+	 *
+	 * @return string
+	 */
+	public function dropin_backup_path()
+	{
+		return $this->loader_backup_path( $this->dropin_path() );
+	}
+
+	/**
+	 * Copies a loader aside before it is overwritten.
+	 *
+	 * The file is left alone when it already matches the template that is
+	 * about to be written, so repeating the action does not pile up backups.
+	 *
+	 * @param string $path     Loader path.
+	 * @param string $template Template that is about to be written.
+	 * @return true|WP_Error
+	 */
+	protected function backup_loader_file( $path, $template )
+	{
+		if ( ! file_exists( $path ) ) {
+			return true;
+		}
+
+		$expected = $this->loader_contents( $template );
+		$current = @file_get_contents( $path );
+
+		if ( ! is_wp_error( $expected ) && false !== $current && $current === $expected ) {
+			return true;
+		}
+
+		$backup = $this->loader_backup_path( $path );
+
+		if ( ! @copy( $path, $backup ) ) {
+			return new WP_Error(
+				'backup',
+				sprintf(
+					// translators: 1: Loader path, 2: Backup path.
+					__( 'The existing file %1$s could not be backed up to %2$s, so it was left untouched.', 'icc-gg-wordpress-super-cache' ),
+					$path,
+					$backup
+				)
+			);
+		}
+
+		$this->last_backup_path = $backup;
+
+		return true;
+	}
+
+	/**
+	 * Returns the backup created by the last forced loader write, if any.
+	 *
+	 * @return string
+	 */
+	public function get_last_backup_path()
+	{
+		return $this->last_backup_path;
 	}
 
 	/**
@@ -1028,6 +1390,63 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 	}
 
 	/**
+	 * Writes the loader even when another file already occupies its place.
+	 *
+	 * This is the escape hatch behind the "Write / Rewrite advanced-cache.php"
+	 * action: enabling the page cache refuses to touch a file installed by
+	 * another plugin, so a site can end up enabled without a working loader.
+	 * The existing file is copied to `<name>.icc-gg-backup.php` first and the
+	 * replacement is written atomically, mirroring `install()`.
+	 *
+	 * @return true|WP_Error
+	 */
+	public function force_write_loader()
+	{
+		$this->last_error = null;
+		$this->last_backup_path = '';
+
+		$runtime = $this->write_runtime_files();
+
+		if ( is_wp_error( $runtime ) ) {
+			return $runtime;
+		}
+
+		$wp_config = $this->try_edit_wp_config();
+
+		if ( true === $wp_config ) {
+			$template = 'advanced-cache.php';
+			$destination = $this->dropin_path();
+			$obsolete = $this->mu_plugin_path();
+		} else {
+			$this->last_error = $wp_config;
+			$template = 'mu-plugin-loader.php';
+			$destination = $this->mu_plugin_path();
+			$obsolete = $this->dropin_path();
+		}
+
+		$backup = $this->backup_loader_file( $destination, $template );
+
+		if ( is_wp_error( $backup ) ) {
+			return $backup;
+		}
+
+		$result = $this->write_loader_file( $template, $destination );
+
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+
+		// Only ever delete the loader we no longer use when we wrote it.
+		if ( $obsolete !== $destination && file_exists( $obsolete )
+			&& $this->plugin_uri() === $this->read_loader_header( $obsolete, 'PluginURI' )
+		) {
+			$this->remove_loader_file( $obsolete );
+		}
+
+		return true;
+	}
+
+	/**
 	 * Removes a loader file, but only when this plugin created it.
 	 *
 	 * @param string $path Loader path.
@@ -1102,7 +1521,8 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 		$needs_loader = 'none' === $this->bootstrap_mode();
 		$needs_sync = ! is_readable( $this->runtime_dir() . '/config.php' )
 			|| $this->dropin_outdated()
-			|| $this->mu_plugin_outdated();
+			|| $this->mu_plugin_outdated()
+			|| $this->loaders_are_stale();
 
 		if ( ! $needs_loader && ! $needs_sync ) {
 			return;

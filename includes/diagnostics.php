@@ -62,11 +62,11 @@ $info['Metrics recorded'] = wp_json_encode( \ICC_GG_WordPress_Super_Cache_Metric
 $nginx = ICC_GG_WordPress_Super_Cache_Nginx_Cache::instance();
 $nginx_stats = $nginx->get_cache_stats();
 
-$info['Nginx'] = $nginx->get_status();
-$info['Nginx Path'] = $nginx->get_cache_path() !== '' ? $nginx->get_cache_path() : '(not set)';
-$info['Nginx Auto Purge'] = $nginx->auto_purge_enabled() ? 'Enabled' : 'Disabled';
-$info['Nginx Files'] = number_format_i18n( $nginx_stats['files'] );
-$info['Nginx Size'] = size_format( $nginx_stats['size'] );
+$info['nginx FastCGI'] = $nginx->get_status();
+$info['nginx FastCGI Path'] = $nginx->get_cache_path() !== '' ? $nginx->get_cache_path() : '(not set)';
+$info['nginx FastCGI Auto Purge'] = $nginx->auto_purge_enabled() ? 'Enabled' : 'Disabled';
+$info['nginx FastCGI Files'] = number_format_i18n( $nginx_stats['files'] );
+$info['nginx FastCGI Size'] = size_format( $nginx_stats['size'] );
 
 $registry = ICC_GG_WordPress_Super_Cache_Page_Cache::instance();
 $local = ICC_GG_WordPress_Super_Cache_Local_Cache::instance();
@@ -88,7 +88,7 @@ $info['Local Pages'] = number_format_i18n( $local_stats['pages'] );
 $info['Local Size'] = size_format( $local_stats['size'] );
 $info['Local Preload Queue'] = number_format_i18n( count( $local->get_preload_queue() ) );
 
-$info['Varnish'] = $varnish->get_status();
+$info['Varnish Cache'] = $varnish->get_status();
 $info['Varnish Endpoint'] = is_wp_error( $varnish->endpoint_url() ) ? '(invalid)' : $varnish->endpoint_url();
 $info['Varnish Method'] = strtoupper( (string) $varnish->get_setting( 'method' ) );
 

@@ -5,10 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * ICC.gg WordPress Super Cache - WordPress Super Cache Plugin
  *
- * Two independent caching layers in one plugin:
+ * Three independent caching layers in one plugin:
  * - Redis object cache (Predis, PhpRedis, Relay, replication, sentinels,
  *   clustering and WP-CLI).
- * - Nginx page cache purging (FastCGI, Proxy and uWSGI cache zones).
+ * - Local PHP page cache (advanced-cache.php drop-in or must-use plugin loader).
+ * - Varnish Cache and nginx FastCGI page cache purging.
  *
  * @package   ICC_GG_WordPress_Super_Cache
  * @category  General
@@ -20,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @wordpress-plugin
  * Plugin Name:       ICC.gg WordPress Super Cache
  * Plugin URI:        https://github.com/ivancarlosti/wordpressiccsupercache
- * Description:       Redis object cache and Nginx page cache in one plugin. Enable, configure and purge each layer independently.
+ * Description:       Redis object cache, Varnish Cache and nginx FastCGI page cache in one plugin. Enable, configure and purge each layer independently.
  * Version:           2.0.0
  * Requires at least: 5.0
  * Requires PHP:      8.2

@@ -1,7 +1,7 @@
-# Varnish
+# Varnish Cache
 
-The Varnish backend purges an HTTP cache sitting in front of WordPress. The plugin never configures
-Varnish itself: it sends purge requests and shows the VCL snippet that accepts them.
+The Varnish Cache backend purges an HTTP cache sitting in front of WordPress. The plugin never configures
+Varnish itself: it sends purge requests and shows the VCL snippets that accept them.
 
 ![Varnish tab after a successful connection test](screenshots/admin-varnish.png)
 
@@ -9,7 +9,7 @@ Varnish itself: it sends purge requests and shows the VCL snippet that accepts t
 
 | Setting | Description |
 |---|---|
-| Varnish | Enable the backend (mutually exclusive with the local page cache and Nginx) |
+| Varnish Cache | Enable the backend (mutually exclusive with the local page cache and nginx FastCGI) |
 | Varnish Host | Address Varnish listens on (`127.0.0.1`, a Docker service name, …) |
 | Port | Port Varnish listens on (default `6081`) |
 | Purge Method | `PURGE` for a single URL, `BAN` for Varnish 4+ pattern bans |
@@ -53,7 +53,7 @@ sub vcl_recv {
         if (req.http.X-Purge-Key != "secret") {
             return (synth(403, "Forbidden"));
         }
-        ban req.http.host == req.http.X-Purge-Host && req.url ~ req.http.X-Purge-Path;
+        ban("req.http.host == " + req.http.X-Purge-Host + " && req.url ~ " + req.http.X-Purge-Path);
         return (synth(200, "Purged"));
     }
 
@@ -65,6 +65,45 @@ sub vcl_recv {
     }
 }
 ```
+
+## Exclusions
+
+Varnish answers before WordPress runs, so the URL exclusions of the local page cache never reach it: a
+cached `/cart/` would keep being served, and a logged-in visitor could receive a page from the shared
+cache. The tab renders a second snippet, generated from the saved exclusions, that must be merged into
+the **same** `vcl_recv` subroutine and evaluated before the lookups:
+
+```vcl
+sub vcl_recv {
+    if (req.method != "GET" && req.method != "HEAD"
+        && req.method != "PURGE" && req.method != "BAN") {
+        return (pass);
+    }
+
+    if (req.http.Authorization) {
+        return (pass);
+    }
+
+    # The URL exclusions from the Page Cache tab.
+    if (req.url ~ "^/wp-admin|^/wp-login\.php|^/wp-json|^/wp-cron\.php") {
+        return (pass);
+    }
+
+    # Never cache a request carrying a WordPress session or comment cookie.
+    if (req.http.Cookie ~ "wordpress_logged_in|comment_author|wp-postpass") {
+        return (pass);
+    }
+}
+```
+
+Notes:
+
+- `PURGE`/`BAN` are whitelisted in the method check, otherwise the first rule would swallow the purge
+  requests the plugin sends.
+- `req.url` keeps the query string, so `/?s=*` becomes `^\?s=.*`-style matching through the same
+  compiler (`Local_Cache::exclusion_regexes()`) used by the nginx FastCGI tab.
+- Merging two `sub vcl_recv` blocks is a VCL error: copy the `if` blocks into the existing subroutine.
+- PURGE and BAN remove whatever Varnish stored, exclusions included; re-cache happens on the next visit.
 
 ## Constants
 
@@ -93,8 +132,11 @@ wp icc-gg-wordpress-super-cache varnish-purge /about/
 
 ## Notes
 
-- Varnish normally sits in front of Nginx, so a site that runs both layers on purpose can lift the
+- Varnish normally sits in front of nginx, so a site that runs both layers on purpose can lift the
   mutual exclusion with the `icc_gg_wordpress_super_cache_page_cache_exclusive` filter.
 - Purging only removes objects Varnish knows about. If the VCL ignores cookies, logged-in users may
-  receive cached pages; add the usual `Cookie`/`Authorization` bypass rules to your VCL.
+  receive cached pages; add the usual `Cookie`/`Authorization` bypass rules to your VCL — the
+  **Exclusions** snippet above already does it.
+- Purging never filters by path: a `BAN` with an empty path removes every object of the host. Keep the
+  exclusion list in VCL, not in the purge request.
 - `BAN` requires Varnish 4 or newer. Varnish 3 only supports `PURGE`.

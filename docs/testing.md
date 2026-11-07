@@ -52,11 +52,21 @@ Then, through `http://localhost:8080`:
    `wp-content/cache/icc-gg-page-cache`. Use **Purge URLs** for a single post.
 2. **Varnish** — enable it, run **Test Connection** and confirm the probe finds `X-Varnish`. The VCL in
    `tests/e2e/varnish.vcl` already accepts `PURGE` and `BAN` with the key from `docker/.env`.
-3. **Nginx** — enable it, set the cache zone to `/var/cache/nginx/wordpress` and purge.
+3. **nginx FastCGI** — enable it, set the cache zone to `/var/cache/nginx/wordpress` and purge.
 4. **Exclusivity** — try to enable a second backend and confirm the error message names the backend that
    is already enabled.
 5. **Optimize Images** — upload a large JPEG, run the optimizer and compare the file sizes in
    `wp-content/uploads` with `wp-content/icc-gg-image-backups`.
+6. **Loader recovery** — with the page cache enabled, replace `wp-content/advanced-cache.php` with a
+   one-line PHP file (a "foreign" drop-in) and add `Test-Nope:` to its header to simulate a damaged file.
+   The **Page Cache** tab must report *Installed by another plugin* / *Damaged or unreadable*, and
+   **Write / Rewrite advanced-cache.php** must restore a working loader and leave
+   `advanced-cache.icc-gg-backup.php` behind.
+7. **Exclusions** — confirm the URL list is prefilled, add `/cart/`, request `/cart/` and check the page
+   is not cached; remove every line and confirm `/wp-admin/options-general.php` is still skipped.
+   **Restore default exclusions** must bring the list back.
+8. **Snippets** — with `/cart/` saved as an exclusion, the **Varnish Cache** tab must show
+   `req.url ~ "…^/cart…"` and the **nginx FastCGI** tab an `if ($request_uri ~* "^/cart")` line.
 
 ## WP-CLI smoke tests
 
@@ -79,7 +89,7 @@ regenerated after a UI change:
 
 1. Start the end-to-end stack and add a few posts plus a handful of media library images.
 2. Enable the backend you want to document. Only one page cache can be active, so capture the **Page Cache**,
-   **Varnish** and **Nginx** tabs in separate passes; force a conflict by defining
+   **Varnish Cache** and **nginx FastCGI** tabs in separate passes; force a conflict by defining
    `ICC_GG_SUPER_CACHE_NGINX_ENABLED` in `wp-config.php` if you need the warning screenshot.
 3. Warm the cache by requesting a few front-end pages, then flush the one minute stats transient
    (`wp eval 'ICC_GG_WordPress_Super_Cache_Local_Cache::instance()->flush_stats_cache();'`) so the tab shows
@@ -97,6 +107,10 @@ otherwise **Test Connection** correctly falls back to "purge accepted, headers n
 - Enable the page cache on a site where `wp-config.php` is **not** writable: the must-use plugin loader
   must be installed and `bootstrap_mode()` must report `mu-plugin`.
 - Delete the backup with **Revert wp-config.php Backup** and confirm the site still serves pages.
+- Truncate `advanced-cache.php` (keep the header) and confirm `loaders_are_stale()` is true, the tab reports
+  *Damaged or unreadable* and the loader is rewritten on the next admin request.
+- Keep a foreign `advanced-cache.php` in place and confirm enabling the page cache still refuses to replace
+  it, while **Write / Rewrite advanced-cache.php** does replace it and keeps a backup.
 - Disable the page cache and confirm `advanced-cache.php` and the must-use plugin loader are removed.
 - Trigger a post update and confirm exactly one purge per enabled backend (`wp-content/debug.log`).
-- Check the **Diagnostics** tab for the page cache, Varnish and image optimizer sections.
+- Check the **Diagnostics** tab for the page cache, Varnish Cache, nginx FastCGI and image optimizer sections.

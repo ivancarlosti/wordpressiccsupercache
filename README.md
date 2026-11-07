@@ -1,6 +1,6 @@
 # ICC.gg WordPress Super Cache
 
-A WordPress plugin that provides a persistent object cache backend powered by Redis®¹, three mutually exclusive page cache backends (local PHP page cache, Varnish and Nginx) and a media library image optimizer. It supports Predis, PhpRedis, Relay, replication, sentinels, clustering and WP-CLI.
+A WordPress plugin that provides a persistent object cache backend powered by Redis®¹, three mutually exclusive page cache backends (local PHP page cache, Varnish Cache and nginx FastCGI) and a media library image optimizer. It supports Predis, PhpRedis, Relay, replication, sentinels, clustering and WP-CLI.
 
 <!-- buttons -->
 [![Stars](https://img.shields.io/github/stars/ivancarlosti/wordpressiccsupercache?label=⭐%20Stars&color=gold&style=flat)](https://github.com/ivancarlosti/wordpressiccsupercache/stargazers)
@@ -24,9 +24,10 @@ A WordPress plugin that provides a persistent object cache backend powered by Re
 - **High Availability** — Supports replication, sentinels, clustering and sharding
 - **One-Click Management** — Enable, disable, flush and update the object cache drop-in from **Settings → Super Cache**
 - **Local Page Cache** — Store pages as static HTML in `wp-content` and serve them before WordPress boots, configured on its own tab with clear cache, purge by URL and preload
-- **Varnish Support** — Send `PURGE`/`BAN` requests to a Varnish instance, test the connection and copy the matching VCL snippet
-- **Nginx Page Cache** — Purge a FastCGI, Proxy or uWSGI cache zone automatically or manually, configured on its own tab
-- **One Page Cache at a Time** — The local, Varnish and Nginx backends are mutually exclusive, so a page can never be cached twice
+- **Recoverable Loader** — Report the state of `advanced-cache.php` and rewrite it on demand, with a backup, when the file is missing, damaged, outdated or owned by another plugin
+- **Varnish Cache Support** — Send `PURGE`/`BAN` requests to a Varnish instance, test the connection and copy the matching VCL snippets (purges and exclusions)
+- **nginx FastCGI Page Cache** — Purge a FastCGI, Proxy or uWSGI cache zone automatically or manually, with an nginx snippet generated from your exclusions
+- **One Page Cache at a Time** — The local, Varnish Cache and nginx FastCGI backends are mutually exclusive, so a page can never be cached twice
 - **Image Optimizer** — Compress the media library, cap image dimensions and file size, and store new uploads as WebP; formats are detected at runtime
 - **Metrics Dashboard** — Track hit ratio, hits, misses, cache size, calls and response time with charts
 - **Diagnostics** — Inspect the Redis server, client, connection and key configuration
@@ -46,8 +47,8 @@ traffic. The files live in [`docs/screenshots`](docs/screenshots), together with
 
 | | |
 |---|---|
-| **Page Cache** — loader, `WP_CACHE`, cached pages and size, expiry, behaviour, exclusions, clear cache and maintenance<br><img src="docs/screenshots/admin-page-cache.png" alt="Page Cache tab" width="440"> | **Varnish** — purge endpoint plus a passing connection test with the headers it received and the VCL snippet to paste<br><img src="docs/screenshots/admin-varnish.png" alt="Varnish tab" width="440"> |
-| **Nginx** — cache zone, auto purge and the FastCGI configuration for the zone<br><img src="docs/screenshots/admin-nginx.png" alt="Nginx tab" width="440"> | **Optimize Images** — library progress, formats detected at runtime, quality, dimensions, size cap and the batch optimizer<br><img src="docs/screenshots/admin-images.png" alt="Optimize Images tab" width="440"> |
+| **Page Cache** — loader state, `advanced-cache.php` status, `WP_CACHE`, cached pages and size, expiry, behaviour, prefilled exclusions, clear cache and maintenance<br><img src="docs/screenshots/admin-page-cache.png" alt="Page Cache tab" width="440"> | **Varnish Cache** — purge endpoint plus a passing connection test with the headers it received and the VCL snippets to paste<br><img src="docs/screenshots/admin-varnish.png" alt="Varnish Cache tab" width="440"> |
+| **nginx FastCGI** — cache zone, auto purge and the FastCGI configuration, including the generated exclusion bypasses<br><img src="docs/screenshots/admin-nginx.png" alt="nginx FastCGI tab" width="440"> | **Optimize Images** — library progress, formats detected at runtime, quality, dimensions, size cap and the batch optimizer<br><img src="docs/screenshots/admin-images.png" alt="Optimize Images tab" width="440"> |
 | **One page cache at a time** — a second backend forced on by a `wp-config.php` constant is reported instead of silently fighting the active one<br><img src="docs/screenshots/admin-conflict.png" alt="Page cache conflict notice" width="440"> | **Admin bar** — a clear cache action for every enabled backend and a shortcut to each tab<br><img src="docs/screenshots/admin-bar.png" alt="Admin bar cache actions" width="440"> |
 
 ## Requirements
@@ -55,8 +56,8 @@ traffic. The files live in [`docs/screenshots`](docs/screenshots), together with
 - WordPress 5.0+
 - PHP 8.2+
 - A running Redis server (for the Redis module)
-- Varnish 4+ (optional, for the Varnish module)
-- Nginx with `fastcgi_cache_path` or `proxy_cache_path` (optional, for the Nginx module)
+- Varnish 4+ (optional, for the Varnish Cache module)
+- nginx with `fastcgi_cache_path` or `proxy_cache_path` (optional, for the nginx FastCGI module)
 - GD or Imagick (optional, for the image optimizer)
 - One of the following clients:
   - [Predis](https://github.com/predis/predis/) (bundled with the plugin)
@@ -74,8 +75,8 @@ traffic. The files live in [`docs/screenshots`](docs/screenshots), together with
 1. Activate the plugin and open **Settings → Super Cache**
 2. (Optional) Define your connection settings in `wp-config.php` — see the [Configuration](#configuration) section below
 3. Click **Enable Object Cache** to install the `object-cache.php` drop-in
-4. Verify the status shows **Connected** in the **Redis** tab
-5. (Optional) Open the **Page Cache** tab to enable the local PHP page cache, or the **Varnish** / **Nginx** tabs to enable one of the other page cache backends
+4. Verify the status shows **Connected** in the **Redis Object Cache** tab
+5. (Optional) Open the **Page Cache** tab to enable the local PHP page cache, or the **Varnish Cache** / **nginx FastCGI** tabs to enable one of the other page cache backends
 6. (Optional) Open the **Optimize Images** tab to compress the media library
 
 The plugin defaults to connecting to `127.0.0.1:6379` with database `0` when no connection constants are defined.
@@ -153,15 +154,15 @@ define( 'WP_REDIS_MAXTTL', 86400 );
 define( 'WP_REDIS_GRACEFUL', true );
 ```
 
-## Nginx Page Cache
+## nginx FastCGI Page Cache
 
-The plugin can purge the directory used by Nginx's `fastcgi_cache_path`, `proxy_cache_path` or `uwsgi_cache_path`. The module is fully independent from the Redis object cache: it can be enabled on its own, configured on the **Nginx** tab and purged manually at any time.
+The plugin can purge the directory used by nginx's `fastcgi_cache_path`, `proxy_cache_path` or `uwsgi_cache_path`. The module is fully independent from the Redis object cache: it can be enabled on its own, configured on the **nginx FastCGI** tab and purged manually at any time.
 
-### Nginx constants
+### nginx FastCGI constants
 
 | Constant | Description | Default |
 |---|---|---|
-| `ICC_GG_SUPER_CACHE_NGINX_ENABLED` | Force the Nginx module on or off | Stored setting |
+| `ICC_GG_SUPER_CACHE_NGINX_ENABLED` | Force the nginx FastCGI module on or off | Stored setting |
 | `ICC_GG_SUPER_CACHE_NGINX_PATH` | Absolute path of the cache zone directory | Stored setting |
 | `ICC_GG_SUPER_CACHE_NGINX_AUTO_PURGE` | Purge the zone automatically when content changes | Stored setting |
 | `NGINX_CACHE_PATH` | Legacy alias for the cache zone path | — |
@@ -176,11 +177,11 @@ define( 'ICC_GG_SUPER_CACHE_NGINX_AUTO_PURGE', true );
 
 ### Settings form
 
-All three values can also be changed on the **Nginx** tab, which additionally shows the current status, the number of cached files and the cache size. Values defined as constants take precedence and the matching form field is disabled.
+All three values can also be changed on the **nginx FastCGI** tab, which additionally shows the current status, the number of cached files and the cache size. Values defined as constants take precedence and the matching form field is disabled.
 
-### Nginx configuration
+### nginx configuration
 
-The plugin only empties the cache zone; Nginx must be configured to store responses in it:
+The plugin only empties the cache zone; nginx must be configured to store responses in it:
 
 ```nginx
 # http {} block
@@ -194,6 +195,11 @@ server {
         set $icc_gg_skip_cache 1;
     }
 
+    # The URL exclusions from the Page Cache tab, repeated for nginx.
+    if ($request_uri ~* "^/wp-admin") { set $icc_gg_skip_cache 1; }
+    if ($request_uri ~* "^/wp-login\.php") { set $icc_gg_skip_cache 1; }
+    if ($request_uri ~* "^/wp-json") { set $icc_gg_skip_cache 1; }
+
     location ~ \.php$ {
         fastcgi_cache icc_gg_super_cache;
         fastcgi_cache_key "$scheme$request_method$host$request_uri";
@@ -205,6 +211,8 @@ server {
 }
 ```
 
+The tab renders this block with the stored path and the current exclusions already expanded. nginx answers before PHP runs, so the [Page Cache exclusions](#exclusions-across-backends) have to be repeated here. See [docs/nginx.md](docs/nginx.md).
+
 Automatic purges run on `save_post`, `edit_post`, `delete_post`, `wp_trash_post`, `clean_post_cache`, comment and trackback actions, `switch_theme`, `wp_update_nav_menu` and `edit_user_profile_update`. Post types can be excluded with the `icc_gg_wordpress_super_cache_nginx_excluded_post_types` filter.
 
 ## Page Cache Backends
@@ -214,17 +222,17 @@ The plugin ships three page cache backends and only one of them can be enabled a
 | Backend | Tab | What it does |
 |---|---|---|
 | Local PHP page cache | **Page Cache** | Serves cached HTML from `wp-content` before WordPress boots |
-| Varnish | **Varnish** | Purges an HTTP cache in front of the site with `PURGE` or `BAN` |
-| Nginx | **Nginx** | Purges a `fastcgi_cache_path`, `proxy_cache_path` or `uwsgi_cache_path` zone |
+| Varnish Cache | **Varnish Cache** | Purges an HTTP cache in front of the site with `PURGE` or `BAN` |
+| nginx FastCGI | **nginx FastCGI** | Purges a `fastcgi_cache_path`, `proxy_cache_path` or `uwsgi_cache_path` zone |
 
 See the [screenshots](#screenshots) for what each tab looks like once it is enabled.
 
 Every page cache tab shows its own status, its own settings and its own clear cache action, and the admin
-bar grows a **Clear Page Cache** / **Purge Varnish Cache** / **Purge Nginx Cache** entry for each backend
-that is enabled. Trying to enable a second backend is rejected with a message naming the backend that is
-already active — nothing is ever disabled behind your back.
+bar grows a **Clear Page Cache** / **Purge Varnish Cache** / **Purge nginx FastCGI Cache** entry for each
+backend that is enabled. Trying to enable a second backend is rejected with a message naming the backend
+that is already active — nothing is ever disabled behind your back.
 
-Advanced setups that intentionally run Varnish in front of Nginx can lift the rule:
+Advanced setups that intentionally run Varnish in front of nginx can lift the rule:
 
 ```php
 add_filter( 'icc_gg_wordpress_super_cache_page_cache_exclusive', '__return_false' );
@@ -232,6 +240,17 @@ add_filter( 'icc_gg_wordpress_super_cache_page_cache_exclusive', '__return_false
 
 The active backend is stored in the `icc_gg_wordpress_super_cache_page_cache` option and can be forced
 with `ICC_GG_SUPER_CACHE_PAGE_CACHE` (`local`, `varnish` or `nginx`).
+
+### Exclusions across backends
+
+The **Page Cache** tab owns the exclusion list and ships it prefilled with the WordPress paths that should
+never be cached (`/wp-admin`, `/wp-login.php`, `/wp-json`, `wp-cron.php`, `xmlrpc.php`, feeds, search and
+trackbacks). **Restore default exclusions** puts the list back.
+
+Those exclusions are applied by the local PHP engine only. Varnish Cache and nginx FastCGI answer before
+WordPress runs, so a hit never reaches the engine and the same paths must be repeated in their own
+configuration. `Local_Cache::exclusion_regexes()` compiles the list into PCRE patterns, and both tabs
+render snippets generated from it — copy them again after editing the list.
 
 ### Local page cache
 
@@ -246,6 +265,13 @@ Enabling the local page cache writes a standalone engine plus a compiled `config
   (read-only file, `DISALLOW_FILE_MODS`, non-standard `WP_CONTENT_DIR` or
   `ICC_GG_SUPER_CACHE_ALLOW_WP_CONFIG_EDIT = false`). It cannot fatal when the plugin is deleted.
 
+Enabling never overwrites a loader owned by another plugin: the action reports `foreign_dropin` and leaves
+the file untouched. The **Status** table then shows the state of `advanced-cache.php` (*Not installed*,
+*Up to date*, *Outdated*, *Damaged or unreadable*, *Installed by another plugin*) and the **Maintenance**
+section offers **Write / Rewrite advanced-cache.php**, which backs the current file up to
+`wp-content/advanced-cache.icc-gg-backup.php` and writes a working loader even when the file was removed,
+truncated or replaced. See [docs/page-cache.md](docs/page-cache.md#writing-or-rewriting-the-loader).
+
 Cached pages live in `wp-content/cache/icc-gg-page-cache/<secret>/<host>/…` as `index.html` plus an
 optional `index.html.gz`. Logged-in users, commenters, password protected posts, feeds, searches, 404s,
 the REST API and the customizer are never cached, and responses that set cookies or are not `200 text/html`
@@ -258,12 +284,13 @@ define( 'ICC_GG_SUPER_CACHE_LOCAL_AUTO_PURGE', true );
 define( 'ICC_GG_SUPER_CACHE_ALLOW_WP_CONFIG_EDIT', false ); // always use the must-use plugin loader
 ```
 
-### Varnish
+### Varnish Cache
 
-The **Varnish** tab configures the purge endpoint (host, port, scheme, timeout), the purge method
+The **Varnish Cache** tab configures the purge endpoint (host, port, scheme, timeout), the purge method
 (`PURGE` for a single URL, `BAN` for Varnish 4+ patterns), an optional `X-Purge-Key` and automatic
 purging. **Test Connection** probes the home page for `X-Varnish`, `Via`, `Age` and `X-Cache` headers and
-sends a purge request, and the tab renders the VCL snippet that accepts those requests. See
+sends a purge request, and the tab renders two VCL snippets: the one that accepts those requests and the
+one that repeats the page cache exclusions plus the cookie/`Authorization` bypasses. See
 [docs/varnish.md](docs/varnish.md).
 
 ```php
@@ -322,7 +349,7 @@ The plugin provides actions and filters for customization. See [`object-cache.ph
 - `icc_gg_wordpress_super_cache_flush` — Fired when the cache is flushed
 - `icc_gg_wordpress_super_cache_flush_group` — Fired when a cache group is flushed
 - `icc_gg_wordpress_super_cache_error` — Fired when an error occurs
-- `icc_gg_wordpress_super_cache_nginx_cache_purged` — Fired after the Nginx cache zone was purged
+- `icc_gg_wordpress_super_cache_nginx_cache_purged` — Fired after the nginx FastCGI cache zone was purged
 
 **Page cache, Varnish and image optimizer actions**
 
@@ -343,6 +370,7 @@ The plugin provides actions and filters for customization. See [`object-cache.ph
 - `icc_gg_wordpress_super_cache_page_cache_backends` — Modify the registered page cache backends (`slug => label`)
 - `icc_gg_wordpress_super_cache_page_cache_purge_actions` — Modify the hooks that trigger a page cache purge
 - `icc_gg_wordpress_super_cache_local_cache_config` — Modify the configuration compiled for the page cache engine
+- `icc_gg_wordpress_super_cache_local_default_exclude_urls` — Modify the default URL exclusions and what **Restore default exclusions** writes
 - `icc_gg_wordpress_super_cache_local_preload_urls` — Modify the URLs queued for preloading
 - `icc_gg_wordpress_super_cache_preload_sslverify` — Disable SSL verification for preload requests
 - `icc_gg_wordpress_super_cache_varnish_sslverify` — Disable SSL verification for Varnish probe and purge requests
@@ -360,7 +388,7 @@ Answers to common questions and troubleshooting of common errors can be found in
 
 This plugin is a fork of [Redis Object Cache](https://github.com/rhubarbgroup/redis-cache).
 
-The Nginx page cache module is derived from the [Nginx Cache](https://wordpress.org/plugins/nginx-cache/) plugin by [Till Krüss](https://till.im), released under the GPLv3.
+The nginx FastCGI page cache module is derived from the [Nginx Cache](https://wordpress.org/plugins/nginx-cache/) plugin by [Till Krüss](https://till.im), released under the GPLv3.
 
 <!-- footer -->
 ---

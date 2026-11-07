@@ -15,7 +15,7 @@ sub vcl_recv {
             return (synth(403, "Forbidden"));
         }
 
-        ban req.http.host == req.http.X-Purge-Host && req.url ~ req.http.X-Purge-Path;
+        ban("req.http.host == " + req.http.X-Purge-Host + " && req.url ~ " + req.http.X-Purge-Path);
 
         return (synth(200, "Purged"));
     }
@@ -33,6 +33,11 @@ sub vcl_recv {
     }
 
     if (req.http.Authorization || req.http.Cookie ~ "wordpress_logged_in|comment_author|wp-postpass|wordpress_sec|wp_woocommerce_session") {
+        return (pass);
+    }
+
+    # The URL exclusions from the Page Cache tab (see docs/varnish.md).
+    if (req.url ~ "^/wp-admin|^/wp-login\.php|^/wp-json|^/wp-cron\.php|^/xmlrpc\.php|^/wp-sitemap\.xml|^/feed/.*|^/comments/feed/.*|^/\?s=.*") {
         return (pass);
     }
 
