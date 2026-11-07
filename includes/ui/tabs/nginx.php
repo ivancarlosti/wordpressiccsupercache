@@ -156,6 +156,10 @@ CONF,
 					<?php esc_html_e( 'Enable the Nginx cache integration', 'icc-gg-wordpress-super-cache' ); ?>
 				</label>
 
+				<p class="description">
+					<?php esc_html_e( 'Only one page cache backend can be enabled at a time: enabling Nginx requires disabling the local page cache and Varnish first.', 'icc-gg-wordpress-super-cache' ); ?>
+				</p>
+
 				<?php if ( $nginx->is_overridden( 'enabled' ) ) : ?>
 					<p class="description">
 						<?php esc_html_e( 'Overridden by the ICC_GG_SUPER_CACHE_NGINX_ENABLED constant in wp-config.php.', 'icc-gg-wordpress-super-cache' ); ?>

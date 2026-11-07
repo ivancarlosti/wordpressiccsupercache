@@ -249,6 +249,312 @@ class ICC_GG_WordPress_Super_Cache_CLI_Commands extends WP_CLI_Command
 	}
 
 	/**
+	 * Show the page cache registry and the local page cache status.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp icc-gg-wordpress-super-cache page-cache-status
+	 *
+	 * @subcommand page-cache-status
+	 */
+	public function page_cache_status()
+	{
+		$registry = ICC_GG_WordPress_Super_Cache_Page_Cache::instance();
+		$local = ICC_GG_WordPress_Super_Cache_Local_Cache::instance();
+		$stats = $local->cache_stats();
+
+		WP_CLI::line( sprintf( '%s: %s', __( 'Page Cache', 'icc-gg-wordpress-super-cache' ), $registry->get_status() ) );
+
+		WP_CLI::line(
+			sprintf(
+				'%s: %s',
+				__( 'Active Backend', 'icc-gg-wordpress-super-cache' ),
+				$registry->active() !== '' ? $registry->label( $registry->active() ) : __( '(none)', 'icc-gg-wordpress-super-cache' )
+			)
+		);
+
+		WP_CLI::line(
+			sprintf(
+				'%s: %s',
+				__( 'Conflicts', 'icc-gg-wordpress-super-cache' ),
+				implode( ', ', array_map( [ $registry, 'label' ], $registry->enabled_backends() ) )
+			)
+		);
+
+		WP_CLI::line( sprintf( '%s: %s', __( 'Local Page Cache', 'icc-gg-wordpress-super-cache' ), $local->get_status() ) );
+		WP_CLI::line( sprintf( '%s: %s', __( 'Loader', 'icc-gg-wordpress-super-cache' ), $local->bootstrap_mode() ) );
+		WP_CLI::line( sprintf( '%s: %s', __( 'Cache Directory', 'icc-gg-wordpress-super-cache' ), $local->cache_root() ) );
+		WP_CLI::line( sprintf( '%s: %s', __( 'Cached Pages', 'icc-gg-wordpress-super-cache' ), number_format_i18n( $stats['pages'] ) ) );
+		WP_CLI::line( sprintf( '%s: %s', __( 'Cache Files', 'icc-gg-wordpress-super-cache' ), number_format_i18n( $stats['files'] ) ) );
+		WP_CLI::line( sprintf( '%s: %s', __( 'Cache Size', 'icc-gg-wordpress-super-cache' ), size_format( $stats['size'] ) ) );
+		WP_CLI::line( sprintf( '%s: %s', __( 'Preload Queue', 'icc-gg-wordpress-super-cache' ), number_format_i18n( count( $local->get_preload_queue() ) ) ) );
+	}
+
+	/**
+	 * Enables the local page cache.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp icc-gg-wordpress-super-cache page-cache-enable
+	 *
+	 * @subcommand page-cache-enable
+	 */
+	public function page_cache_enable()
+	{
+		$this->bootstrap_filesystem();
+
+		$registry = ICC_GG_WordPress_Super_Cache_Page_Cache::instance();
+		$local = ICC_GG_WordPress_Super_Cache_Local_Cache::instance();
+
+		$result = $registry->set_active( ICC_GG_WordPress_Super_Cache_Page_Cache::LOCAL, true );
+
+		if ( is_wp_error( $result ) ) {
+			WP_CLI::error( $result->get_error_message() );
+		}
+
+		$result = $local->install();
+
+		if ( is_wp_error( $result ) ) {
+			WP_CLI::error( $result->get_error_message() );
+		}
+
+		WP_CLI::success( __( 'Local page cache enabled.', 'icc-gg-wordpress-super-cache' ) );
+
+		$wp_config_error = $local->get_last_error();
+
+		if ( $wp_config_error instanceof WP_Error ) {
+			WP_CLI::warning( $wp_config_error->get_error_message() );
+		}
+	}
+
+	/**
+	 * Disables the local page cache.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp icc-gg-wordpress-super-cache page-cache-disable
+	 *
+	 * @subcommand page-cache-disable
+	 */
+	public function page_cache_disable()
+	{
+		$this->bootstrap_filesystem();
+
+		ICC_GG_WordPress_Super_Cache_Page_Cache::instance()->set_active(
+			ICC_GG_WordPress_Super_Cache_Page_Cache::LOCAL,
+			false
+		);
+
+		$result = ICC_GG_WordPress_Super_Cache_Local_Cache::instance()->install();
+
+		if ( is_wp_error( $result ) ) {
+			WP_CLI::error( $result->get_error_message() );
+		}
+
+		WP_CLI::success( __( 'Local page cache disabled.', 'icc-gg-wordpress-super-cache' ) );
+	}
+
+	/**
+	 * Clears the local page cache.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [<url>...]
+	 * : Optional URLs to purge instead of the whole cache.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp icc-gg-wordpress-super-cache page-cache-purge
+	 *     wp icc-gg-wordpress-super-cache page-cache-purge /about/ /blog/*
+	 *
+	 * @subcommand page-cache-purge
+	 */
+	public function page_cache_purge( $args = [] )
+	{
+		$local = ICC_GG_WordPress_Super_Cache_Local_Cache::instance();
+
+		if ( ! $args ) {
+			$local->purge();
+
+			WP_CLI::success( __( 'Local page cache purged.', 'icc-gg-wordpress-super-cache' ) );
+
+			return;
+		}
+
+		$deleted = $local->purge_urls( $args );
+
+		WP_CLI::success(
+			sprintf(
+				// translators: %d = Number of purged cache entries.
+				_n( '%d cached entry purged.', '%d cached entries purged.', $deleted, 'icc-gg-wordpress-super-cache' ),
+				$deleted
+			)
+		);
+	}
+
+	/**
+	 * Preloads the local page cache.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp icc-gg-wordpress-super-cache page-cache-preload
+	 *
+	 * @subcommand page-cache-preload
+	 */
+	public function page_cache_preload()
+	{
+		$local = ICC_GG_WordPress_Super_Cache_Local_Cache::instance();
+
+		if ( ! $local->is_enabled() ) {
+			WP_CLI::error( __( 'The local page cache is disabled.', 'icc-gg-wordpress-super-cache' ) );
+		}
+
+		$queued = $local->start_preload();
+		$batch = $local->run_preload_batch( 10 );
+
+		WP_CLI::success(
+			sprintf(
+				// translators: 1: Number of queued URLs, 2: Number of URLs requested in this run.
+				__( '%1$d URLs queued, %2$d requested now. The rest runs through WP-Cron.', 'icc-gg-wordpress-super-cache' ),
+				$queued,
+				$batch['processed']
+			)
+		);
+	}
+
+	/**
+	 * Show the Varnish cache status.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp icc-gg-wordpress-super-cache varnish-status
+	 *
+	 * @subcommand varnish-status
+	 */
+	public function varnish_status()
+	{
+		$varnish = ICC_GG_WordPress_Super_Cache_Varnish_Cache::instance();
+		$endpoint = $varnish->endpoint_url();
+
+		WP_CLI::line( sprintf( '%s: %s', __( 'Varnish', 'icc-gg-wordpress-super-cache' ), $varnish->get_status() ) );
+		WP_CLI::line( sprintf( '%s: %s', __( 'Endpoint', 'icc-gg-wordpress-super-cache' ), is_wp_error( $endpoint ) ? '(invalid)' : $endpoint ) );
+		WP_CLI::line( sprintf( '%s: %s', __( 'Method', 'icc-gg-wordpress-super-cache' ), strtoupper( (string) $varnish->get_setting( 'method' ) ) ) );
+	}
+
+	/**
+	 * Tests the Varnish connection.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp icc-gg-wordpress-super-cache varnish-test
+	 *
+	 * @subcommand varnish-test
+	 */
+	public function varnish_test()
+	{
+		$result = ICC_GG_WordPress_Super_Cache_Varnish_Cache::instance()->test();
+
+		WP_CLI::line( $result['message'] );
+
+		if ( ! empty( $result['probe']['headers'] ) ) {
+			foreach ( $result['probe']['headers'] as $header => $value ) {
+				WP_CLI::line( sprintf( '  %s: %s', $header, $value ) );
+			}
+		}
+
+		if ( empty( $result['ok'] ) ) {
+			WP_CLI::error( __( 'Varnish could not be reached.', 'icc-gg-wordpress-super-cache' ) );
+		}
+
+		WP_CLI::success( __( 'Varnish answered.', 'icc-gg-wordpress-super-cache' ) );
+	}
+
+	/**
+	 * Purges a URL from Varnish.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [<url>]
+	 * : URL to purge. Defaults to the site home page.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp icc-gg-wordpress-super-cache varnish-purge /about/
+	 *
+	 * @subcommand varnish-purge
+	 */
+	public function varnish_purge( $args = [] )
+	{
+		$url = isset( $args[0] ) ? $args[0] : '';
+		$result = ICC_GG_WordPress_Super_Cache_Varnish_Cache::instance()->purge( $url );
+
+		if ( is_wp_error( $result ) ) {
+			WP_CLI::error( $result->get_error_message() );
+		}
+
+		WP_CLI::success( __( 'Varnish cache purged.', 'icc-gg-wordpress-super-cache' ) );
+	}
+
+	/**
+	 * Optimizes a batch of images from the media library.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--limit=<limit>]
+	 * : Number of images to process. Defaults to the configured batch size.
+	 *
+	 * [--loop]
+	 * : Keep processing batches until the library is done.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp icc-gg-wordpress-super-cache images-optimize --limit=10
+	 *
+	 * @subcommand images-optimize
+	 */
+	public function images_optimize( $args = [], $assoc_args = [] )
+	{
+		$optimizer = ICC_GG_WordPress_Super_Cache_Image_Optimizer::instance();
+
+		$limit = isset( $assoc_args['limit'] ) ? (int) $assoc_args['limit'] : null;
+		$loop = ! empty( $assoc_args['loop'] );
+
+		do {
+			$result = $optimizer->optimize_batch( $limit );
+
+			WP_CLI::line(
+				sprintf(
+					// translators: 1: Processed images, 2: Failed images, 3: Pending images.
+					__( 'Processed %1$d, failed %2$d, pending %3$d.', 'icc-gg-wordpress-super-cache' ),
+					$result['processed'],
+					$result['failed'],
+					$result['remaining']
+				)
+			);
+
+			foreach ( $result['errors'] as $error ) {
+				WP_CLI::warning( $error );
+			}
+		} while ( $loop && ! $result['done'] );
+
+		WP_CLI::success( __( 'Image optimization finished.', 'icc-gg-wordpress-super-cache' ) );
+	}
+
+	/**
+	 * Loads the filesystem API for the WP-CLI commands.
+	 *
+	 * @return void
+	 */
+	protected function bootstrap_filesystem()
+	{
+		if ( ! function_exists( 'WP_Filesystem' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+
+		WP_Filesystem();
+	}
+
+	/**
 	 * Flush the Redis cache via Predis.
 	 *
 	 * @return bool|string

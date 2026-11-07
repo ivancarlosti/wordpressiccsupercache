@@ -68,6 +68,38 @@ $info['Nginx Auto Purge'] = $nginx->auto_purge_enabled() ? 'Enabled' : 'Disabled
 $info['Nginx Files'] = number_format_i18n( $nginx_stats['files'] );
 $info['Nginx Size'] = size_format( $nginx_stats['size'] );
 
+$registry = ICC_GG_WordPress_Super_Cache_Page_Cache::instance();
+$local = ICC_GG_WordPress_Super_Cache_Local_Cache::instance();
+$varnish = ICC_GG_WordPress_Super_Cache_Varnish_Cache::instance();
+$local_stats = $local->cache_stats();
+
+$info['Page Cache'] = $registry->get_status();
+$info['Page Cache Backend'] = $registry->active() !== '' ? $registry->label( $registry->active() ) : '(none)';
+$info['Page Cache Conflicts'] = count( $registry->enabled_backends() ) > 1
+	? implode( ', ', array_map( [ $registry, 'label' ], $registry->enabled_backends() ) )
+	: 'None';
+
+$info['Local Page Cache'] = $local->get_status();
+$info['Local Loader'] = $local->bootstrap_mode();
+$info['Local WP_CACHE'] = $local->has_wp_cache_constant() ? 'Defined' : 'Not defined';
+$info['Local Cache Path'] = $local->cache_root();
+$info['Local Files'] = number_format_i18n( $local_stats['files'] );
+$info['Local Pages'] = number_format_i18n( $local_stats['pages'] );
+$info['Local Size'] = size_format( $local_stats['size'] );
+$info['Local Preload Queue'] = number_format_i18n( count( $local->get_preload_queue() ) );
+
+$info['Varnish'] = $varnish->get_status();
+$info['Varnish Endpoint'] = is_wp_error( $varnish->endpoint_url() ) ? '(invalid)' : $varnish->endpoint_url();
+$info['Varnish Method'] = strtoupper( (string) $varnish->get_setting( 'method' ) );
+
+$optimizer = ICC_GG_WordPress_Super_Cache_Image_Optimizer::instance();
+$optimizer_stats = $optimizer->stats();
+
+$info['Image Optimizer'] = $optimizer->get_status();
+$info['Image Formats'] = implode( ', ', array_keys( $optimizer->supported_mimes() ) );
+$info['Images Optimized'] = number_format_i18n( $optimizer_stats['optimized'] ) . ' / ' . number_format_i18n( $optimizer_stats['total'] );
+$info['Images Saved'] = size_format( $optimizer_stats['saved'] );
+
 $info['Filesystem'] = is_wp_error( $filesystem ) ? $filesystem->get_error_message() : 'Writable';
 
 if ( $dropin && ! $disabled ) {
@@ -108,6 +140,17 @@ $constants = [
 	'ICC_GG_SUPER_CACHE_NGINX_PATH',
 	'ICC_GG_SUPER_CACHE_NGINX_AUTO_PURGE',
 	'NGINX_CACHE_PATH',
+	'ICC_GG_SUPER_CACHE_PAGE_CACHE',
+	'ICC_GG_SUPER_CACHE_LOCAL_ENABLED',
+	'ICC_GG_SUPER_CACHE_LOCAL_AUTO_PURGE',
+	'ICC_GG_SUPER_CACHE_LOCAL_PATH',
+	'ICC_GG_SUPER_CACHE_ALLOW_WP_CONFIG_EDIT',
+	'ICC_GG_SUPER_CACHE_VARNISH_ENABLED',
+	'ICC_GG_SUPER_CACHE_VARNISH_AUTO_PURGE',
+	'ICC_GG_SUPER_CACHE_VARNISH_HOST',
+	'ICC_GG_SUPER_CACHE_VARNISH_PORT',
+	'ICC_GG_SUPER_CACHE_VARNISH_KEY',
+	'WP_CACHE',
 ];
 
 foreach ( $constants as $constant ) {

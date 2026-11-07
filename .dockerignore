@@ -1,0 +1,13 @@
+docs
+plans
+docker
+.github
+
+.git
+.gitignore
+node_modules
+vendor
+tests/e2e
+*.log
+Dockerfile
+docker-compose.yml

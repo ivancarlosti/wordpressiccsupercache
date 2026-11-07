@@ -320,6 +320,98 @@
         }
     };
 
+    var setup_image_optimizer = function () {
+        var $container = $( '.icc-gg-wordpress-super-cache-optimizer' );
+
+        if ( ! $container.length || ! icc_gg_wordpress_super_cache.images ) {
+            return;
+        }
+
+        if ( ! $container.data( 'enabled' ) ) {
+            return;
+        }
+
+        var data = icc_gg_wordpress_super_cache.images;
+        var l10n = icc_gg_wordpress_super_cache.l10n;
+        var $start = $container.find( '[data-optimizer="start"]' );
+        var $pause = $container.find( '[data-optimizer="pause"]' );
+        var $status = $container.find( '.icc-gg-wordpress-super-cache-optimizer-status' );
+        var $bar = $container.find( '.icc-gg-wordpress-super-cache-optimizer-bar' );
+        var batch = parseInt( $container.data( 'batch' ), 10 ) || data.batch || 3;
+        var running = false;
+        var stopped = false;
+
+        var finish = function ( message ) {
+            running = false;
+
+            $start.prop( 'disabled', false );
+            $pause.prop( 'disabled', true );
+
+            if ( message ) {
+                $status.text( message );
+            }
+        };
+
+        var run = function () {
+            if ( stopped ) {
+                return;
+            }
+
+            $.post( data.ajax_url, {
+                action: data.action,
+                _ajax_nonce: data.nonce,
+                limit: batch
+            } ).done( function ( response ) {
+                if ( ! response || ! response.success ) {
+                    finish( l10n.optimize_error );
+
+                    return;
+                }
+
+                var result = response.data;
+                var stats = result.stats || {};
+
+                if ( stats.total ) {
+                    $bar.css( 'width', Math.min( 100, Math.round( ( stats.optimized / stats.total ) * 100 ) ) + '%' );
+                    $status.text( stats.optimized + ' / ' + stats.total );
+                }
+
+                if ( result.done || ( 0 === result.processed && 0 === result.failed ) ) {
+                    finish( l10n.optimize_done );
+
+                    return;
+                }
+
+                run();
+            } ).fail( function () {
+                finish( l10n.optimize_error );
+            } );
+        };
+
+        $start.on( 'click.icc-gg-wordpress-super-cache', function () {
+            if ( running ) {
+                return;
+            }
+
+            batch = parseInt( $( '#icc-gg-wordpress-super-cache-images-batch' ).val(), 10 ) || batch;
+
+            running = true;
+            stopped = false;
+
+            $start.prop( 'disabled', true );
+            $pause.prop( 'disabled', false );
+            $status.text( l10n.optimizing );
+
+            run();
+        } );
+
+        $pause.on( 'click.icc-gg-wordpress-super-cache', function () {
+            stopped = true;
+
+            finish();
+        } );
+    };
+
     // executed on page load
     $(function () {
         var $tabs = $( '#icc-gg-wordpress-super-cache .nav-tab-wrapper' );
@@ -368,6 +460,8 @@
         show_current_tab();
 
         $( window ).on( 'hashchange', show_current_tab );
+
+        setup_image_optimizer();
 
         if ( $( '#widget-redis-stats' ).length ) {
             icc_gg_wordpress_super_cache.metrics.computed = compute_metrics( root.icc_gg_wordpress_super_cache_metrics );

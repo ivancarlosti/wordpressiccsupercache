@@ -1,0 +1,9 @@
+node_modules/
+vendor/
+*.log
+.env
+.DS_Store
+.idea/
+.vscode/
+phpcs.xml
+.phpunit.result.cache

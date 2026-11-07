@@ -42,6 +42,17 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 		'flush-cache',
 		'update-dropin',
 		'purge-nginx-cache',
+		'enable-local-cache',
+		'disable-local-cache',
+		'purge-local-cache',
+		'preload-local-cache',
+		'replace-advanced-cache',
+		'revert-wp-config',
+		'enable-varnish-cache',
+		'disable-varnish-cache',
+		'purge-varnish-cache',
+		'test-varnish-cache',
+		'reset-image-optimizer',
 	];
 
 	/**
@@ -82,6 +93,10 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 
 		ICC_GG_WordPress_Super_Cache_Metrics::init();
 		ICC_GG_WordPress_Super_Cache_Nginx_Cache::instance();
+		ICC_GG_WordPress_Super_Cache_Page_Cache::instance();
+		ICC_GG_WordPress_Super_Cache_Local_Cache::instance();
+		ICC_GG_WordPress_Super_Cache_Varnish_Cache::instance();
+		ICC_GG_WordPress_Super_Cache_Image_Optimizer::instance();
 
 		$this->add_actions_and_filters();
 	}
@@ -115,6 +130,7 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 		add_action( 'wp_network_dashboard_setup', [ $this, 'setup_dashboard_widget' ] );
 
 		add_action( 'wp_ajax_icc_gg_wordpress_super_cache_flush_cache', [ $this, 'ajax_flush_cache' ] );
+		add_action( 'wp_ajax_icc_gg_wordpress_super_cache_optimize_images', [ $this, 'ajax_optimize_images' ] );
 
 		add_filter( 'plugin_row_meta', [ $this, 'add_plugin_row_meta' ], 10, 2 );
 		add_filter( sprintf( '%splugin_action_links_%s', is_multisite() ? 'network_admin_' : '', ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME ), [ $this, 'add_plugin_actions_links' ] );
@@ -195,8 +211,23 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 		);
 
 		ICC_GG_WordPress_Super_Cache_UI::register_tab(
+			'local',
+			__( 'Page Cache', 'icc-gg-wordpress-super-cache' )
+		);
+
+		ICC_GG_WordPress_Super_Cache_UI::register_tab(
+			'varnish',
+			__( 'Varnish', 'icc-gg-wordpress-super-cache' )
+		);
+
+		ICC_GG_WordPress_Super_Cache_UI::register_tab(
 			'nginx',
 			__( 'Nginx', 'icc-gg-wordpress-super-cache' )
+		);
+
+		ICC_GG_WordPress_Super_Cache_UI::register_tab(
+			'images',
+			__( 'Optimize Images', 'icc-gg-wordpress-super-cache' )
 		);
 
 		ICC_GG_WordPress_Super_Cache_UI::register_tab(
@@ -360,6 +391,15 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 					'calls' => __( 'Calls', 'icc-gg-wordpress-super-cache' ),
 					'no_data' => __( 'Not enough data collected, yet.', 'icc-gg-wordpress-super-cache' ),
 					'no_cache' => __( 'Enable object cache to collect data.', 'icc-gg-wordpress-super-cache' ),
+					'optimizing' => __( 'Optimizing…', 'icc-gg-wordpress-super-cache' ),
+					'optimize_done' => __( 'All images were optimized.', 'icc-gg-wordpress-super-cache' ),
+					'optimize_error' => __( 'The images could not be optimized.', 'icc-gg-wordpress-super-cache' ),
+				],
+				'images' => [
+					'ajax_url' => admin_url( 'admin-ajax.php' ),
+					'action' => 'icc_gg_wordpress_super_cache_optimize_images',
+					'nonce' => wp_create_nonce( 'icc_gg_wordpress_super_cache_images_batch' ),
+					'batch' => (int) ICC_GG_WordPress_Super_Cache_Image_Optimizer::instance()->get_setting( 'batch' ),
 				],
 			]
 		);
@@ -777,7 +817,27 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 			]);
 		}
 
+		$local = ICC_GG_WordPress_Super_Cache_Local_Cache::instance();
+		$varnish = ICC_GG_WordPress_Super_Cache_Varnish_Cache::instance();
 		$nginx = ICC_GG_WordPress_Super_Cache_Nginx_Cache::instance();
+
+		if ( $local->is_enabled() ) {
+			$wp_admin_bar->add_node([
+				'parent' => 'icc-gg-wordpress-super-cache',
+				'id' => 'icc-gg-wordpress-super-cache-purge-local',
+				'title' => __( 'Clear Page Cache', 'icc-gg-wordpress-super-cache' ),
+				'href' => $this->action_link( 'purge-local-cache' ),
+			]);
+		}
+
+		if ( $varnish->is_enabled() ) {
+			$wp_admin_bar->add_node([
+				'parent' => 'icc-gg-wordpress-super-cache',
+				'id' => 'icc-gg-wordpress-super-cache-purge-varnish',
+				'title' => __( 'Purge Varnish Cache', 'icc-gg-wordpress-super-cache' ),
+				'href' => $this->action_link( 'purge-varnish-cache' ),
+			]);
+		}
 
 		if ( $nginx->is_enabled() ) {
 			$wp_admin_bar->add_node([
@@ -794,6 +854,32 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 			'title' => __( 'Settings', 'icc-gg-wordpress-super-cache' ),
 			'href' => network_admin_url( $this->page ),
 		]);
+
+		$wp_admin_bar->add_group(
+			[
+				'id' => 'icc-gg-wordpress-super-cache-tabs',
+				'parent' => 'icc-gg-wordpress-super-cache',
+				'meta' => [
+					'class' => 'ab-sub-secondary',
+				],
+			]
+		);
+
+		$tab_links = [
+			'local' => __( 'Page Cache Settings', 'icc-gg-wordpress-super-cache' ),
+			'varnish' => __( 'Varnish Settings', 'icc-gg-wordpress-super-cache' ),
+			'nginx' => __( 'Nginx Settings', 'icc-gg-wordpress-super-cache' ),
+			'images' => __( 'Optimize Images', 'icc-gg-wordpress-super-cache' ),
+		];
+
+		foreach ( $tab_links as $tab => $label ) {
+			$wp_admin_bar->add_node([
+				'parent' => 'icc-gg-wordpress-super-cache-tabs',
+				'id' => 'icc-gg-wordpress-super-cache-tab-' . $tab,
+				'title' => $label,
+				'href' => network_admin_url( $this->page . '#' . $tab ),
+			]);
+		}
 
 		$wp_admin_bar->add_group(
 			[
@@ -941,6 +1027,30 @@ HTML;
 			return;
 		}
 
+		if ( isset( $_POST['icc_gg_wordpress_super_cache_local'] ) ) {
+			$this->save_local_settings();
+
+			return;
+		}
+
+		if ( isset( $_POST['icc_gg_wordpress_super_cache_local_urls'] ) ) {
+			$this->purge_local_urls();
+
+			return;
+		}
+
+		if ( isset( $_POST['icc_gg_wordpress_super_cache_varnish'] ) ) {
+			$this->save_varnish_settings();
+
+			return;
+		}
+
+		if ( isset( $_POST['icc_gg_wordpress_super_cache_images'] ) ) {
+			$this->save_image_settings();
+
+			return;
+		}
+
 		if ( isset( $_GET['_wpnonce'], $_GET['action'] ) ) {
 			$action = sanitize_key( $_GET['action'] );
 			$nonce = sanitize_key( $_GET['_wpnonce'] );
@@ -1002,8 +1112,10 @@ HTML;
 					}
 				}
 
+				$handled = $this->handle_extra_actions( $action );
+
 				// do we have filesystem credentials?
-				if ( $this->initialize_filesystem( $url, true ) ) {
+				if ( ! $handled && $this->initialize_filesystem( $url, true ) ) {
 
 					if ( $action === 'enable-cache' ) {
 						$result = $wp_filesystem->copy(
@@ -1107,7 +1219,7 @@ HTML;
 				if ( count( $messages ) !== 0 ) {
 					set_transient( 'settings_errors', $messages, 30 );
 
-					$fragment = $action === 'purge-nginx-cache' ? '#nginx' : '';
+					$fragment = $this->tab_fragment_for_action( $action );
 
 					wp_safe_redirect(
 						network_admin_url( add_query_arg( 'settings-updated', 1, $this->page ) . $fragment )
@@ -1137,6 +1249,20 @@ HTML;
 			wp_unslash( $_POST['icc_gg_wordpress_super_cache_nginx'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		);
 
+		$registry = ICC_GG_WordPress_Super_Cache_Page_Cache::instance();
+		$registry_error = null;
+
+		if ( ! empty( $settings['enabled'] ) && ! $registry->is_active( ICC_GG_WordPress_Super_Cache_Page_Cache::NGINX ) ) {
+			$result = $registry->set_active( ICC_GG_WordPress_Super_Cache_Page_Cache::NGINX, true );
+
+			if ( is_wp_error( $result ) ) {
+				$registry_error = $result;
+				$settings['enabled'] = false;
+			}
+		} elseif ( empty( $settings['enabled'] ) && $registry->is_active( ICC_GG_WordPress_Super_Cache_Page_Cache::NGINX ) ) {
+			$registry->set_active( ICC_GG_WordPress_Super_Cache_Page_Cache::NGINX, false );
+		}
+
 		update_option( ICC_GG_WordPress_Super_Cache_Nginx_Cache::OPTION_KEY, $settings );
 
 		$nginx->flush_settings_cache();
@@ -1164,12 +1290,617 @@ HTML;
 			);
 		}
 
+		if ( $registry_error instanceof WP_Error ) {
+			add_settings_error(
+				'icc-gg-wordpress-super-cache',
+				'page_cache_conflict',
+				$registry_error->get_error_message(),
+				'error'
+			);
+		}
+
 		set_transient( 'settings_errors', get_settings_errors( 'icc-gg-wordpress-super-cache' ), 30 );
 
 		wp_safe_redirect(
 			network_admin_url( add_query_arg( 'settings-updated', 1, $this->page ) . '#nginx' )
 		);
 		exit;
+	}
+
+	/**
+	 * Returns the tab fragment a given action should redirect to.
+	 *
+	 * @param string $action Action name.
+	 * @return string
+	 */
+	protected function tab_fragment_for_action( $action )
+	{
+		$fragments = [
+			'flush-cache' => '#redis',
+			'purge-nginx-cache' => '#nginx',
+			'enable-local-cache' => '#local',
+			'disable-local-cache' => '#local',
+			'purge-local-cache' => '#local',
+			'preload-local-cache' => '#local',
+			'replace-advanced-cache' => '#local',
+			'revert-wp-config' => '#local',
+			'enable-varnish-cache' => '#varnish',
+			'disable-varnish-cache' => '#varnish',
+			'purge-varnish-cache' => '#varnish',
+			'test-varnish-cache' => '#varnish',
+			'reset-image-optimizer' => '#images',
+		];
+
+		return isset( $fragments[ $action ] ) ? $fragments[ $action ] : '';
+	}
+
+	/**
+	 * Adds a settings error shown at the top of the settings page.
+	 *
+	 * @param string $message Message to display.
+	 * @param string $type    Either `updated` or `error`.
+	 * @param string $code    Optional error code.
+	 * @return void
+	 */
+	protected function add_action_message( $message, $type = 'updated', $code = 'icc_gg_action' )
+	{
+		add_settings_error( 'icc-gg-wordpress-super-cache', $code, $message, $type );
+	}
+
+	/**
+	 * Stores the collected messages and redirects back to the settings page.
+	 *
+	 * @param string $fragment Optional tab fragment.
+	 * @return void
+	 */
+	protected function redirect_with_messages( $fragment = '' )
+	{
+		$messages = get_settings_errors( 'icc-gg-wordpress-super-cache' );
+
+		if ( $messages ) {
+			set_transient( 'settings_errors', $messages, 30 );
+		}
+
+		wp_safe_redirect(
+			network_admin_url( add_query_arg( 'settings-updated', 1, $this->page ) . $fragment )
+		);
+		exit;
+	}
+
+	/**
+	 * Handles the page cache and image optimizer actions.
+	 *
+	 * @param string $action Action name.
+	 * @return bool Whether the action was handled.
+	 */
+	protected function handle_extra_actions( $action )
+	{
+		$handlers = [
+			'enable-local-cache' => 'handle_local_cache_action',
+			'disable-local-cache' => 'handle_local_cache_action',
+			'purge-local-cache' => 'handle_local_cache_action',
+			'preload-local-cache' => 'handle_local_cache_action',
+			'replace-advanced-cache' => 'handle_local_cache_action',
+			'revert-wp-config' => 'handle_local_cache_action',
+			'enable-varnish-cache' => 'handle_varnish_action',
+			'disable-varnish-cache' => 'handle_varnish_action',
+			'purge-varnish-cache' => 'handle_varnish_action',
+			'test-varnish-cache' => 'handle_varnish_action',
+			'reset-image-optimizer' => 'handle_image_action',
+		];
+
+		if ( ! isset( $handlers[ $action ] ) ) {
+			return false;
+		}
+
+		$method = $handlers[ $action ];
+
+		return (bool) $this->$method( $action );
+	}
+
+	/**
+	 * Enables, disables, purges or preloads the local page cache.
+	 *
+	 * @param string $action Action name.
+	 * @return bool
+	 */
+	protected function handle_local_cache_action( $action )
+	{
+		$registry = ICC_GG_WordPress_Super_Cache_Page_Cache::instance();
+		$local = ICC_GG_WordPress_Super_Cache_Local_Cache::instance();
+
+		switch ( $action ) {
+			case 'enable-local-cache':
+				$result = $registry->set_active( ICC_GG_WordPress_Super_Cache_Page_Cache::LOCAL, true );
+
+				if ( is_wp_error( $result ) ) {
+					$this->add_action_message( $result->get_error_message(), 'error', 'page_cache' );
+
+					break;
+				}
+
+				$result = $local->install();
+
+				if ( is_wp_error( $result ) ) {
+					$this->add_action_message(
+						sprintf(
+							// translators: %s = The reason the loader could not be installed.
+							__( 'The page cache was enabled, but its loader could not be installed: %s', 'icc-gg-wordpress-super-cache' ),
+							$result->get_error_message()
+						),
+						'error',
+						'page_cache'
+					);
+
+					break;
+				}
+
+				$this->add_action_message(
+					__( 'The local page cache is enabled.', 'icc-gg-wordpress-super-cache' ),
+					'updated',
+					'page_cache'
+				);
+
+				$wp_config_error = $local->get_last_error();
+
+				if ( $wp_config_error instanceof WP_Error ) {
+					$this->add_action_message(
+						sprintf(
+							// translators: %s = The reason wp-config.php could not be edited.
+							__( 'WP_CACHE was not added to wp-config.php (%s); the must-use plugin loader was installed instead.', 'icc-gg-wordpress-super-cache' ),
+							$wp_config_error->get_error_message()
+						),
+						'error',
+						'page_cache'
+					);
+				}
+
+				break;
+
+			case 'disable-local-cache':
+				$registry->set_active( ICC_GG_WordPress_Super_Cache_Page_Cache::LOCAL, false );
+
+				$result = $local->install();
+
+				if ( is_wp_error( $result ) ) {
+					$this->add_action_message( $result->get_error_message(), 'error', 'page_cache' );
+
+					break;
+				}
+
+				$this->add_action_message(
+					__( 'The local page cache is disabled and its loader was removed.', 'icc-gg-wordpress-super-cache' ),
+					'updated',
+					'page_cache'
+				);
+
+				break;
+
+			case 'purge-local-cache':
+				$local->purge();
+
+				$this->add_action_message(
+					__( 'The local page cache was purged.', 'icc-gg-wordpress-super-cache' ),
+					'updated',
+					'page_cache'
+				);
+
+				break;
+
+			case 'preload-local-cache':
+				if ( ! $local->is_enabled() ) {
+					$this->add_action_message(
+						__( 'The local page cache is disabled, so it cannot be preloaded.', 'icc-gg-wordpress-super-cache' ),
+						'error',
+						'page_cache'
+					);
+
+					break;
+				}
+
+				$queued = $local->start_preload();
+
+				$local->run_preload_batch( (int) $local->get_setting( 'preload_batch' ) );
+
+				$this->add_action_message(
+					sprintf(
+						// translators: %d = Number of queued URLs.
+						_n(
+							'%d URL was queued for preloading.',
+							'%d URLs were queued for preloading.',
+							$queued,
+							'icc-gg-wordpress-super-cache'
+						),
+						$queued
+					),
+					'updated',
+					'page_cache'
+				);
+
+				break;
+
+			case 'replace-advanced-cache':
+				$result = $local->install();
+
+				if ( is_wp_error( $result ) ) {
+					$this->add_action_message( $result->get_error_message(), 'error', 'page_cache' );
+
+					break;
+				}
+
+				$this->add_action_message(
+					__( 'The page cache loader was regenerated.', 'icc-gg-wordpress-super-cache' ),
+					'updated',
+					'page_cache'
+				);
+
+				break;
+
+			case 'revert-wp-config':
+				$result = $local->revert_wp_config();
+
+				if ( is_wp_error( $result ) ) {
+					$this->add_action_message( $result->get_error_message(), 'error', 'page_cache' );
+
+					break;
+				}
+
+				$this->add_action_message(
+					__( 'wp-config.php was restored from the backup. The page cache keeps working through the must-use plugin loader.', 'icc-gg-wordpress-super-cache' ),
+					'updated',
+					'page_cache'
+				);
+
+				break;
+		}
+
+		$this->redirect_with_messages( '#local' );
+
+		return true;
+	}
+
+	/**
+	 * Enables, disables, purges or tests the Varnish cache.
+	 *
+	 * @param string $action Action name.
+	 * @return bool
+	 */
+	protected function handle_varnish_action( $action )
+	{
+		$registry = ICC_GG_WordPress_Super_Cache_Page_Cache::instance();
+		$varnish = ICC_GG_WordPress_Super_Cache_Varnish_Cache::instance();
+
+		switch ( $action ) {
+			case 'enable-varnish-cache':
+				$result = $registry->set_active( ICC_GG_WordPress_Super_Cache_Page_Cache::VARNISH, true );
+
+				if ( is_wp_error( $result ) ) {
+					$this->add_action_message( $result->get_error_message(), 'error', 'varnish' );
+
+					break;
+				}
+
+				$settings = $varnish->get_settings();
+				$settings['enabled'] = true;
+
+				update_option( ICC_GG_WordPress_Super_Cache_Varnish_Cache::OPTION_KEY, $settings );
+
+				$varnish->flush_settings_cache();
+
+				$this->add_action_message(
+					__( 'Varnish is enabled.', 'icc-gg-wordpress-super-cache' ),
+					'updated',
+					'varnish'
+				);
+
+				$test = $varnish->test();
+
+				// Shown by the "Last Test" row, not repeated as a settings error.
+				set_transient( 'icc_gg_wordpress_super_cache_varnish_test', $test, 120 );
+
+				break;
+
+			case 'disable-varnish-cache':
+				$registry->set_active( ICC_GG_WordPress_Super_Cache_Page_Cache::VARNISH, false );
+
+				$settings = $varnish->get_settings();
+				$settings['enabled'] = false;
+
+				update_option( ICC_GG_WordPress_Super_Cache_Varnish_Cache::OPTION_KEY, $settings );
+
+				$varnish->flush_settings_cache();
+
+				$this->add_action_message(
+					__( 'Varnish is disabled.', 'icc-gg-wordpress-super-cache' ),
+					'updated',
+					'varnish'
+				);
+
+				break;
+
+			case 'purge-varnish-cache':
+				$result = $varnish->purge();
+
+				if ( is_wp_error( $result ) ) {
+					$this->add_action_message(
+						sprintf(
+							// translators: %s = The reason the purge failed.
+							__( 'Varnish could not be purged: %s', 'icc-gg-wordpress-super-cache' ),
+							$result->get_error_message()
+						),
+						'error',
+						'varnish'
+					);
+
+					break;
+				}
+
+				$this->add_action_message(
+					__( 'Varnish cache purged.', 'icc-gg-wordpress-super-cache' ),
+					'updated',
+					'varnish'
+				);
+
+				break;
+
+			case 'test-varnish-cache':
+				$test = $varnish->test();
+
+				// The result is stored so the tab can keep showing it; no
+				// settings error is queued to avoid printing the same message
+				// twice on the same screen.
+				set_transient( 'icc_gg_wordpress_super_cache_varnish_test', $test, 120 );
+
+				break;
+		}
+
+		$this->redirect_with_messages( '#varnish' );
+
+		return true;
+	}
+
+	/**
+	 * Handles the image optimizer actions.
+	 *
+	 * @param string $action Action name.
+	 * @return bool
+	 */
+	protected function handle_image_action( $action )
+	{
+		if ( 'reset-image-optimizer' === $action ) {
+			ICC_GG_WordPress_Super_Cache_Image_Optimizer::instance()->reset_batch_state();
+
+			$this->add_action_message(
+				__( 'The image optimization progress was reset.', 'icc-gg-wordpress-super-cache' ),
+				'updated',
+				'images'
+			);
+		}
+
+		$this->redirect_with_messages( '#images' );
+
+		return true;
+	}
+
+	/**
+	 * Saves the local page cache settings submitted from the Page Cache tab.
+	 *
+	 * @return void
+	 */
+	protected function save_local_settings()
+	{
+		check_admin_referer( 'icc_gg_wordpress_super_cache_local' );
+
+		if ( ! $this->current_user_can_manage_redis() ) {
+			return;
+		}
+
+		$input = wp_unslash( $_POST['icc_gg_wordpress_super_cache_local'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$input = is_array( $input ) ? $input : [];
+
+		$local = ICC_GG_WordPress_Super_Cache_Local_Cache::instance();
+		$registry = ICC_GG_WordPress_Super_Cache_Page_Cache::instance();
+
+		$settings = $local->sanitize_settings( $input );
+
+		update_option( ICC_GG_WordPress_Super_Cache_Local_Cache::OPTION_KEY, $settings );
+
+		$local->flush_settings_cache();
+
+		$want_enabled = ! empty( $input['enabled'] );
+
+		if ( $want_enabled && ! $local->is_enabled() ) {
+			$result = $registry->set_active( ICC_GG_WordPress_Super_Cache_Page_Cache::LOCAL, true );
+
+			if ( is_wp_error( $result ) ) {
+				$this->add_action_message( $result->get_error_message(), 'error', 'page_cache' );
+			}
+		} elseif ( ! $want_enabled && $local->is_enabled() ) {
+			$registry->set_active( ICC_GG_WordPress_Super_Cache_Page_Cache::LOCAL, false );
+		}
+
+		$install = $local->install();
+
+		if ( is_wp_error( $install ) ) {
+			$this->add_action_message(
+				sprintf(
+					// translators: %s = The reason the loader could not be written.
+					__( 'Settings saved, but the page cache loader could not be written: %s', 'icc-gg-wordpress-super-cache' ),
+					$install->get_error_message()
+				),
+				'error',
+				'page_cache'
+			);
+		} else {
+			$this->add_action_message(
+				__( 'Page cache settings saved.', 'icc-gg-wordpress-super-cache' ),
+				'updated',
+				'page_cache'
+			);
+
+			$wp_config_error = $local->get_last_error();
+
+			if ( $local->is_enabled() && $wp_config_error instanceof WP_Error ) {
+				$this->add_action_message(
+					sprintf(
+						// translators: %s = The reason wp-config.php could not be edited.
+						__( 'WP_CACHE was not added to wp-config.php (%s); the must-use plugin loader was installed instead.', 'icc-gg-wordpress-super-cache' ),
+						$wp_config_error->get_error_message()
+					),
+					'error',
+					'page_cache'
+				);
+			}
+		}
+
+		$this->redirect_with_messages( '#local' );
+	}
+
+	/**
+	 * Purges a list of URLs from the local page cache.
+	 *
+	 * @return void
+	 */
+	protected function purge_local_urls()
+	{
+		check_admin_referer( 'icc_gg_wordpress_super_cache_local_urls' );
+
+		if ( ! $this->current_user_can_manage_redis() ) {
+			return;
+		}
+
+		$urls = '';
+
+		if ( isset( $_POST['icc_gg_wordpress_super_cache_local_urls']['urls'] ) ) {
+			$urls = wp_unslash( $_POST['icc_gg_wordpress_super_cache_local_urls']['urls'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		}
+
+		$deleted = ICC_GG_WordPress_Super_Cache_Local_Cache::instance()->purge_urls( (string) $urls );
+
+		$this->add_action_message(
+			sprintf(
+				// translators: %d = Number of purged cache entries.
+				_n(
+					'%d cached entry was purged.',
+					'%d cached entries were purged.',
+					$deleted,
+					'icc-gg-wordpress-super-cache'
+				),
+				$deleted
+			),
+			$deleted > 0 ? 'updated' : 'error',
+			'page_cache'
+		);
+
+		$this->redirect_with_messages( '#local' );
+	}
+
+	/**
+	 * Saves the Varnish settings submitted from the Varnish tab.
+	 *
+	 * @return void
+	 */
+	protected function save_varnish_settings()
+	{
+		check_admin_referer( 'icc_gg_wordpress_super_cache_varnish' );
+
+		if ( ! $this->current_user_can_manage_redis() ) {
+			return;
+		}
+
+		$input = wp_unslash( $_POST['icc_gg_wordpress_super_cache_varnish'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$input = is_array( $input ) ? $input : [];
+
+		$varnish = ICC_GG_WordPress_Super_Cache_Varnish_Cache::instance();
+		$registry = ICC_GG_WordPress_Super_Cache_Page_Cache::instance();
+
+		$settings = $varnish->sanitize_settings( $input );
+
+		update_option( ICC_GG_WordPress_Super_Cache_Varnish_Cache::OPTION_KEY, $settings );
+
+		$varnish->flush_settings_cache();
+
+		$want_enabled = ! empty( $input['enabled'] );
+
+		if ( $want_enabled && ! $varnish->is_enabled() ) {
+			$result = $registry->set_active( ICC_GG_WordPress_Super_Cache_Page_Cache::VARNISH, true );
+
+			if ( is_wp_error( $result ) ) {
+				$this->add_action_message( $result->get_error_message(), 'error', 'varnish' );
+			}
+		} elseif ( ! $want_enabled && $varnish->is_enabled() ) {
+			$registry->set_active( ICC_GG_WordPress_Super_Cache_Page_Cache::VARNISH, false );
+		}
+
+		$this->add_action_message(
+			__( 'Varnish settings saved.', 'icc-gg-wordpress-super-cache' ),
+			'updated',
+			'varnish'
+		);
+
+		$this->redirect_with_messages( '#varnish' );
+	}
+
+	/**
+	 * Saves the image optimizer settings submitted from the Optimize Images tab.
+	 *
+	 * @return void
+	 */
+	protected function save_image_settings()
+	{
+		check_admin_referer( 'icc_gg_wordpress_super_cache_images' );
+
+		if ( ! $this->current_user_can_manage_redis() ) {
+			return;
+		}
+
+		$input = wp_unslash( $_POST['icc_gg_wordpress_super_cache_images'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$input = is_array( $input ) ? $input : [];
+
+		$optimizer = ICC_GG_WordPress_Super_Cache_Image_Optimizer::instance();
+
+		$settings = $optimizer->sanitize_settings( $input );
+
+		update_option( ICC_GG_WordPress_Super_Cache_Image_Optimizer::OPTION_KEY, $settings );
+
+		$optimizer->flush_settings_cache();
+
+		$this->add_action_message(
+			__( 'Image optimization settings saved.', 'icc-gg-wordpress-super-cache' ),
+			'updated',
+			'images'
+		);
+
+		$this->redirect_with_messages( '#images' );
+	}
+
+	/**
+	 * Optimizes a batch of images over AJAX.
+	 *
+	 * @return void
+	 */
+	public function ajax_optimize_images()
+	{
+		check_ajax_referer( 'icc_gg_wordpress_super_cache_images_batch' );
+
+		if ( ! $this->current_user_can_manage_redis() ) {
+			wp_send_json_error(
+				[
+					'message' => __( 'You are not allowed to optimize images.', 'icc-gg-wordpress-super-cache' ),
+				],
+				403
+			);
+		}
+
+		$optimizer = ICC_GG_WordPress_Super_Cache_Image_Optimizer::instance();
+
+		$limit = isset( $_POST['limit'] ) ? (int) $_POST['limit'] : 0;
+
+		$result = $optimizer->optimize_batch( $limit > 0 ? $limit : null );
+
+		$result['stats'] = $optimizer->stats();
+
+		wp_send_json_success( $result );
 	}
 
 	/**
@@ -1587,6 +2318,12 @@ HTML;
 			if ( $this->validate_object_cache_dropin() && $this->initialize_filesystem( '', true ) ) {
 				$wp_filesystem->delete( WP_CONTENT_DIR . '/object-cache.php' );
 			}
+
+			// Stop page caching while the plugin is inactive; the cached files stay.
+			$local = ICC_GG_WordPress_Super_Cache_Local_Cache::instance();
+
+			$local->remove_loaders();
+			$local->unschedule_preload();
 		}
 
 		ob_end_clean();

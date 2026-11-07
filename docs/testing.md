@@ -1,0 +1,102 @@
+# Testing
+
+## Static checks
+
+Every PHP file must lint cleanly:
+
+```bash
+find . -name '*.php' -not -path './dependencies/*' -not -path './vendor/*' -exec php -l {} \;
+```
+
+## Page cache engine (no WordPress needed)
+
+`includes/local-cache-engine.php` is standalone, so the pure helpers can be tested with a plain PHP
+script:
+
+```php
+<?php
+define( 'ABSPATH', '/tmp/e2e/wordpress/' );
+define( 'ICC_GG_PAGE_CACHE_DIR', '/tmp/e2e/runtime' );
+$_SERVER['HTTP_HOST'] = 'example.com';
+$_SERVER['REQUEST_METHOD'] = 'GET';
+$_SERVER['REQUEST_URI'] = '/blog/post/';
+$_SERVER['QUERY_STRING'] = '';
+
+require __DIR__ . '/includes/local-cache-engine.php';
+
+// Cache file path for the current request.
+var_dump( icc_gg_page_cache_file( icc_gg_page_cache_config() ) );
+
+// Store and serve.
+icc_gg_page_cache_store( '<html><body>' . str_repeat( 'x', 400 ) . '</body></html>' );
+icc_gg_page_cache_bootstrap(); // prints the cached page and exits
+```
+
+Covered this way: path sanitization (traversal, unsafe characters), wildcard and `regex:` exclusions,
+cookie/user-agent/method/path blocking, gzip storage and gzip serving.
+
+## End-to-end stack
+
+`docker/docker-compose.yml` starts MariaDB, WordPress (PHP-FPM), Nginx, Varnish and a WP-CLI container:
+
+```bash
+cp docker/.env.example docker/.env
+docker compose -f docker/docker-compose.yml up -d
+docker compose -f docker/docker-compose.yml run --rm cli \
+  wp plugin activate icc-gg-wordpress-super-cache
+```
+
+Then, through `http://localhost:8080`:
+
+1. **Page Cache** — enable it, load the home page twice and check the `X-ICC-Page-Cache: HIT` header and
+   `wp-content/cache/icc-gg-page-cache`. Use **Purge URLs** for a single post.
+2. **Varnish** — enable it, run **Test Connection** and confirm the probe finds `X-Varnish`. The VCL in
+   `tests/e2e/varnish.vcl` already accepts `PURGE` and `BAN` with the key from `docker/.env`.
+3. **Nginx** — enable it, set the cache zone to `/var/cache/nginx/wordpress` and purge.
+4. **Exclusivity** — try to enable a second backend and confirm the error message names the backend that
+   is already enabled.
+5. **Optimize Images** — upload a large JPEG, run the optimizer and compare the file sizes in
+   `wp-content/uploads` with `wp-content/icc-gg-image-backups`.
+
+## WP-CLI smoke tests
+
+```bash
+wp icc-gg-wordpress-super-cache status
+wp icc-gg-wordpress-super-cache page-cache-status
+wp icc-gg-wordpress-super-cache page-cache-enable
+wp icc-gg-wordpress-super-cache page-cache-purge
+wp icc-gg-wordpress-super-cache page-cache-preload
+wp cron event run --due-now
+wp icc-gg-wordpress-super-cache varnish-status
+wp icc-gg-wordpress-super-cache varnish-test
+wp icc-gg-wordpress-super-cache images-optimize --limit=2
+```
+
+## Screenshots
+
+The admin screens in [`docs/screenshots`](screenshots/README.md) are captured from this stack, so they can be
+regenerated after a UI change:
+
+1. Start the end-to-end stack and add a few posts plus a handful of media library images.
+2. Enable the backend you want to document. Only one page cache can be active, so capture the **Page Cache**,
+   **Varnish** and **Nginx** tabs in separate passes; force a conflict by defining
+   `ICC_GG_SUPER_CACHE_NGINX_ENABLED` in `wp-config.php` if you need the warning screenshot.
+3. Warm the cache by requesting a few front-end pages, then flush the one minute stats transient
+   (`wp eval 'ICC_GG_WordPress_Super_Cache_Local_Cache::instance()->flush_stats_cache();'`) so the tab shows
+   current numbers.
+4. Capture at 1440 CSS pixels wide with a device scale factor of 2, following
+   [`docs/screenshots/README.md`](screenshots/README.md).
+
+Varnish reports its own headers only when the site URL is reachable from PHP. Inside Docker the published
+port is not, so run the probe through a bridge that forwards the site URL to the Varnish service (for
+example `socat TCP-LISTEN:<site-port>,fork,reuseaddr TCP:varnish:80` in the WordPress network namespace),
+otherwise **Test Connection** correctly falls back to "purge accepted, headers not visible".
+
+## Manual checks before a release
+
+- Enable the page cache on a site where `wp-config.php` is **not** writable: the must-use plugin loader
+  must be installed and `bootstrap_mode()` must report `mu-plugin`.
+- Delete the backup with **Revert wp-config.php Backup** and confirm the site still serves pages.
+- Disable the page cache and confirm `advanced-cache.php` and the must-use plugin loader are removed.
+- Trigger a post update and confirm exactly one purge per enabled backend (`wp-content/debug.log`).
+- Check the **Diagnostics** tab for the page cache, Varnish and image optimizer sections.

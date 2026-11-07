@@ -86,10 +86,6 @@ class ICC_GG_WordPress_Super_Cache_Nginx_Cache
 	private function __construct()
 	{
 		$this->maybe_import_legacy_settings();
-
-		if ( $this->is_enabled() && $this->auto_purge_enabled() ) {
-			add_action( 'init', [ $this, 'register_purge_actions' ], 20 );
-		}
 	}
 
 	/**
@@ -149,6 +145,10 @@ class ICC_GG_WordPress_Super_Cache_Nginx_Cache
 	/**
 	 * Whether the Nginx cache integration is enabled.
 	 *
+	 * The page cache registry owns the `enabled` flag so only one page cache
+	 * backend (local, Varnish or Nginx) can be active at a time. A constant in
+	 * `wp-config.php` always wins over the stored setting.
+	 *
 	 * @return bool
 	 */
 	public function is_enabled()
@@ -157,7 +157,9 @@ class ICC_GG_WordPress_Super_Cache_Nginx_Cache
 			return (bool) ICC_GG_SUPER_CACHE_NGINX_ENABLED;
 		}
 
-		return (bool) $this->get_setting( 'enabled' );
+		return ICC_GG_WordPress_Super_Cache_Page_Cache::instance()->is_active(
+			ICC_GG_WordPress_Super_Cache_Page_Cache::NGINX
+		);
 	}
 
 	/**
@@ -262,70 +264,6 @@ class ICC_GG_WordPress_Super_Cache_Nginx_Cache
 		);
 
 		$this->flush_settings_cache();
-	}
-
-	/**
-	 * Registers the actions that trigger a cache purge.
-	 *
-	 * @return void
-	 */
-	public function register_purge_actions()
-	{
-		if ( ! $this->is_enabled() || ! $this->auto_purge_enabled() ) {
-			return;
-		}
-
-		/**
-		 * Filters the actions that trigger an automatic Nginx cache purge.
-		 *
-		 * @param string[] $purge_actions Hook names.
-		 */
-		$purge_actions = (array) apply_filters(
-			'icc_gg_wordpress_super_cache_nginx_purge_actions',
-			[
-				'publish_phone',
-				'save_post',
-				'edit_post',
-				'delete_post',
-				'wp_trash_post',
-				'clean_post_cache',
-				'trackback_post',
-				'pingback_post',
-				'comment_post',
-				'edit_comment',
-				'delete_comment',
-				'wp_set_comment_status',
-				'switch_theme',
-				'wp_update_nav_menu',
-				'edit_user_profile_update',
-			]
-		);
-
-		foreach ( $purge_actions as $action ) {
-			if ( did_action( $action ) ) {
-				$this->purge_zone_once();
-			} else {
-				add_action( $action, [ $this, 'purge_zone_once' ] );
-			}
-		}
-	}
-
-	/**
-	 * Purges the cache zone at most once per request.
-	 *
-	 * @return void
-	 */
-	public function purge_zone_once()
-	{
-		static $completed = false;
-
-		if ( $completed ) {
-			return;
-		}
-
-		$this->purge_zone();
-
-		$completed = true;
 	}
 
 	/**

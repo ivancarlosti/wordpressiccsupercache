@@ -11,6 +11,9 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @copyright 2007-2026 Ivan Carlos Consultoria
  * @license   https://www.gnu.org/licenses/gpl-3.0.txt GPL-3.0-or-later
  */
+
+$icc_page_cache_registry = ICC_GG_WordPress_Super_Cache_Page_Cache::instance();
+$icc_page_cache_conflicts = $icc_page_cache_registry->enabled_backends();
 ?>
 <div id="icc-gg-wordpress-super-cache" class="wrap">
 
@@ -19,6 +22,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</h1>
 
 	<?php settings_errors(); ?>
+
+	<?php if ( count( $icc_page_cache_conflicts ) > 1 ) : ?>
+		<div class="notice notice-warning">
+			<p>
+				<strong><?php esc_html_e( 'More than one page cache is enabled:', 'icc-gg-wordpress-super-cache' ); ?></strong>
+				<?php echo esc_html( implode( ', ', array_map( [ $icc_page_cache_registry, 'label' ], $icc_page_cache_conflicts ) ) ); ?>.
+				<?php esc_html_e( 'Only one page cache backend can be active at a time. Disable the others below, or remove the constants in wp-config.php that force them.', 'icc-gg-wordpress-super-cache' ); ?>
+			</p>
+		</div>
+	<?php endif; ?>
 
 	<div class="columns">
 
