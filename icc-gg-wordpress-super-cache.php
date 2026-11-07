@@ -71,7 +71,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /*
  * Hard requirement: PHP 8.2+.
  *
- * Kept in sync with the "Requires PHP" plugin header, readme.txt and
+ * Kept in sync with the "Requires PHP" plugin header and
  * composer.json. WordPress validates the header on install and activation, but
  * a site can still auto-update the plugin while running an older PHP version,
  * so the plugin disables itself and explains why instead of failing later.
