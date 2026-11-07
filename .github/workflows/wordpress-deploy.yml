@@ -141,6 +141,12 @@ jobs:
           echo "✅ Version ${VERSION} stamped successfully."
 
       # -------------------------------------------------------
+      # 3b. Reject packages WordPress would read as several plugins
+      # -------------------------------------------------------
+      - name: 🧪 Validate plugin layout
+        run: sh tests/validate-plugin-layout.sh
+
+      # -------------------------------------------------------
       # 4. Create WordPress-friendly ZIP
       #     Root folder inside zip = plugin slug (no version)
       # -------------------------------------------------------

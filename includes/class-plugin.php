@@ -559,7 +559,7 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 	 */
 	protected function is_own_dropin_uri( $uri )
 	{
-		$plugin = get_plugin_data( ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php' );
+		$plugin = get_plugin_data( ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/dropins/object-cache.php' );
 
 		if ( isset( $plugin['PluginURI'] ) && $uri === $plugin['PluginURI'] ) {
 			return true;
@@ -580,7 +580,7 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 		}
 
 		$dropin = get_plugin_data( WP_CONTENT_DIR . '/object-cache.php' );
-		$plugin = get_plugin_data( ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php' );
+		$plugin = get_plugin_data( ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/dropins/object-cache.php' );
 
 		/**
 		 * Filters the drop-in validation state
@@ -610,7 +610,7 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 		}
 
 		$dropin = get_plugin_data( WP_CONTENT_DIR . '/object-cache.php' );
-		$plugin = get_plugin_data( ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php' );
+		$plugin = get_plugin_data( ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/dropins/object-cache.php' );
 
 		// Drop-ins created by earlier versions are always updated.
 		if ( $dropin['PluginURI'] !== $plugin['PluginURI'] && $this->is_own_dropin_uri( $dropin['PluginURI'] ) ) {
@@ -1255,7 +1255,7 @@ HTML;
 
 					if ( $action === 'enable-cache' ) {
 						$result = $wp_filesystem->copy(
-							ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php',
+							ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/dropins/object-cache.php',
 							WP_CONTENT_DIR . '/object-cache.php',
 							true,
 							FS_CHMOD_FILE
@@ -1320,7 +1320,7 @@ HTML;
 
 					if ( $action === 'update-dropin' ) {
 						$result = $wp_filesystem->copy(
-							ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php',
+							ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/dropins/object-cache.php',
 							WP_CONTENT_DIR . '/object-cache.php',
 							true,
 							FS_CHMOD_FILE
@@ -2393,7 +2393,7 @@ HTML;
 			return true;
 		}
 
-		$cachefile = ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php';
+		$cachefile = ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/dropins/object-cache.php';
 		$testfile = WP_CONTENT_DIR . '/object-cache.tmp';
 
 		if ( ! $wp_filesystem->exists( $cachefile ) ) {
@@ -2482,7 +2482,7 @@ HTML;
 
 		if ( $this->initialize_filesystem( '', true ) ) {
 			$result = $wp_filesystem->copy(
-				ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php',
+				ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/dropins/object-cache.php',
 				WP_CONTENT_DIR . '/object-cache.php',
 				true,
 				FS_CHMOD_FILE

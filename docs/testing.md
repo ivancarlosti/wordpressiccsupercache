@@ -8,6 +8,16 @@ Every PHP file must lint cleanly:
 find . -name '*.php' -not -path './dependencies/*' -not -path './vendor/*' -exec php -l {} \;
 ```
 
+The packaged tree must also not look like several plugins. WordPress reads every `*.php` file in the plugin
+root **and one directory below it** as a potential plugin, so any file carrying a `Plugin Name:` header is
+listed as its own plugin and the uploader offers it for activation ("The plugin does not have a valid
+header."). Drop-in templates therefore live in `includes/dropins/`. Both packaging workflows run the guard
+before zipping and fail on a second header:
+
+```bash
+sh tests/validate-plugin-layout.sh
+```
+
 ## Page cache engine (no WordPress needed)
 
 `includes/local-cache-engine.php` is standalone, so the pure helpers can be tested with a plain PHP
@@ -151,4 +161,8 @@ otherwise **Test Connection** correctly falls back to "purge accepted, headers n
 - Trigger a post update and confirm exactly one purge per enabled backend (`wp-content/debug.log`).
 - Run **Check for updates** twice in a row: both runs must reach GitHub (no 12 hour cache) and the second
   run must not leave a stale "update available" row behind after the plugin was upgraded.
+- Upload the `icc-gg-wordpress-super-cache.zip` asset on a clean site: after "Plugin installed successfully" the
+  **Activate Plugin** link must point at `icc-gg-wordpress-super-cache/icc-gg-wordpress-super-cache.php` and
+  activation must succeed. The drop-in templates live in `includes/dropins/`, so WordPress's plugin scanner
+  must never offer *"The plugin does not have a valid header."* for `includes/advanced-cache.php`.
 - Check the **Diagnostics** tab for the page cache, Varnish Cache, nginx FastCGI and image optimizer sections.

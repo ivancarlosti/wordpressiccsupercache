@@ -19,7 +19,7 @@ A WordPress plugin that provides a persistent object cache backend powered by Re
 
 ## Features
 
-- **Redis Object Cache Backend** — A drop-in [`object-cache.php`](includes/object-cache.php:1) replacement that stores WordPress object cache data in Redis
+- **Redis Object Cache Backend** — A drop-in [`object-cache.php`](includes/dropins/object-cache.php:1) replacement that stores WordPress object cache data in Redis
 - **Multiple Clients** — Works with [Predis](https://github.com/predis/predis/) (bundled), [PhpRedis (PECL)](https://github.com/phpredis/phpredis) and [Relay](https://relaycache.com)
 - **High Availability** — Supports replication, sentinels, clustering and sharding
 - **One-Click Management** — Enable, disable, flush and update the object cache drop-in from **Settings → Super Cache**
@@ -351,7 +351,7 @@ To flush the cache from the command line, use the built-in `wp cache flush` comm
 
 ## Hooks & Filters
 
-The plugin provides actions and filters for customization. See [`object-cache.php`](includes/object-cache.php:1) for the complete list including:
+The plugin provides actions and filters for customization. See [`object-cache.php`](includes/dropins/object-cache.php:1) for the complete list including:
 
 **Actions**
 

@@ -778,7 +778,7 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 	 * Compares a generated loader file with the template it came from.
 	 *
 	 * @param string $path     Loader path.
-	 * @param string $template Template file name inside `includes/`.
+	 * @param string $template Template file name inside `includes/dropins/`.
 	 * @return bool
 	 */
 	protected function loader_is_valid( $path, $template )
@@ -1002,12 +1002,12 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 	/**
 	 * Renders one of the generated loader templates.
 	 *
-	 * @param string $template Template file name inside `includes/`.
+	 * @param string $template Template file name inside `includes/dropins/`.
 	 * @return string|WP_Error
 	 */
 	protected function loader_contents( $template )
 	{
-		$source = ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/' . $template;
+		$source = ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/dropins/' . $template;
 		$contents = is_readable( $source ) ? @file_get_contents( $source ) : false;
 
 		if ( false === $contents ) {
@@ -1032,7 +1032,7 @@ class ICC_GG_WordPress_Super_Cache_Local_Cache
 	/**
 	 * Writes one of the generated loader files.
 	 *
-	 * @param string $template    Template file name inside `includes/`.
+	 * @param string $template    Template file name inside `includes/dropins/`.
 	 * @param string $destination Destination path.
 	 * @return true|WP_Error
 	 */

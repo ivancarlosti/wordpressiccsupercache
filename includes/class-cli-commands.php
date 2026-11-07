@@ -68,7 +68,7 @@ class ICC_GG_WordPress_Super_Cache_CLI_Commands extends WP_CLI_Command
 			WP_Filesystem();
 
 			$copy = $wp_filesystem->copy(
-				ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php',
+				ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/dropins/object-cache.php',
 				WP_CONTENT_DIR . '/object-cache.php',
 				true,
 				FS_CHMOD_FILE
@@ -161,7 +161,7 @@ class ICC_GG_WordPress_Super_Cache_CLI_Commands extends WP_CLI_Command
 		WP_Filesystem();
 
 		$copy = $wp_filesystem->copy(
-			ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/object-cache.php',
+			ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH . '/includes/dropins/object-cache.php',
 			WP_CONTENT_DIR . '/object-cache.php',
 			true,
 			FS_CHMOD_FILE

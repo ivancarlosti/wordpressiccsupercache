@@ -7,8 +7,8 @@ no Composer toolchain.
 
 | Path | Version | Loaded by |
 | --- | --- | --- |
-| `predis/predis/src/`, `predis/predis/autoload.php` | Predis 2.4.0 (`Client::VERSION` in `src/Client.php`) | `includes/class-predis.php`, `includes/object-cache.php` |
-| `colinmollenhour/credis/` (`Client.php`, `Cluster.php`, `Sentinel.php`, `Module.php`) | upstream tree vendored with the plugin | `includes/object-cache.php` |
+| `predis/predis/src/`, `predis/predis/autoload.php` | Predis 2.4.0 (`Client::VERSION` in `src/Client.php`) | `includes/class-predis.php`, `includes/dropins/object-cache.php` |
+| `colinmollenhour/credis/` (`Client.php`, `Cluster.php`, `Sentinel.php`, `Module.php`) | upstream tree vendored with the plugin | `includes/dropins/object-cache.php` |
 
 ## Local modifications
 
