@@ -485,7 +485,7 @@ msgstr "الصراع: يتم تمكين %s في نفس الوقت"
 #: includes/class-plugin.php:185 includes/class-plugin.php:273
 #: includes/ui/settings.php:21
 msgid "ICC.gg WordPress Super Cache"
-msgstr "ICC.gg ووردبريس ذاكرة التخزين المؤقتة الفائقة"
+msgstr "ICC.gg WordPress Super Cache"
 
 #: includes/class-plugin.php:186
 msgid "Super Cache"

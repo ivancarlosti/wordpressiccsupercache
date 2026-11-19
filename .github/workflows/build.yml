@@ -136,6 +136,10 @@ jobs:
         if: steps.rebuild.outputs.proceed == 'true' && github.event_name != 'schedule'
         run: php tests/key-prefix.php
 
+      - name: 🧪 Validate translations
+        if: steps.rebuild.outputs.proceed == 'true' && github.event_name != 'schedule'
+        run: sh tests/validate-i18n.sh
+
       - name: 📦 Create ZIP package
         if: steps.rebuild.outputs.proceed == 'true' && github.event_name != 'schedule'
         run: |

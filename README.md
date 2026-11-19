@@ -24,7 +24,7 @@ A WordPress plugin that provides a persistent object cache backend powered by Re
 - **High Availability** — Supports replication, sentinels, clustering and sharding
 - **One-Click Management** — Enable, disable, flush and update the object cache drop-in from **Settings → Super Cache**
 - **Selective Flush by Default** — `wp_cache_flush()` deletes only keys that belong to this site instead of running `FLUSHDB`, so a shared Redis database is not wiped by other sites. The behaviour can be changed on the **Redis Object Cache** tab or forced in `wp-config.php`
-- **Translations & RTL** — English fallback plus `pt-BR`, `es-MX`, `fr-FR`, `zh-CN`, `hi-IN` and `ar-SA` (right-to-left)
+- **Translations & RTL** — English fallback plus `pt-BR`, `es-MX`, `fr-FR`, `zh-CN`, `hi-IN` and `ar-SA` (right-to-left); the plugin name stays `ICC.gg WordPress Super Cache` in every locale
 - **Local Page Cache** — Store pages as static HTML in `wp-content` and serve them before WordPress boots, configured on its own tab with clear cache, purge by URL and preload
 - **Recoverable Loader** — Report the state of `advanced-cache.php` and rewrite it on demand, with a backup, when the file is missing, damaged, outdated or owned by another plugin
 - **Varnish Cache Support** — Send `PURGE`/`BAN` requests to a Varnish instance, test the connection and copy the matching VCL snippets (purges and exclusions)

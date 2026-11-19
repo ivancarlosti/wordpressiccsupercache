@@ -481,7 +481,7 @@ msgstr "Conflito: %s estão ativados ao mesmo tempo"
 #: includes/class-plugin.php:185 includes/class-plugin.php:273
 #: includes/ui/settings.php:21
 msgid "ICC.gg WordPress Super Cache"
-msgstr "Super Cache WordPress ICC.gg"
+msgstr "ICC.gg WordPress Super Cache"
 
 #: includes/class-plugin.php:186
 msgid "Super Cache"

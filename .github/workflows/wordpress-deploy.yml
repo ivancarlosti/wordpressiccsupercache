@@ -147,6 +147,12 @@ jobs:
         run: sh tests/validate-plugin-layout.sh
 
       # -------------------------------------------------------
+      # 3c. Reject catalogs that translate the plugin name
+      # -------------------------------------------------------
+      - name: 🧪 Validate translations
+        run: sh tests/validate-i18n.sh
+
+      # -------------------------------------------------------
       # 4. Create WordPress-friendly ZIP
       #     Root folder inside zip = plugin slug (no version)
       # -------------------------------------------------------

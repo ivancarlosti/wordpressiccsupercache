@@ -481,7 +481,7 @@ msgstr "Conflit : %s sont activés en même temps"
 #: includes/class-plugin.php:185 includes/class-plugin.php:273
 #: includes/ui/settings.php:21
 msgid "ICC.gg WordPress Super Cache"
-msgstr "Super Cache WordPress ICC.gg"
+msgstr "ICC.gg WordPress Super Cache"
 
 #: includes/class-plugin.php:186
 msgid "Super Cache"
@@ -602,7 +602,7 @@ msgstr "Un ajout de cache d'objets étrangers a été trouvé. Pour utiliser Red
 #: includes/class-plugin.php:994
 #, php-format
 msgid "<strong>ICC.gg WordPress Super Cache %1$s is available.</strong> You are running version %2$s."
-msgstr "<strong>ICC.gg Le super cache WordPress %1$s est disponible.</strong> Vous utilisez la version %2$s."
+msgstr "<strong>ICC.gg WordPress Super Cache %1$s est disponible.</strong> Vous utilisez la version %2$s."
 
 #: includes/class-plugin.php:1005 includes/ui/settings.php:110
 msgid "Update now"

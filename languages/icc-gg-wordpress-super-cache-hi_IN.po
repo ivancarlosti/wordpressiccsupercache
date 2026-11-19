@@ -481,7 +481,7 @@ msgstr "विरोध: %s एक ही समय में सक्षम �
 #: includes/class-plugin.php:185 includes/class-plugin.php:273
 #: includes/ui/settings.php:21
 msgid "ICC.gg WordPress Super Cache"
-msgstr "ICC.gg वर्डप्रेस सुपर कैश"
+msgstr "ICC.gg WordPress Super Cache"
 
 #: includes/class-plugin.php:186
 msgid "Super Cache"
@@ -602,7 +602,7 @@ msgstr "एक विदेशी ऑब्जेक्ट कैश ड्र�
 #: includes/class-plugin.php:994
 #, php-format
 msgid "<strong>ICC.gg WordPress Super Cache %1$s is available.</strong> You are running version %2$s."
-msgstr "<strong>ICC.gg वर्डप्रेस सुपर कैश %1$s उपलब्ध है।</strong> आप संस्करण %2$s चला रहे हैं।"
+msgstr "<strong>ICC.gg WordPress Super Cache %1$s उपलब्ध है।</strong> आप संस्करण %2$s चला रहे हैं।"
 
 #: includes/class-plugin.php:1005 includes/ui/settings.php:110
 msgid "Update now"
@@ -612,7 +612,7 @@ msgstr "अभी अपडेट करें"
 #: includes/class-plugin.php:1032
 #, php-format
 msgid "ICC.gg WordPress Super Cache is up to date (version %s)."
-msgstr "ICC.gg वर्डप्रेस सुपर कैश अद्यतित है (संस्करण %s)।"
+msgstr "ICC.gg WordPress Super Cache अद्यतित है (संस्करण %s)।"
 
 #: includes/class-plugin.php:1043
 msgid "The update check could not reach GitHub. Please try again in a few minutes."
@@ -1001,7 +1001,7 @@ msgstr "एक समय में केवल एक पेज कैश ब�
 
 #: includes/ui/settings.php:84
 msgid "ICC.gg WordPress Super Cache - Redis object cache, Varnish Cache and nginx FastCGI page cache in one plugin. Enable, configure and purge each layer independently."
-msgstr "ICC.gg वर्डप्रेस सुपर कैश - Redis ऑब्जेक्ट कैश, वार्निश कैश और nginx फास्टसीजीआई पेज कैश एक प्लगइन में। प्रत्येक परत को स्वतंत्र रूप से सक्षम, कॉन्फ़िगर और शुद्ध करें।"
+msgstr "ICC.gg WordPress Super Cache - Redis ऑब्जेक्ट कैश, वार्निश कैश और nginx फास्टसीजीआई पेज कैश एक प्लगइन में। प्रत्येक परत को स्वतंत्र रूप से सक्षम, कॉन्फ़िगर और शुद्ध करें।"
 
 #. translators: %s: New version number.
 #: includes/ui/settings.php:102

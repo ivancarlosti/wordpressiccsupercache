@@ -18,6 +18,14 @@ before zipping and fail on a second header:
 sh tests/validate-plugin-layout.sh
 ```
 
+The plugin name is a brand and must never be translated: every catalog has to render `ICC.gg WordPress Super
+Cache` verbatim, both as a standalone string (admin heading, plugin list, update notices) and inside longer
+messages (update banner, settings footer). Both packaging workflows run the guard before zipping:
+
+```bash
+sh tests/validate-i18n.sh
+```
+
 ## Page cache engine (no WordPress needed)
 
 `includes/local-cache-engine.php` is standalone, so the pure helpers can be tested with a plain PHP
