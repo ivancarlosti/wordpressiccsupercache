@@ -153,7 +153,10 @@ otherwise **Test Connection** correctly falls back to "purge accepted, headers n
 Validate the prefix and catalog changes before a release:
 
 ```bash
-# Prefix sanitization, generation and Lua escaping (standalone harness).
+# Prefix allow-list, generation, origin detection and drop-in parity.
+php tests/key-prefix.php
+
+# Ad-hoc resolve()/selective_flush_enabled() check.
 php -r 'define("ABSPATH", "/tmp/"); define("DB_NAME", "demo"); $GLOBALS["table_prefix"] = "wp_"; require "includes/class-key-prefix.php"; $c = "ICC_GG_WordPress_Super_Cache_Key_Prefix"; echo $c::resolve(), PHP_EOL; echo var_export($c::selective_flush_enabled(), true), PHP_EOL;'
 
 # Every catalog must compile without format-string errors.
@@ -164,9 +167,11 @@ On the **Redis Object Cache** tab:
 
 1. With no `WP_REDIS_SELECTIVE_FLUSH` in `wp-config.php`, the checkbox must be enabled and editable; unchecking it must show the red warning and, after saving, `wp_cache_flush()` must run `FLUSHDB`.
 2. Define `WP_REDIS_SELECTIVE_FLUSH` as `true` or `false`: the checkbox must be disabled and the screen must explain that the value is read-only.
-3. Define `WP_REDIS_PREFIX` with spaces or glob characters (for example `demo*{site}`): the screen must show the sanitized prefix and the warning about removed characters, and a selective flush must delete only keys that start with the sanitized prefix.
-4. Remove `WP_REDIS_PREFIX`: the screen must show an auto-generated `icc…-` prefix and selective flush must keep working.
-5. Switch the site language to each bundled locale and confirm the Redis tab is translated; for Arabic confirm `<html dir="rtl">` and the `rtl` body class.
+3. Define `WP_REDIS_PREFIX` with spaces or special characters (for example `demo*{site}`, `host:8080` or `<>##`): the screen must show an alphanumeric prefix (`demosite`, `host8080`, or the generated prefix when nothing usable remains), the `(from WP_REDIS_PREFIX)` origin and the warning about removed characters. A selective flush must delete only keys that start with the sanitized prefix.
+4. Remove `WP_REDIS_PREFIX`: the screen must show an auto-generated `icc<hash>` prefix (12 hexadecimal characters, no punctuation) and selective flush must keep working.
+5. Define `WP_CACHE_KEY_SALT` without `WP_REDIS_PREFIX`: the screen must show the sanitized value with `(from WP_CACHE_KEY_SALT)`, and **Diagnostics → Key Prefix Source** must report `Defined (WP_CACHE_KEY_SALT)`. The `WP_CACHE_KEY_SALT` constant row must show the sanitized value plus a `(sanitized; original length N)` marker.
+6. Reproduce a host-injected salt with either reported value (`<$iIZ^o2xAd4-a>Ub3Vp4mYL0%oMZ1Xlo6dOCzJ:…` or ``bvCxv3~uT&TM~P1Mp837OS6=9cyC3M<yD`r;ZK0Ac:…``) as `WP_REDIS_PREFIX` and as the `WP_REDIS_PREFIX` environment variable: the effective prefix must contain only letters and digits, `redis-cli --scan` must show no key starting with a punctuation prefix, and `wp cache flush` must stay scoped to the sanitized prefix. `php tests/key-prefix.php` pins the exact expected values.
+7. Switch the site language to each bundled locale and confirm the Redis tab is translated; for Arabic confirm `<html dir="rtl">` and the `rtl` body class.
 
 ## Manual checks before a release
 

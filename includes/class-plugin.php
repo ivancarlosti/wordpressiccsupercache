@@ -789,7 +789,8 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 	 *
 	 * The drop-in knows whether the prefix was defined or generated and returns
 	 * the sanitized value. Without an active drop-in the configured constant is
-	 * sanitized locally so the screen never shows glob metacharacters.
+	 * sanitized locally so the screen never shows punctuation from a host
+	 * injected salt.
 	 *
 	 * @return string|null
 	 */
@@ -806,7 +807,18 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 		}
 
 		if ( defined( 'WP_REDIS_PREFIX' ) ) {
-			return ICC_GG_WordPress_Super_Cache_Key_Prefix::sanitize( WP_REDIS_PREFIX );
+			$configured = ICC_GG_WordPress_Super_Cache_Key_Prefix::sanitize( WP_REDIS_PREFIX );
+
+			if ( '' !== $configured ) {
+				return $configured;
+			}
+
+			/*
+			 * The constant only contained punctuation. Show the generated prefix
+			 * the client will actually use together with the sanitized warning
+			 * instead of hiding the row.
+			 */
+			return ICC_GG_WordPress_Super_Cache_Key_Prefix::resolve();
 		}
 
 		if ( 'defined' === ICC_GG_WordPress_Super_Cache_Key_Prefix::source() ) {
@@ -839,15 +851,57 @@ class ICC_GG_WordPress_Super_Cache_Plugin
 	/**
 	 * Tells whether the configured prefix had to be sanitized.
 	 *
+	 * Compares the raw configured value with the effective prefix so every
+	 * source is covered: a constant in wp-config.php, a value the drop-in mapped
+	 * from the environment, and `WP_CACHE_KEY_SALT`.
+	 *
 	 * @return bool
 	 */
 	public function is_redis_prefix_sanitized()
 	{
-		if ( ! defined( 'WP_REDIS_PREFIX' ) ) {
+		$raw = null;
+
+		if ( defined( 'WP_REDIS_PREFIX' ) ) {
+			$raw = (string) WP_REDIS_PREFIX;
+		} elseif ( defined( 'WP_CACHE_KEY_SALT' ) ) {
+			$raw = (string) WP_CACHE_KEY_SALT;
+		} else {
+			$env_prefix = getenv( 'WP_REDIS_PREFIX' );
+
+			if ( false !== $env_prefix && '' !== trim( (string) $env_prefix ) ) {
+				$raw = (string) $env_prefix;
+			}
+		}
+
+		if ( null === $raw ) {
 			return false;
 		}
 
-		return (string) WP_REDIS_PREFIX !== ICC_GG_WordPress_Super_Cache_Key_Prefix::sanitize( WP_REDIS_PREFIX );
+		$effective = $this->get_redis_prefix();
+
+		return null !== $effective && $raw !== $effective;
+	}
+
+	/**
+	 * Returns where the configured prefix came from.
+	 *
+	 * @return string One of the `ICC_GG_WordPress_Super_Cache_Key_Prefix::SOURCE_*` constants.
+	 */
+	public function get_redis_prefix_source_detail()
+	{
+		return ICC_GG_WordPress_Super_Cache_Key_Prefix::source_detail();
+	}
+
+	/**
+	 * Returns a human-readable label for the configured prefix source.
+	 *
+	 * @return string
+	 */
+	public function get_redis_prefix_source_label()
+	{
+		return ICC_GG_WordPress_Super_Cache_Key_Prefix::source_label(
+			$this->get_redis_prefix_source_detail()
+		);
 	}
 
 	/**

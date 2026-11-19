@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin Name: ICC.gg WordPress Super Cache Drop-In
  * Plugin URI: https://github.com/ivancarlosti/wordpressiccsupercache
  * Description: A persistent object cache backend powered by Redis. Supports Predis, PhpRedis, Relay, replication, sentinels, clustering and WP-CLI.
- * Version: 2.1.0
+ * Version: 2.1.1
  * Author: ivancarlosti
  * Author URI: https://ivancarlos.com.br
  * License: GPL-3.0-or-later
@@ -248,10 +248,14 @@ function wp_cache_init()
 {
 	global $wp_object_cache;
 
-	$env_prefix = getenv( 'WP_REDIS_PREFIX' );
+	$env_prefix    = getenv( 'WP_REDIS_PREFIX' );
+	$prefix_origin = 'generated';
 
-	if ( ! defined( 'WP_REDIS_PREFIX' ) && false !== $env_prefix && '' !== trim( (string) $env_prefix ) ) {
+	if ( defined( 'WP_REDIS_PREFIX' ) ) {
+		$prefix_origin = 'constant';
+	} elseif ( false !== $env_prefix && '' !== trim( (string) $env_prefix ) ) {
 		define( 'WP_REDIS_PREFIX', $env_prefix );
+		$prefix_origin = 'environment';
 	}
 
 	$env_selective = getenv( 'WP_REDIS_SELECTIVE_FLUSH' );
@@ -272,17 +276,29 @@ function wp_cache_init()
 	}
 
 	// Backwards compatibility: map `WP_CACHE_KEY_SALT` constant to `WP_REDIS_PREFIX`.
-	if ( defined( 'WP_CACHE_KEY_SALT' ) && ! defined( 'WP_REDIS_PREFIX' ) ) {
+	if ( 'generated' === $prefix_origin && ! defined( 'WP_REDIS_PREFIX' ) && defined( 'WP_CACHE_KEY_SALT' ) ) {
 		define( 'WP_REDIS_PREFIX', WP_CACHE_KEY_SALT );
+		$prefix_origin = 'wp_cache_key_salt';
 	}
 
 	// Set unique prefix for sites hosted on Cloudways
-	if ( ! defined( 'WP_REDIS_PREFIX' ) && isset( $_SERVER['cw_allowed_ip'] ) )  {
+	if ( 'generated' === $prefix_origin && ! defined( 'WP_REDIS_PREFIX' ) && isset( $_SERVER['cw_allowed_ip'] ) )  {
 		$cloudways_prefix = getenv( 'HTTP_X_APP_USER' );
 
 		if ( false !== $cloudways_prefix && '' !== trim( (string) $cloudways_prefix ) ) {
 			define( 'WP_REDIS_PREFIX', $cloudways_prefix );
+			$prefix_origin = 'cloudways';
 		}
+	}
+
+	/*
+	 * Record where the prefix came from before the plugin loads, so the
+	 * diagnostics screen can tell a host-injected value apart from a constant
+	 * in wp-config.php. `WP_REDIS_PREFIX` alone cannot distinguish them because
+	 * the blocks above map every source to that constant.
+	 */
+	if ( ! defined( 'ICC_GG_SUPER_CACHE_PREFIX_ORIGIN' ) ) {
+		define( 'ICC_GG_SUPER_CACHE_PREFIX_ORIGIN', $prefix_origin );
 	}
 
 	if ( ! ( $wp_object_cache instanceof WP_Object_Cache ) ) {
@@ -636,9 +652,10 @@ class WP_Object_Cache
 	 * Returns the effective key prefix.
 	 *
 	 * The configured `WP_REDIS_PREFIX` (or `WP_CACHE_KEY_SALT`, mapped above) is
-	 * sanitized before use. Redis glob metacharacters are removed because the
-	 * prefix is interpolated into `SCAN MATCH` patterns by the selective flush
-	 * routines. When no usable prefix is configured, a deterministic per-site
+	 * reduced to letters and digits before use. Punctuation is removed because
+	 * the prefix is interpolated into keys and `SCAN MATCH` patterns by the
+	 * selective flush routines; a random host-injected salt must never widen a
+	 * pattern. When no usable prefix is configured, a deterministic per-site
 	 * prefix is generated so selective flush remains scoped.
 	 *
 	 * Keep this logic in sync with
@@ -657,7 +674,7 @@ class WP_Object_Cache
 				$this->key_prefix = $configured;
 				$this->key_prefix_source = 'defined';
 			} else {
-				$this->key_prefix = $this->generate_key_prefix();
+				$this->key_prefix = $this->sanitize_key_prefix( $this->generate_key_prefix() );
 				$this->key_prefix_source = 'generated';
 			}
 		}
@@ -678,7 +695,7 @@ class WP_Object_Cache
 	}
 
 	/**
-	 * Removes Redis glob metacharacters, whitespace and control characters.
+	 * Keeps only letters and digits in the key prefix.
 	 *
 	 * Keep this logic in sync with
 	 * `ICC_GG_WordPress_Super_Cache_Key_Prefix::sanitize()`.
@@ -694,17 +711,9 @@ class WP_Object_Cache
 			return '';
 		}
 
-		$clean = preg_replace( '/[\x00-\x20\x7F]/', '', $prefix );
+		$clean = preg_replace( '/[^A-Za-z0-9]/', '', $prefix );
 
-		if ( null !== $clean ) {
-			$prefix = $clean;
-		}
-
-		return str_replace(
-			[ '\\', '*', '?', '[', ']', '{', '}', '(', ')', '|', '@', '!', '+' ],
-			'',
-			$prefix
-		);
+		return null === $clean ? '' : $clean;
 	}
 
 	/**
@@ -729,7 +738,7 @@ class WP_Object_Cache
 			$seed[] = 'multisite';
 		}
 
-		return 'icc' . substr( md5( implode( '|', $seed ) ), 0, 12 ) . '-';
+		return 'icc' . substr( md5( implode( '|', $seed ) ), 0, 12 );
 	}
 
 	/**

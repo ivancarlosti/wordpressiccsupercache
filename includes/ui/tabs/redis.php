@@ -21,6 +21,7 @@ $redis_client = $roc->get_redis_client_name();
 $redis_prefix = $roc->get_redis_prefix();
 $redis_prefix_generated = $roc->is_redis_prefix_generated();
 $redis_prefix_sanitized = $roc->is_redis_prefix_sanitized();
+$redis_prefix_source = $roc->get_redis_prefix_source_label();
 $selective_flush = $roc->is_selective_flush_enabled();
 $selective_flush_locked = $roc->is_selective_flush_locked();
 $redis_maxttl = $roc->get_redis_maxttl();
@@ -109,6 +110,19 @@ $diagnostics = $roc->get_diagnostics();
 				<code><?php echo esc_html( $redis_prefix ); ?></code>
 				<?php if ( $redis_prefix_generated ) : ?>
 					<span class="description"><?php esc_html_e( '(generated automatically)', 'icc-gg-wordpress-super-cache' ); ?></span>
+				<?php else : ?>
+					<span class="description">
+						<?php
+						echo wp_kses(
+							sprintf(
+								// translators: %s: Configuration source, for example WP_REDIS_PREFIX or WP_CACHE_KEY_SALT.
+								__( '(from %s)', 'icc-gg-wordpress-super-cache' ),
+								'<code>' . $redis_prefix_source . '</code>'
+							),
+							[ 'code' => [] ]
+						);
+						?>
+					</span>
 				<?php endif; ?>
 
 				<p class="description">
@@ -129,7 +143,7 @@ $diagnostics = $roc->get_diagnostics();
 				<?php if ( $redis_prefix_sanitized ) : ?>
 					<div class="notice notice-warning inline">
 						<p>
-							<?php esc_html_e( 'The configured prefix contained spaces or Redis glob metacharacters (such as *, ?, [, ], {, }, ( ) and |). They were removed automatically to keep selective flush patterns safe. Update WP_REDIS_PREFIX in wp-config.php to silence this warning.', 'icc-gg-wordpress-super-cache' ); ?>
+							<?php esc_html_e( 'The configured prefix contained characters other than letters and digits. They were removed automatically to keep Redis keys and selective flush patterns safe. Update WP_REDIS_PREFIX in wp-config.php to silence this warning.', 'icc-gg-wordpress-super-cache' ); ?>
 						</p>
 					</div>
 				<?php endif; ?>

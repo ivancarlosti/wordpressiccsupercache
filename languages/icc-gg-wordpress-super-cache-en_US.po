@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: ICC.gg WordPress Super Cache 2.1.0\n"
+"Project-Id-Version: ICC.gg WordPress Super Cache 2.1.1\n"
 "Language: en_US\n"
 "PO-Revision-Date: 2026-11-19 00:00+0000\n"
 "Last-Translator: ICC.gg <https://ivancarlos.com.br>\n"
@@ -85,7 +85,7 @@ msgstr "Enabled"
 #: includes/class-cli-commands.php:221 includes/class-local-cache.php:432
 #: includes/class-nginx-cache.php:525 includes/class-plugin.php:656
 #: includes/class-qm-collector.php:79 includes/class-varnish-cache.php:326
-#: includes/ui/tabs/redis.php:71
+#: includes/ui/tabs/redis.php:72
 msgid "Disabled"
 msgstr "Disabled"
 
@@ -522,22 +522,22 @@ msgstr "Sorry, you are not allowed to check for plugin updates on this site."
 msgid "The update checker is not available."
 msgstr "The update checker is not available."
 
-#: includes/class-plugin.php:453 includes/ui/tabs/redis.php:391
+#: includes/class-plugin.php:453 includes/ui/tabs/redis.php:405
 #: includes/ui/widget.php:23
 msgid "Time"
 msgstr "Time"
 
-#: includes/class-plugin.php:454 includes/ui/tabs/redis.php:396
+#: includes/class-plugin.php:454 includes/ui/tabs/redis.php:410
 #: includes/ui/widget.php:28
 msgid "Bytes"
 msgstr "Bytes"
 
-#: includes/class-plugin.php:455 includes/ui/tabs/redis.php:401
+#: includes/class-plugin.php:455 includes/ui/tabs/redis.php:415
 #: includes/ui/widget.php:33
 msgid "Ratio"
 msgstr "Ratio"
 
-#: includes/class-plugin.php:456 includes/ui/tabs/redis.php:406
+#: includes/class-plugin.php:456 includes/ui/tabs/redis.php:420
 #: includes/ui/widget.php:38
 msgid "Calls"
 msgstr "Calls"
@@ -582,7 +582,7 @@ msgstr "Connected"
 msgid "Not connected"
 msgstr "Not connected"
 
-#: includes/class-plugin.php:677 includes/ui/tabs/redis.php:372
+#: includes/class-plugin.php:677 includes/ui/tabs/redis.php:386
 msgid "Unknown"
 msgstr "Unknown"
 
@@ -623,7 +623,7 @@ msgstr "The update check could not reach GitHub. Please try again in a few minut
 msgid "Object Cache"
 msgstr "Object Cache"
 
-#: includes/class-plugin.php:1085 includes/ui/tabs/redis.php:421
+#: includes/class-plugin.php:1085 includes/ui/tabs/redis.php:435
 msgid "Flush Cache"
 msgstr "Flush Cache"
 
@@ -1026,7 +1026,7 @@ msgid "WordPress needs either the GD or the Imagick extension to optimize images
 msgstr "WordPress needs either the GD or the Imagick extension to optimize images."
 
 #: includes/ui/tabs/images.php:37 includes/ui/tabs/local.php:85
-#: includes/ui/tabs/redis.php:48 includes/ui/tabs/varnish.php:28
+#: includes/ui/tabs/redis.php:49 includes/ui/tabs/varnish.php:28
 msgid "Status:"
 msgstr "Status:"
 
@@ -1498,191 +1498,197 @@ msgstr "When WP_CACHE cannot be added to wp-config.php, both buttons write the m
 msgid "The same values can be defined in wp-config.php with the ICC_GG_SUPER_CACHE_LOCAL_ENABLED, ICC_GG_SUPER_CACHE_LOCAL_AUTO_PURGE and ICC_GG_SUPER_CACHE_LOCAL_PATH constants."
 msgstr "The same values can be defined in wp-config.php with the ICC_GG_SUPER_CACHE_LOCAL_ENABLED, ICC_GG_SUPER_CACHE_LOCAL_AUTO_PURGE and ICC_GG_SUPER_CACHE_LOCAL_PATH constants."
 
-#: includes/ui/tabs/redis.php:39
+#: includes/ui/tabs/redis.php:40
 msgid "Redis is unreachable:"
 msgstr "Redis is unreachable:"
 
-#: includes/ui/tabs/redis.php:65
+#: includes/ui/tabs/redis.php:66
 msgid "Filesystem:"
 msgstr "Filesystem:"
 
-#: includes/ui/tabs/redis.php:76
+#: includes/ui/tabs/redis.php:77
 msgid "Not writeable"
 msgstr "Not writeable"
 
-#: includes/ui/tabs/redis.php:82
+#: includes/ui/tabs/redis.php:83
 msgid "Writeable"
 msgstr "Writeable"
 
-#: includes/ui/tabs/redis.php:89
+#: includes/ui/tabs/redis.php:90
 msgid "Redis:"
 msgstr "Redis:"
 
-#: includes/ui/tabs/redis.php:94
+#: includes/ui/tabs/redis.php:95
 msgid "Reachable"
 msgstr "Reachable"
 
-#: includes/ui/tabs/redis.php:99
+#: includes/ui/tabs/redis.php:100
 msgid "Unreachable"
 msgstr "Unreachable"
 
-#: includes/ui/tabs/redis.php:107
+#: includes/ui/tabs/redis.php:108
 msgid "Key Prefix:"
 msgstr "Key Prefix:"
 
-#: includes/ui/tabs/redis.php:111
+#: includes/ui/tabs/redis.php:112
 msgid "(generated automatically)"
 msgstr "(generated automatically)"
 
-#. translators: 1: Example Redis key pattern, 2: WP_REDIS_PREFIX, 3: WP_CACHE_KEY_SALT.
+#. translators: %s: Configuration source, for example WP_REDIS_PREFIX or WP_CACHE_KEY_SALT.
 #: includes/ui/tabs/redis.php:119
+#, php-format
+msgid "(from %s)"
+msgstr "(from %s)"
+
+#. translators: 1: Example Redis key pattern, 2: WP_REDIS_PREFIX, 3: WP_CACHE_KEY_SALT.
+#: includes/ui/tabs/redis.php:133
 #, php-format
 msgid "Every key is stored as %1$s. The prefix comes from %2$s or %3$s. When neither constant is defined, the plugin generates a stable prefix for this site so cache flushes can stay scoped to it."
 msgstr "Every key is stored as %1$s. The prefix comes from %2$s or %3$s. When neither constant is defined, the plugin generates a stable prefix for this site so cache flushes can stay scoped to it."
 
-#: includes/ui/tabs/redis.php:132
-msgid "The configured prefix contained spaces or Redis glob metacharacters (such as *, ?, [, ], {, }, ( ) and |). They were removed automatically to keep selective flush patterns safe. Update WP_REDIS_PREFIX in wp-config.php to silence this warning."
-msgstr "The configured prefix contained spaces or Redis glob metacharacters (such as *, ?, [, ], {, }, ( ) and |). They were removed automatically to keep selective flush patterns safe. Update WP_REDIS_PREFIX in wp-config.php to silence this warning."
+#: includes/ui/tabs/redis.php:146
+msgid "The configured prefix contained characters other than letters and digits. They were removed automatically to keep Redis keys and selective flush patterns safe. Update WP_REDIS_PREFIX in wp-config.php to silence this warning."
+msgstr "The configured prefix contained characters other than letters and digits. They were removed automatically to keep Redis keys and selective flush patterns safe. Update WP_REDIS_PREFIX in wp-config.php to silence this warning."
 
-#: includes/ui/tabs/redis.php:142
+#: includes/ui/tabs/redis.php:156
 msgid "Max. TTL:"
 msgstr "Max. TTL:"
 
-#: includes/ui/tabs/redis.php:148
+#: includes/ui/tabs/redis.php:162
 msgid "This doesn’t appear to be a valid number."
 msgstr "This doesn’t appear to be a valid number."
 
-#: includes/ui/tabs/redis.php:158
+#: includes/ui/tabs/redis.php:172
 msgid "Flush Behavior"
 msgstr "Flush Behavior"
 
-#: includes/ui/tabs/redis.php:166
+#: includes/ui/tabs/redis.php:180
 msgid "Selective Flush:"
 msgstr "Selective Flush:"
 
-#: includes/ui/tabs/redis.php:179
+#: includes/ui/tabs/redis.php:193
 msgid "Flush only keys that belong to this site"
 msgstr "Flush only keys that belong to this site"
 
 #. translators: %s = Name of the constant that locks the setting.
-#: includes/ui/tabs/redis.php:189
+#: includes/ui/tabs/redis.php:203
 #, php-format
 msgid "Defined as %s in wp-config.php (or by the environment). This setting is read-only here."
 msgstr "Defined as %s in wp-config.php (or by the environment). This setting is read-only here."
 
-#: includes/ui/tabs/redis.php:199
+#: includes/ui/tabs/redis.php:213
 msgid "Enabled by default. When enabled, wp_cache_flush() uses SCAN + DEL and only deletes keys that start with this site's prefix. When disabled, it runs FLUSHDB and deletes every key in the Redis database, including keys from other sites that share the same database."
 msgstr "Enabled by default. When enabled, wp_cache_flush() uses SCAN + DEL and only deletes keys that start with this site's prefix. When disabled, it runs FLUSHDB and deletes every key in the Redis database, including keys from other sites that share the same database."
 
-#: includes/ui/tabs/redis.php:202
+#: includes/ui/tabs/redis.php:216
 msgid "Group flushes (wp_cache_flush_group()) always delete only the requested group and remain scoped to this site."
 msgstr "Group flushes (wp_cache_flush_group()) always delete only the requested group and remain scoped to this site."
 
-#: includes/ui/tabs/redis.php:209
+#: includes/ui/tabs/redis.php:223
 msgid "Warning:"
 msgstr "Warning:"
 
-#: includes/ui/tabs/redis.php:210
+#: includes/ui/tabs/redis.php:224
 msgid "selective flush is disabled, so the next cache flush will delete every key in the Redis database. Only use this when Redis is dedicated to this site."
 msgstr "selective flush is disabled, so the next cache flush will delete every key in the Redis database. Only use this when Redis is dedicated to this site."
 
-#: includes/ui/tabs/redis.php:220
+#: includes/ui/tabs/redis.php:234
 msgid "Save Redis Settings"
 msgstr "Save Redis Settings"
 
-#: includes/ui/tabs/redis.php:228
+#: includes/ui/tabs/redis.php:242
 msgid "Connection"
 msgstr "Connection"
 
-#: includes/ui/tabs/redis.php:235
+#: includes/ui/tabs/redis.php:249
 msgid "Client:"
 msgstr "Client:"
 
-#: includes/ui/tabs/redis.php:244
+#: includes/ui/tabs/redis.php:258
 msgid "Host:"
 msgstr "Host:"
 
-#: includes/ui/tabs/redis.php:251
+#: includes/ui/tabs/redis.php:265
 msgid "Cluster:"
 msgstr "Cluster:"
 
-#: includes/ui/tabs/redis.php:264
+#: includes/ui/tabs/redis.php:278
 msgid "Shards:"
 msgstr "Shards:"
 
-#: includes/ui/tabs/redis.php:277
+#: includes/ui/tabs/redis.php:291
 msgid "Servers:"
 msgstr "Servers:"
 
-#: includes/ui/tabs/redis.php:290
+#: includes/ui/tabs/redis.php:304
 msgid "Port:"
 msgstr "Port:"
 
-#: includes/ui/tabs/redis.php:297
+#: includes/ui/tabs/redis.php:311
 msgid "Username:"
 msgstr "Username:"
 
-#: includes/ui/tabs/redis.php:304
+#: includes/ui/tabs/redis.php:318
 msgid "Password:"
 msgstr "Password:"
 
-#: includes/ui/tabs/redis.php:313
+#: includes/ui/tabs/redis.php:327
 msgid "Database:"
 msgstr "Database:"
 
-#: includes/ui/tabs/redis.php:320
+#: includes/ui/tabs/redis.php:334
 msgid "Connection Timeout:"
 msgstr "Connection Timeout:"
 
 #. translators: %s = Redis connection/read timeout in seconds.
-#: includes/ui/tabs/redis.php:326 includes/ui/tabs/redis.php:343
+#: includes/ui/tabs/redis.php:340 includes/ui/tabs/redis.php:357
 #, php-format
 msgid "%ss"
 msgstr "%ss"
 
-#: includes/ui/tabs/redis.php:337
+#: includes/ui/tabs/redis.php:351
 msgid "Read Timeout:"
 msgstr "Read Timeout:"
 
-#: includes/ui/tabs/redis.php:354
+#: includes/ui/tabs/redis.php:368
 msgid "Retry Interval:"
 msgstr "Retry Interval:"
 
 #. translators: %s = Redis retry interval in milliseconds.
-#: includes/ui/tabs/redis.php:360
+#: includes/ui/tabs/redis.php:374
 #, php-format
 msgid "%sms"
 msgstr "%sms"
 
-#: includes/ui/tabs/redis.php:371
+#: includes/ui/tabs/redis.php:385
 msgid "Redis Version:"
 msgstr "Redis Version:"
 
-#: includes/ui/tabs/redis.php:383
+#: includes/ui/tabs/redis.php:397
 msgid "Metrics"
 msgstr "Metrics"
 
-#: includes/ui/tabs/redis.php:390 includes/ui/widget.php:22
+#: includes/ui/tabs/redis.php:404 includes/ui/widget.php:22
 msgid "The total amount of time (in milliseconds) it took Redis to return cache data."
 msgstr "The total amount of time (in milliseconds) it took Redis to return cache data."
 
-#: includes/ui/tabs/redis.php:395 includes/ui/widget.php:27
+#: includes/ui/tabs/redis.php:409 includes/ui/widget.php:27
 msgid "The total amount of bytes that was retrieved from Redis."
 msgstr "The total amount of bytes that was retrieved from Redis."
 
-#: includes/ui/tabs/redis.php:400 includes/ui/widget.php:32
+#: includes/ui/tabs/redis.php:414 includes/ui/widget.php:32
 msgid "The hit/miss ratio of cache data that was already cached."
 msgstr "The hit/miss ratio of cache data that was already cached."
 
-#: includes/ui/tabs/redis.php:405 includes/ui/widget.php:37
+#: includes/ui/tabs/redis.php:419 includes/ui/widget.php:37
 msgid "The total amount of commands sent to Redis."
 msgstr "The total amount of commands sent to Redis."
 
-#: includes/ui/tabs/redis.php:428
+#: includes/ui/tabs/redis.php:442
 msgid "Disable Object Cache"
 msgstr "Disable Object Cache"
 
-#: includes/ui/tabs/redis.php:434 includes/ui/tabs/redis.php:438
+#: includes/ui/tabs/redis.php:448 includes/ui/tabs/redis.php:452
 msgid "Enable Object Cache"
 msgstr "Enable Object Cache"
 

@@ -156,7 +156,7 @@ All settings can be defined as PHP constants in `wp-config.php` for added securi
 
 | Constant | Description | Default |
 |---|---|---|
-| `WP_REDIS_PREFIX` | Key prefix for this site's cache. Redis glob metacharacters and whitespace are removed automatically; when neither this constant nor `WP_CACHE_KEY_SALT` is defined, a stable prefix is generated from the site's database and installation path | Generated |
+| `WP_REDIS_PREFIX` | Key prefix for this site's cache. Only letters and digits are kept; every other character (Redis glob metacharacters, whitespace, `:`, `-`, `_`, punctuation) is removed automatically, so a host-injected random salt cannot reach Redis keys. When neither this constant nor `WP_CACHE_KEY_SALT` is defined, a stable prefix is generated from the site's database and installation path | Generated |
 | `WP_REDIS_SELECTIVE_FLUSH` | Flush only keys with the effective site prefix. Defaults to `true`; set it to `false` only when Redis is dedicated to this site. Defining it makes the setting read-only on the Redis tab | `true` |
 | `WP_REDIS_MAXTTL` | Maximum time-to-live for cache keys, in seconds | — |
 
@@ -167,14 +167,14 @@ Every key is stored as `<prefix><blog>:<group>:<key>`, where `<blog>` is `$table
 `wp_cache_flush()` is **selective by default**. It scans and deletes only keys that start with the effective site prefix:
 
 - The value comes from `WP_REDIS_PREFIX`, `WP_CACHE_KEY_SALT`, the `WP_REDIS_PREFIX` environment variable, or Cloudways' `HTTP_X_APP_USER`.
-- Spaces and Redis glob metacharacters (`*`, `?`, `[`, `]`, `{`, `}`, `(`, `)`, `|`, `@`, `!`, `+`, `\`) are removed before the prefix is used, so it cannot turn into a wider `SCAN` pattern.
-- When no prefix is configured, a stable per-site prefix (`icc` + hash of database name and installation path) is generated.
+- Only letters and digits are kept in the prefix: glob metacharacters (`*`, `?`, `[`, `]`, `{`, `}`, `(`, `)`, `|`), whitespace, `:`, `-`, `_` and any other punctuation are removed before the prefix is used, so it cannot turn into a wider `SCAN` pattern.
+- When no prefix is configured, a stable per-site prefix (`icc` + hash of database name and installation path) is generated. The generated value is alphanumeric, so it passes the same rule unchanged.
 - If `WP_REDIS_SELECTIVE_FLUSH` is defined in `wp-config.php` (or the environment), the checkbox on the **Redis Object Cache** tab is read-only. Otherwise the tab stores the preference, defaulting to `true`.
 - Setting it to `false` makes `wp_cache_flush()` run `FLUSHDB`, deleting **every key in the Redis database**, including keys from other sites that share it. Only use this when Redis is dedicated to the site.
 - `wp_cache_flush_group()` always deletes only the requested group and is scoped to the current site. On multisite, global groups are shared by the network, while every other group belongs to the current blog.
 - On multisite, the key prefix is shared by the whole network, so `wp_cache_flush()` clears the object cache of every blog in the network while still leaving other installations that share the same Redis database untouched.
 
-Changing the effective prefix — because characters were sanitized or because a prefix is generated for the first time — starts a new key namespace. Keys written under the previous prefix are no longer read and expire according to their TTL, so expect one round of cache misses after upgrading a site whose prefix contained glob characters.
+Changing the effective prefix — because characters were sanitized, because 2.1.1 replaced the `icc…-` generated namespace from 2.1.0, or because a prefix is generated for the first time — starts a new key namespace. Keys written under the previous prefix are no longer read and expire according to their TTL, so expect one round of cache misses after upgrading a site whose prefix contained special characters.
 
 ### Groups
 

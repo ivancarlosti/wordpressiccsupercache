@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin Name:       ICC.gg WordPress Super Cache
  * Plugin URI:        https://github.com/ivancarlosti/wordpressiccsupercache
  * Description:       Redis object cache, Varnish Cache and nginx FastCGI page cache in one plugin. Enable, configure and purge each layer independently.
- * Version:           2.1.0
+ * Version:           2.1.1
  * Requires at least: 5.0
  * Requires PHP:      8.2
  * Author:            ivancarlosti
@@ -133,7 +133,7 @@ define( 'ICC_GG_WORDPRESS_SUPER_CACHE_FILE', __FILE__ );
 define( 'ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME', plugin_basename( ICC_GG_WORDPRESS_SUPER_CACHE_FILE ) );
 define( 'ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_DIR', plugin_dir_url( ICC_GG_WORDPRESS_SUPER_CACHE_FILE ) );
 define( 'ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH', __DIR__ );
-define( 'ICC_GG_WORDPRESS_SUPER_CACHE_VERSION', '2.1.0' );
+define( 'ICC_GG_WORDPRESS_SUPER_CACHE_VERSION', '2.1.1' );
 
 /**
  * Loads the bundled translations.
@@ -275,7 +275,7 @@ class ICC_GG_WordPress_Super_Cache {
 	 *
 	 * @var string
 	 */
-	const VERSION = '2.1.0';
+	const VERSION = '2.1.1';
 
 	/**
 	 * Simple autoloader.
