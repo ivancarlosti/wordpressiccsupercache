@@ -1,0 +1,1794 @@
+# ICC.gg WordPress Super Cache translation.
+# This file is distributed under the same license as the plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: ICC.gg WordPress Super Cache 2.1.0\n"
+"Language: es_MX\n"
+"PO-Revision-Date: 2026-11-19 00:00+0000\n"
+"Last-Translator: ICC.gg <https://ivancarlos.com.br>\n"
+"Language-Team: ICC.gg\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: ICC.gg translation helper\n"
+
+#: includes/class-cli-commands.php:56
+msgid "Redis object cache already enabled."
+msgstr "La caché de objetos de Redis ya está habilitada."
+
+#: includes/class-cli-commands.php:58 includes/class-cli-commands.php:118
+msgid "A foreign object cache drop-in was found. To use Redis for object caching, run: `wp icc-gg-wordpress-super-cache update-dropin`."
+msgstr "Se encontró una entrada de caché de objetos extraños. Para usar Redis para el almacenamiento en caché de objetos, ejecute: `wp icc-gg-wordpress-super-cache update-dropin`."
+
+#. translators: %s = The Redis connection error message.
+#: includes/class-cli-commands.php:65
+#, php-format
+msgid "Object cache could not be enabled. Redis server is unreachable: %s"
+msgstr "No se pudo habilitar la caché de objetos. El servidor Redis es inaccesible: %s"
+
+#: includes/class-cli-commands.php:86 includes/class-plugin.php:1420
+msgid "Object cache enabled."
+msgstr "Caché de objetos habilitado."
+
+#: includes/class-cli-commands.php:88 includes/class-plugin.php:1426
+msgid "Object cache could not be enabled."
+msgstr "No se pudo habilitar la caché de objetos."
+
+#: includes/class-cli-commands.php:112
+msgid "No object cache drop-in found."
+msgstr "No se encontró ningún complemento de caché de objetos."
+
+#: includes/class-cli-commands.php:137 includes/class-plugin.php:1450
+msgid "Object cache disabled."
+msgstr "Caché de objetos deshabilitada."
+
+#: includes/class-cli-commands.php:139 includes/class-plugin.php:1456
+msgid "Object cache could not be disabled."
+msgstr "No se pudo desactivar la caché de objetos."
+
+#. translators: %s = The Redis connection error message.
+#: includes/class-cli-commands.php:183
+#, php-format
+msgid "Object cache drop-in could not be updated. Redis server is unreachable: %s"
+msgstr "No se pudo actualizar la caché de objetos. El servidor Redis es inaccesible: %s"
+
+#: includes/class-cli-commands.php:186 includes/class-plugin.php:1481
+msgid "Updated object cache drop-in and enabled Redis object cache."
+msgstr "Se actualizó el caché de objetos y se habilitó el caché de objetos de Redis."
+
+#: includes/class-cli-commands.php:188 includes/class-plugin.php:1487
+msgid "Object cache drop-in could not be updated."
+msgstr "No se pudo actualizar la caché de objetos."
+
+#: includes/class-cli-commands.php:207 includes/class-page-cache.php:117
+#: includes/class-plugin.php:239
+msgid "nginx FastCGI"
+msgstr "nginx FastCGI"
+
+#: includes/class-cli-commands.php:212
+msgid "Cache Zone Path"
+msgstr "Ruta de la zona de caché"
+
+#: includes/class-cli-commands.php:213
+msgid "(not set)"
+msgstr "(no establecido)"
+
+#: includes/class-cli-commands.php:220 includes/ui/tabs/varnish.php:200
+msgid "Auto Purge"
+msgstr "Purga automática"
+
+#: includes/class-cli-commands.php:221
+msgid "Enabled"
+msgstr "Activado"
+
+#: includes/class-cli-commands.php:221 includes/class-local-cache.php:432
+#: includes/class-nginx-cache.php:525 includes/class-plugin.php:656
+#: includes/class-qm-collector.php:79 includes/class-varnish-cache.php:326
+#: includes/ui/tabs/redis.php:71
+msgid "Disabled"
+msgstr "Desactivado"
+
+#: includes/class-cli-commands.php:225
+msgid "Files"
+msgstr "Archivos"
+
+#: includes/class-cli-commands.php:226 includes/ui/query-monitor.php:45
+msgid "Size"
+msgstr "Tamaño"
+
+#: includes/class-cli-commands.php:243 includes/class-plugin.php:1367
+msgid "nginx FastCGI cache purged."
+msgstr "Se purgó la caché de nginx FastCGI."
+
+#: includes/class-cli-commands.php:247 includes/class-plugin.php:1385
+msgid "nginx FastCGI cache purge was skipped."
+msgstr "Se omitió la purga de caché de nginx FastCGI."
+
+#: includes/class-cli-commands.php:266 includes/class-page-cache.php:115
+#: includes/class-plugin.php:229 includes/ui/tabs/local.php:289
+msgid "Page Cache"
+msgstr "Caché de páginas"
+
+#: includes/class-cli-commands.php:271
+msgid "Active Backend"
+msgstr "Servidor activo"
+
+#: includes/class-cli-commands.php:272
+msgid "(none)"
+msgstr "(ninguno)"
+
+#: includes/class-cli-commands.php:279
+msgid "Conflicts"
+msgstr "Conflictos"
+
+#: includes/class-cli-commands.php:284
+msgid "Local Page Cache"
+msgstr "Caché de página local"
+
+#: includes/class-cli-commands.php:285
+msgid "Loader"
+msgstr "Cargador"
+
+#: includes/class-cli-commands.php:286
+msgid "Cache Directory"
+msgstr "Directorio de caché"
+
+#: includes/class-cli-commands.php:287
+msgid "Cached Pages"
+msgstr "Páginas almacenadas en caché"
+
+#: includes/class-cli-commands.php:288
+msgid "Cache Files"
+msgstr "Archivos de caché"
+
+#: includes/class-cli-commands.php:289
+msgid "Cache Size"
+msgstr "Tamaño de caché"
+
+#: includes/class-cli-commands.php:290
+msgid "Preload Queue"
+msgstr "Cola de precarga"
+
+#: includes/class-cli-commands.php:321
+msgid "Local page cache enabled."
+msgstr "Caché de página local habilitado."
+
+#: includes/class-cli-commands.php:354
+msgid "Local page cache disabled."
+msgstr "Caché de página local deshabilitado."
+
+#: includes/class-cli-commands.php:379
+msgid "Local page cache purged."
+msgstr "Caché de página local eliminado."
+
+#. translators: %d = Number of purged cache entries.
+#: includes/class-cli-commands.php:389
+#, php-format
+msgid "%d cached entry purged."
+msgid_plural "%d cached entries purged."
+msgstr[0] "%d entrada en caché eliminada."
+msgstr[1] "%d entradas en caché eliminadas."
+
+#: includes/class-cli-commands.php:409
+msgid "The local page cache is disabled."
+msgstr "La caché de la página local está deshabilitada."
+
+#. translators: 1: Number of queued URLs, 2: Number of URLs requested in this run.
+#: includes/class-cli-commands.php:418
+#, php-format
+msgid "%1$d URLs queued, %2$d requested now. The rest runs through WP-Cron."
+msgstr "%1$d URL en cola, %2$d solicitadas ahora. El resto pasa por WP-Cron."
+
+#: includes/class-cli-commands.php:439 includes/class-page-cache.php:116
+#: includes/class-plugin.php:234 includes/ui/tabs/varnish.php:83
+msgid "Varnish Cache"
+msgstr "Caché Varnish"
+
+#: includes/class-cli-commands.php:440
+msgid "Endpoint"
+msgstr "Punto final"
+
+#: includes/class-cli-commands.php:441
+msgid "Method"
+msgstr "Método"
+
+#: includes/class-cli-commands.php:466 includes/class-varnish-cache.php:523
+msgid "Varnish could not be reached."
+msgstr "No se pudo alcanzar el barniz."
+
+#: includes/class-cli-commands.php:469
+msgid "Varnish answered."
+msgstr "Barniz respondió."
+
+#: includes/class-cli-commands.php:495 includes/class-plugin.php:2045
+msgid "Varnish cache purged."
+msgstr "Caché de barniz purgado."
+
+#. translators: 1: Processed images, 2: Failed images, 3: Pending images.
+#: includes/class-cli-commands.php:528
+#, php-format
+msgid "Processed %1$d, failed %2$d, pending %3$d."
+msgstr "Procesado %1$d, fallido %2$d, pendiente %3$d."
+
+#: includes/class-cli-commands.php:540
+msgid "Image optimization finished."
+msgstr "Optimización de imagen finalizada."
+
+#: includes/class-image-optimizer.php:157
+msgid "JPEG"
+msgstr "JPEG"
+
+#: includes/class-image-optimizer.php:158
+msgid "PNG"
+msgstr "PNG"
+
+#: includes/class-image-optimizer.php:159
+msgid "WebP"
+msgstr "WebP"
+
+#: includes/class-image-optimizer.php:160
+msgid "AVIF"
+msgstr "AVIF"
+
+#: includes/class-image-optimizer.php:284
+msgid "Manual optimization"
+msgstr "Optimización manual"
+
+#: includes/class-image-optimizer.php:287
+msgid "Optimizing new uploads"
+msgstr "Optimización de nuevas cargas"
+
+#: includes/class-image-optimizer.php:402
+#: includes/class-image-optimizer.php:595
+msgid "The attached file could not be read."
+msgstr "El archivo adjunto no se pudo leer."
+
+#: includes/class-image-optimizer.php:411
+msgid "This image format is not optimized by the current settings."
+msgstr "Este formato de imagen no está optimizado por la configuración actual."
+
+#: includes/class-image-optimizer.php:558
+msgid "The backup directory could not be created."
+msgstr "No se pudo crear el directorio de respaldo."
+
+#: includes/class-image-optimizer.php:565
+msgid "The original image could not be backed up."
+msgstr "No se pudo realizar una copia de seguridad de la imagen original."
+
+#: includes/class-image-optimizer.php:586
+msgid "No backup was found for this image."
+msgstr "No se encontró ninguna copia de seguridad para esta imagen."
+
+#: includes/class-image-optimizer.php:602
+msgid "The original image could not be restored."
+msgstr "No se pudo restaurar la imagen original."
+
+#. translators: 1: attachment title, 2: attachment ID, 3: error message.
+#: includes/class-image-optimizer.php:775
+#, php-format
+msgid "%1$s (#%2$d): %3$s"
+msgstr "%1$s (#%2$d): %3$s"
+
+#: includes/class-local-cache.php:438
+msgid "Enabled, but no loader installed"
+msgstr "Habilitado, pero no hay cargador instalado"
+
+#: includes/class-local-cache.php:442
+msgid "Enabled (advanced-cache.php)"
+msgstr "Habilitado (advanced-cache.php)"
+
+#: includes/class-local-cache.php:443
+msgid "Enabled (must-use plugin loader)"
+msgstr "Habilitado (cargador de complementos de uso obligatorio)"
+
+#: includes/class-local-cache.php:897 includes/class-local-cache.php:952
+#: includes/class-local-cache.php:1042 includes/class-nginx-cache.php:294
+#: includes/class-nginx-cache.php:352
+msgid "Filesystem API could not be initialized."
+msgstr "No se pudo inicializar la API del sistema de archivos."
+
+#. translators: %s = Directory path.
+#: includes/class-local-cache.php:907
+#, php-format
+msgid "The directory %s could not be created."
+msgstr "No se pudo crear el directorio %s."
+
+#. translators: %s = File path.
+#: includes/class-local-cache.php:920
+#, php-format
+msgid "The file %s could not be written."
+msgstr "No se pudo escribir el archivo %s."
+
+#. translators: %s = File path.
+#: includes/class-local-cache.php:933
+#, php-format
+msgid "The file %s could not be saved."
+msgstr "No se pudo guardar el archivo %s."
+
+#: includes/class-local-cache.php:963
+msgid "The page cache engine file could not be read."
+msgstr "No se pudo leer el archivo del motor de caché de páginas."
+
+#. translators: %s = Cache directory path.
+#: includes/class-local-cache.php:991
+#, php-format
+msgid "The cache directory %s could not be created."
+msgstr "No se pudo crear el directorio de caché %s."
+
+#: includes/class-local-cache.php:1014
+msgid "The loader template could not be read."
+msgstr "No se pudo leer la plantilla del cargador."
+
+#. translators: 1: Loader path, 2: Backup path.
+#: includes/class-local-cache.php:1111
+#, php-format
+msgid "The existing file %1$s could not be backed up to %2$s, so it was left untouched."
+msgstr "No se pudo realizar una copia de seguridad del archivo existente %1$s en %2$s, por lo que no se modificó."
+
+#: includes/class-local-cache.php:1188
+msgid "Editing wp-config.php is disabled by the ICC_GG_SUPER_CACHE_ALLOW_WP_CONFIG_EDIT constant."
+msgstr "La edición wp-config.php está deshabilitada por la constante ICC_GG_SUPER_CACHE_ALLOW_WP_CONFIG_EDIT."
+
+#: includes/class-local-cache.php:1199
+msgid "wp-config.php could not be located."
+msgstr "No se pudo localizar wp-config.php."
+
+#: includes/class-local-cache.php:1203
+msgid "File modifications are not allowed on this installation."
+msgstr "No se permiten modificaciones de archivos en esta instalación."
+
+#: includes/class-local-cache.php:1209
+msgid "WP_CONTENT_DIR is customized, so WP_CACHE has to be added to wp-config.php manually."
+msgstr "WP_CONTENT_DIR está personalizado, por lo que WP_CACHE debe agregarse a wp-config.php manualmente."
+
+#: includes/class-local-cache.php:1214
+msgid "wp-config.php is not writable."
+msgstr "wp-config.php no se puede escribir."
+
+#: includes/class-local-cache.php:1220
+msgid "wp-config.php could not be read."
+msgstr "No se pudo leer wp-config.php."
+
+#: includes/class-local-cache.php:1240
+msgid "The WP_CACHE constant in wp-config.php could not be updated automatically."
+msgstr "La constante WP_CACHE en wp-config.php no se pudo actualizar automáticamente."
+
+#: includes/class-local-cache.php:1255
+msgid "The wp-config.php layout was not recognized, so WP_CACHE was not added."
+msgstr "No se reconoció el diseño wp-config.php, por lo que no se agregó WP_CACHE."
+
+#: includes/class-local-cache.php:1272
+msgid "wp-config.php could not be backed up."
+msgstr "No se pudo realizar una copia de seguridad de wp-config.php."
+
+#: includes/class-local-cache.php:1279
+msgid "The temporary wp-config.php file could not be written."
+msgstr "No se pudo escribir el archivo temporal wp-config.php."
+
+#: includes/class-local-cache.php:1285
+msgid "wp-config.php could not be replaced."
+msgstr "wp-config.php no se pudo reemplazar."
+
+#: includes/class-local-cache.php:1297
+msgid "The wp-config.php edit could not be verified and was reverted."
+msgstr "La edición wp-config.php no se pudo verificar y se revirtió."
+
+#: includes/class-local-cache.php:1314
+msgid "No wp-config.php backup was found."
+msgstr "No se encontró ninguna copia de seguridad de wp-config.php."
+
+#: includes/class-local-cache.php:1318
+msgid "wp-config.php could not be restored from the backup."
+msgstr "wp-config.php no se pudo restaurar desde la copia de seguridad."
+
+#: includes/class-local-cache.php:1362
+msgid "Another plugin already installed an advanced-cache.php drop-in. Remove it before enabling the local page cache."
+msgstr "Otro complemento ya instaló un complemento advanced-cache.php. Elimínelo antes de habilitar el caché de la página local."
+
+#: includes/class-local-cache.php:1369
+msgid "Another must-use plugin already uses the file wp-content/mu-plugins/icc-gg-page-cache.php. Remove it before enabling the local page cache."
+msgstr "Otro complemento imprescindible ya utiliza el archivo wp-content/mu-plugins/icc-gg-page-cache.php. Elimínelo antes de habilitar el caché de la página local."
+
+#. translators: %s = Loader path.
+#: includes/class-local-cache.php:1466
+#, php-format
+msgid "The file %s was not created by this plugin and was left untouched."
+msgstr "El archivo %s no fue creado por este complemento y no se modificó."
+
+#. translators: %s = Loader path.
+#: includes/class-local-cache.php:1477
+#, php-format
+msgid "The file %s could not be removed."
+msgstr "No se pudo eliminar el archivo %s."
+
+#: includes/class-nginx-cache.php:279
+msgid "The Nginx cache is disabled."
+msgstr "La caché de Nginx está deshabilitada."
+
+#: includes/class-nginx-cache.php:348
+msgid "\"Cache Zone Path\" is not set."
+msgstr "La \"Ruta de la zona de caché\" no está configurada."
+
+#: includes/class-nginx-cache.php:356
+msgid "\"Cache Zone Path\" does not exist."
+msgstr "La \"ruta de la zona de caché\" no existe."
+
+#: includes/class-nginx-cache.php:360
+msgid "\"Cache Zone Path\" is not a directory."
+msgstr "\"Ruta de la zona de caché\" no es un directorio."
+
+#: includes/class-nginx-cache.php:366
+msgid "\"Cache Zone Path\" does not appear to be an Nginx cache zone directory."
+msgstr "La \"Ruta de la zona de caché\" no parece ser un directorio de zona de caché de Nginx."
+
+#: includes/class-nginx-cache.php:370
+msgid "\"Cache Zone Path\" is not writable."
+msgstr "No se puede escribir en la \"Ruta de la zona de caché\"."
+
+#. translators: %s = The cache zone path validation error.
+#: includes/class-nginx-cache.php:533
+#, php-format
+msgid "Enabled, but unusable: %s"
+msgstr "Habilitado, pero inutilizable: %s"
+
+#: includes/class-nginx-cache.php:539 includes/class-varnish-cache.php:330
+msgid "Enabled (auto purge)"
+msgstr "Habilitado (purga automática)"
+
+#: includes/class-nginx-cache.php:540 includes/class-varnish-cache.php:331
+msgid "Enabled (manual purge)"
+msgstr "Habilitado (purga manual)"
+
+#. translators: 1: enabled page cache names, 2: page cache the user wants to enable.
+#: includes/class-page-cache.php:280
+#, php-format
+msgid "The %1$s page cache is enabled. Disable it before enabling the %2$s page cache."
+msgstr "La caché de páginas de %1$s está habilitada. Deshabilítelo antes de habilitar el caché de la página %2$s."
+
+#. translators: 1: forced backend name, 2: backend the user wants to enable.
+#: includes/class-page-cache.php:303
+#, php-format
+msgid "The %1$s cache is forced by the ICC_GG_SUPER_CACHE_PAGE_CACHE constant in wp-config.php, so the %2$s cache cannot be enabled."
+msgstr "La constante ICC_GG_SUPER_CACHE_PAGE_CACHE en wp-config.php fuerza la caché de %1$s, por lo que no se puede habilitar la caché de %2$s."
+
+#: includes/class-page-cache.php:338
+msgid "Unknown page cache backend."
+msgstr "Backend de caché de página desconocida."
+
+#: includes/class-page-cache.php:565
+msgid "The page cache backend is not available."
+msgstr "El backend de caché de página no está disponible."
+
+#: includes/class-page-cache.php:579
+msgid "This page cache backend cannot be purged."
+msgstr "El backend de caché de esta página no se puede eliminar."
+
+#: includes/class-page-cache.php:595
+msgid "No page cache is enabled."
+msgstr "No hay caché de página habilitado."
+
+#: includes/class-page-cache.php:612
+msgid "No page cache enabled"
+msgstr "No hay caché de página habilitado"
+
+#. translators: %s = Comma separated list of enabled page caches.
+#: includes/class-page-cache.php:618
+#, php-format
+msgid "Conflict: %s are enabled at the same time"
+msgstr "Conflicto: %s están habilitados al mismo tiempo"
+
+#: includes/class-plugin.php:185 includes/class-plugin.php:273
+#: includes/ui/settings.php:21
+msgid "ICC.gg WordPress Super Cache"
+msgstr "Súper caché de WordPress de ICC.gg"
+
+#: includes/class-plugin.php:186
+msgid "Super Cache"
+msgstr "Súper caché"
+
+#: includes/class-plugin.php:223
+msgid "Redis Object Cache"
+msgstr "Caché de objetos Redis"
+
+#: includes/class-plugin.php:244 includes/class-plugin.php:1142
+#: includes/ui/tabs/images.php:322
+msgid "Optimize Images"
+msgstr "Optimizar imágenes"
+
+#: includes/class-plugin.php:249
+msgid "Diagnostics"
+msgstr "Diagnóstico"
+
+#: includes/class-plugin.php:303 includes/class-plugin.php:1124
+#: includes/ui/widget.php:43
+msgid "Settings"
+msgstr "Configuración"
+
+#: includes/class-plugin.php:330 includes/ui/settings.php:92
+msgid "Check for updates"
+msgstr "Buscar actualizaciones"
+
+#: includes/class-plugin.php:337 includes/class-plugin.php:1013
+#: includes/ui/settings.php:116
+msgid "Release notes"
+msgstr "Notas de la versión"
+
+#: includes/class-plugin.php:352
+msgid "Sorry, you are not allowed to check for plugin updates on this site."
+msgstr "Lo sentimos, no tienes permiso para buscar actualizaciones de complementos en este sitio."
+
+#: includes/class-plugin.php:358
+msgid "The update checker is not available."
+msgstr "El verificador de actualizaciones no está disponible."
+
+#: includes/class-plugin.php:453 includes/ui/tabs/redis.php:391
+#: includes/ui/widget.php:23
+msgid "Time"
+msgstr "Tiempo"
+
+#: includes/class-plugin.php:454 includes/ui/tabs/redis.php:396
+#: includes/ui/widget.php:28
+msgid "Bytes"
+msgstr "Bytes"
+
+#: includes/class-plugin.php:455 includes/ui/tabs/redis.php:401
+#: includes/ui/widget.php:33
+msgid "Ratio"
+msgstr "Proporción"
+
+#: includes/class-plugin.php:456 includes/ui/tabs/redis.php:406
+#: includes/ui/widget.php:38
+msgid "Calls"
+msgstr "Llamadas"
+
+#: includes/class-plugin.php:457
+msgid "Not enough data collected, yet."
+msgstr "Aún no se han recopilado suficientes datos."
+
+#: includes/class-plugin.php:458
+msgid "Enable object cache to collect data."
+msgstr "Habilite la caché de objetos para recopilar datos."
+
+#: includes/class-plugin.php:459
+msgid "Optimizing…"
+msgstr "Optimizando…"
+
+#: includes/class-plugin.php:460
+msgid "All images were optimized."
+msgstr "Todas las imágenes fueron optimizadas."
+
+#: includes/class-plugin.php:461
+msgid "The images could not be optimized."
+msgstr "Las imágenes no se pudieron optimizar."
+
+#: includes/class-plugin.php:660
+msgid "Not enabled"
+msgstr "No activado"
+
+#: includes/class-plugin.php:664
+msgid "Drop-in is outdated"
+msgstr "La entrada sin cita previa está desactualizada"
+
+#: includes/class-plugin.php:668
+msgid "Drop-in is invalid"
+msgstr "La entrada no es válida"
+
+#: includes/class-plugin.php:673
+msgid "Connected"
+msgstr "Conectado"
+
+#: includes/class-plugin.php:674
+msgid "Not connected"
+msgstr "No conectado"
+
+#: includes/class-plugin.php:677 includes/ui/tabs/redis.php:372
+msgid "Unknown"
+msgstr "Desconocido"
+
+#. translators: %s = Action link to update the drop-in.
+#: includes/class-plugin.php:946
+#, php-format
+msgid "The Redis object cache drop-in is outdated. Please <a href=\"%s\">update the drop-in</a>."
+msgstr "El complemento de caché de objetos de Redis está desactualizado. Por favor <a href=\"%s\">actualice el drop-in</a>."
+
+#. translators: %s = Link to settings page.
+#: includes/class-plugin.php:953
+#, php-format
+msgid "A foreign object cache drop-in was found. To use Redis for object caching, please <a href=\"%s\">enable the drop-in</a>."
+msgstr "Se encontró una entrada de caché de objetos extraños. Para utilizar Redis para el almacenamiento en caché de objetos, <a href=\"%s\">habilite el complemento</a>."
+
+#. translators: 1: New version number, 2: Installed version number.
+#: includes/class-plugin.php:994
+#, php-format
+msgid "<strong>ICC.gg WordPress Super Cache %1$s is available.</strong> You are running version %2$s."
+msgstr "<strong>ICC.gg WordPress Super Cache %1$s está disponible.</strong> Estás ejecutando la versión %2$s."
+
+#: includes/class-plugin.php:1005 includes/ui/settings.php:110
+msgid "Update now"
+msgstr "Actualizar ahora"
+
+#. translators: %s: Installed version number.
+#: includes/class-plugin.php:1032
+#, php-format
+msgid "ICC.gg WordPress Super Cache is up to date (version %s)."
+msgstr "ICC.gg WordPress Super Cache está actualizado (versión %s)."
+
+#: includes/class-plugin.php:1043
+msgid "The update check could not reach GitHub. Please try again in a few minutes."
+msgstr "La verificación de actualización no pudo llegar a GitHub. Inténtelo de nuevo en unos minutos."
+
+#: includes/class-plugin.php:1064 includes/class-qm-collector.php:34
+#: includes/class-qm-output.php:40
+msgid "Object Cache"
+msgstr "Caché de objetos"
+
+#: includes/class-plugin.php:1085 includes/ui/tabs/redis.php:421
+msgid "Flush Cache"
+msgstr "Limpiar caché"
+
+#: includes/class-plugin.php:1098 includes/ui/tabs/local.php:480
+msgid "Clear Page Cache"
+msgstr "Limpiar caché de páginas"
+
+#: includes/class-plugin.php:1107 includes/ui/tabs/varnish.php:230
+msgid "Purge Varnish Cache"
+msgstr "Purgar caché Varnish"
+
+#: includes/class-plugin.php:1116
+msgid "Purge nginx FastCGI Cache"
+msgstr "Purgar caché nginx FastCGI"
+
+#: includes/class-plugin.php:1139 includes/ui/tabs/local.php:281
+msgid "Page Cache Settings"
+msgstr "Configuración de caché de página"
+
+#: includes/class-plugin.php:1140 includes/ui/tabs/varnish.php:75
+msgid "Varnish Cache Settings"
+msgstr "Configuración de caché de barniz"
+
+#: includes/class-plugin.php:1141
+msgid "nginx FastCGI Settings"
+msgstr "Configuración FastCGI de nginx"
+
+#. translators: %s = The status of the Redis connection.
+#: includes/class-plugin.php:1166
+#, php-format
+msgid "Status: %s"
+msgstr "Estado: %s"
+
+#. translators: 1: Hit ratio, 2: Hits, 3: Misses. 4: Human-readable size of cache.
+#: includes/class-plugin.php:1186
+#, php-format
+msgid "(Current page) Hit Ratio: %1$s%%, Hits %2$s, Misses: %3$s, Size: %4$s"
+msgstr "(Página actual) Proporción de aciertos: %1$s%%, aciertos %2$s, errores: %3$s, tamaño: %4$s"
+
+#: includes/class-plugin.php:1236
+msgid "Flushing cache..."
+msgstr "Limpiando caché..."
+
+#: includes/class-plugin.php:1349 includes/class-plugin.php:2322
+msgid "Object cache flushed."
+msgstr "Caché de objetos limpiada."
+
+#: includes/class-plugin.php:1355 includes/class-plugin.php:2324
+msgid "Object cache could not be flushed."
+msgstr "No se pudo limpiar la caché de objetos."
+
+#. translators: %s = The reason the nginx FastCGI cache could not be purged.
+#: includes/class-plugin.php:1376
+#, php-format
+msgid "nginx FastCGI cache could not be purged: %s"
+msgstr "La caché FastCGI de nginx no se pudo eliminar: %s"
+
+#: includes/class-plugin.php:1530
+msgid "Selective flush is defined in wp-config.php and cannot be changed from this screen. Remove the WP_REDIS_SELECTIVE_FLUSH constant to manage it here."
+msgstr "La limpieza selectiva se define en wp-config.php y no se puede cambiar desde esta pantalla. Elimine la constante WP_REDIS_SELECTIVE_FLUSH para administrarla aquí."
+
+#: includes/class-plugin.php:1553
+msgid "Selective flush enabled. Cache flushes now delete only keys that belong to this site."
+msgstr "Limpieza selectiva habilitada. Los vaciados de caché ahora eliminan solo las claves que pertenecen a este sitio."
+
+#: includes/class-plugin.php:1554
+msgid "Selective flush disabled. Cache flushes now run FLUSHDB and delete every key in the Redis database, including other sites."
+msgstr "Limpieza selectiva deshabilitada. Los vaciados de caché ahora ejecutan FLUSHDB y eliminan todas las claves de la base de datos de Redis, incluidos otros sitios."
+
+#. translators: %s = The cache zone path validation error.
+#: includes/class-plugin.php:1607
+#, php-format
+msgid "nginx FastCGI cache settings saved, but the cache zone is unusable: %s"
+msgstr "La configuración de caché de nginx FastCGI se guardó, pero la zona de caché no se puede utilizar: %s"
+
+#: includes/class-plugin.php:1616
+msgid "nginx FastCGI cache settings saved."
+msgstr "Se guardó la configuración de caché de nginx FastCGI."
+
+#. translators: %s = The reason the loader could not be installed.
+#: includes/class-plugin.php:1760
+#, php-format
+msgid "The page cache was enabled, but its loader could not be installed: %s"
+msgstr "Se habilitó la caché de la página, pero no se pudo instalar su cargador: %s"
+
+#: includes/class-plugin.php:1769
+msgid "Use \"Write / Rewrite advanced-cache.php\" in the Maintenance section of the Page Cache tab to replace it; the current file is copied to a backup first."
+msgstr "Utilice \"Escribir/Reescribir advanced-cache.php\" en la sección Mantenimiento de la pestaña Caché de página para reemplazarlo; el archivo actual se copia primero en una copia de seguridad."
+
+#: includes/class-plugin.php:1779
+msgid "The local page cache is enabled."
+msgstr "La caché de la página local está habilitada."
+
+#. translators: %s = The reason wp-config.php could not be edited.
+#: includes/class-plugin.php:1790 includes/class-plugin.php:2153
+#, php-format
+msgid "WP_CACHE was not added to wp-config.php (%s); the must-use plugin loader was installed instead."
+msgstr "WP_CACHE no se agregó a wp-config.php (%s); En su lugar, se instaló el cargador de complementos de uso imprescindible."
+
+#: includes/class-plugin.php:1812
+msgid "The local page cache is disabled and its loader was removed."
+msgstr "El caché de la página local está deshabilitado y se eliminó su cargador."
+
+#: includes/class-plugin.php:1823
+msgid "The local page cache was purged."
+msgstr "Se eliminó el caché de la página local."
+
+#: includes/class-plugin.php:1833
+msgid "The local page cache is disabled, so it cannot be preloaded."
+msgstr "La caché de la página local está deshabilitada, por lo que no se puede precargar."
+
+#: includes/class-plugin.php:1849
+#, php-format
+msgid "%d URL was queued for preloading."
+msgid_plural "%d URLs were queued for preloading."
+msgstr[0] "%d URL estaba en cola para precarga."
+msgstr[1] "Las URL %d estaban en cola para la precarga."
+
+#: includes/class-plugin.php:1872
+msgid "The page cache loader was regenerated."
+msgstr "Se regeneró el cargador de caché de páginas."
+
+#: includes/class-plugin.php:1892
+msgid "The must-use plugin loader was written because WP_CACHE could not be added to wp-config.php."
+msgstr "El cargador de complementos de uso imprescindible se escribió porque no se pudo agregar WP_CACHE a wp-config.php."
+
+#: includes/class-plugin.php:1898
+msgid "advanced-cache.php was written."
+msgstr "Se escribió advanced-cache.php."
+
+#. translators: %s = Path of the backup file.
+#: includes/class-plugin.php:1910
+#, php-format
+msgid "The previous file was backed up to %s."
+msgstr "Se realizó una copia de seguridad del archivo anterior en %s."
+
+#: includes/class-plugin.php:1920
+msgid "The page cache is disabled, so caching stays off until it is enabled."
+msgstr "El caché de la página está deshabilitado, por lo que el almacenamiento en caché permanece desactivado hasta que se habilita."
+
+#: includes/class-plugin.php:1938
+msgid "The default URL exclusions were restored."
+msgstr "Se restauraron las exclusiones de URL predeterminadas."
+
+#: includes/class-plugin.php:1955
+msgid "wp-config.php was restored from the backup. The page cache keeps working through the must-use plugin loader."
+msgstr "wp-config.php se restauró desde la copia de seguridad. El caché de la página sigue funcionando a través del cargador de complementos de uso imprescindible."
+
+#: includes/class-plugin.php:1997
+msgid "Varnish is enabled."
+msgstr "El barniz está habilitado."
+
+#: includes/class-plugin.php:2020
+msgid "Varnish is disabled."
+msgstr "El barniz está deshabilitado."
+
+#. translators: %s = The reason the purge failed.
+#: includes/class-plugin.php:2034
+#, php-format
+msgid "Varnish could not be purged: %s"
+msgstr "No se pudo purgar el barniz: %s"
+
+#: includes/class-plugin.php:2080
+msgid "The image optimization progress was reset."
+msgstr "Se restableció el progreso de optimización de la imagen."
+
+#. translators: %s = The reason the loader could not be written.
+#: includes/class-plugin.php:2134
+#, php-format
+msgid "Settings saved, but the page cache loader could not be written: %s"
+msgstr "La configuración se guardó, pero no se pudo escribir el cargador de caché de la página: %s"
+
+#: includes/class-plugin.php:2142
+msgid "Page cache settings saved."
+msgstr "Se guardó la configuración de caché de la página."
+
+#: includes/class-plugin.php:2190
+#, php-format
+msgid "%d cached entry was purged."
+msgid_plural "%d cached entries were purged."
+msgstr[0] "Se eliminó %d entrada almacenada en caché."
+msgstr[1] "Se eliminaron %d entradas almacenadas en caché."
+
+#: includes/class-plugin.php:2242
+msgid "Varnish settings saved."
+msgstr "Configuración de barniz guardada."
+
+#: includes/class-plugin.php:2275
+msgid "Image optimization settings saved."
+msgstr "Configuración de optimización de imagen guardada."
+
+#: includes/class-plugin.php:2295
+msgid "You are not allowed to optimize images."
+msgstr "No se le permite optimizar imágenes."
+
+#: includes/class-plugin.php:2320
+msgid "Invalid Nonce."
+msgstr "Nonce no válido."
+
+#. translators: %1$d = number of objects. %2$s = human-readable size of cache. %3$s = name of the used client.
+#: includes/class-plugin.php:2447
+#, php-format
+msgid "Retrieved %1$d objects (%2$s) from Redis using %3$s."
+msgstr "Se recuperaron %1$d objetos (%2$s) de Redis usando %3$s."
+
+#: includes/class-plugin.php:2567
+msgid "File modifications are not allowed."
+msgstr "No se permiten modificaciones de archivos."
+
+#: includes/class-plugin.php:2571
+msgid "Could not initialize filesystem."
+msgstr "No se pudo inicializar el sistema de archivos."
+
+#: includes/class-plugin.php:2582
+msgid "Object cache drop-in is not writable."
+msgstr "No se puede escribir en la caché de objetos."
+
+#: includes/class-plugin.php:2592
+msgid "Object cache file doesn’t exist."
+msgstr "El archivo de caché de objetos no existe."
+
+#: includes/class-plugin.php:2597
+msgid "Test file exists, but couldn’t be deleted."
+msgstr "El archivo de prueba existe, pero no se pudo eliminar."
+
+#: includes/class-plugin.php:2602
+msgid "Content directory is not writable."
+msgstr "El directorio de contenido no se puede escribir."
+
+#: includes/class-plugin.php:2606
+msgid "Failed to copy test file."
+msgstr "No se pudo copiar el archivo de prueba."
+
+#: includes/class-plugin.php:2610
+msgid "Copied test file doesn’t exist."
+msgstr "El archivo de prueba copiado no existe."
+
+#: includes/class-plugin.php:2616
+msgid "Couldn’t verify test file contents."
+msgstr "No se pudo verificar el contenido del archivo de prueba."
+
+#: includes/class-plugin.php:2620
+msgid "Copied test file couldn’t be deleted."
+msgstr "El archivo de prueba copiado no se pudo eliminar."
+
+#: includes/class-qm-collector.php:79
+msgid "Yes"
+msgstr "si"
+
+#: includes/class-qm-output.php:108
+msgid "The Redis Object Cache drop-in is not installed. Use WP CLI or go to \"Settings -> Redis\" to enable drop-in."
+msgstr "El complemento Redis Object Cache no está instalado. Utilice WP CLI o vaya a \"Configuración -> Redis\" para habilitar la inclusión directa."
+
+#: includes/class-qm-output.php:119
+msgid "WordPress is using a foreign object cache drop-in and Redis Object Cache is not being used. Use WP CLI or go to \"Settings -> Redis\" to enable drop-in."
+msgstr "WordPress utiliza un complemento de caché de objetos extraños y Redis Object Cache no se utiliza. Utilice WP CLI o vaya a \"Configuración -> Redis\" para habilitar la inclusión directa."
+
+#. translators: %s = Tab label.
+#: includes/class-ui-tab.php:163
+#, php-format
+msgid "%s are disabled for this site."
+msgstr "%s están deshabilitados para este sitio."
+
+#: includes/class-varnish-cache.php:297
+msgid "The URL to purge is not valid."
+msgstr "La URL para purgar no es válida."
+
+#: includes/class-varnish-cache.php:343
+msgid "The Varnish cache is disabled."
+msgstr "La caché de Varnish está deshabilitada."
+
+#. translators: 1: HTTP status code, 2: HTTP method.
+#: includes/class-varnish-cache.php:399
+#, php-format
+msgid "Varnish answered with HTTP %1$d to the %2$s request."
+msgstr "Varnish respondió con HTTP %1$d a la solicitud de %2$s."
+
+#: includes/class-varnish-cache.php:487
+msgid "Varnish headers were found in the response."
+msgstr "Se encontraron encabezados barnizados en la respuesta."
+
+#: includes/class-varnish-cache.php:488
+msgid "No Varnish headers were found in the response."
+msgstr "No se encontraron encabezados de Varnish en la respuesta."
+
+#: includes/class-varnish-cache.php:511
+msgid "The purge request was accepted."
+msgstr "Se aceptó la solicitud de depuración."
+
+#: includes/class-varnish-cache.php:517
+msgid "Varnish is in front of the site and answers purge requests."
+msgstr "Varnish está frente al sitio y responde a las solicitudes de purga."
+
+#: includes/class-varnish-cache.php:519
+msgid "Varnish answers purge requests, but its headers were not visible on the home page."
+msgstr "Varnish responde a las solicitudes de eliminación, pero sus encabezados no estaban visibles en la página de inicio."
+
+#: includes/class-varnish-cache.php:521
+msgid "Varnish looks active, but the purge request was rejected. Check the VCL and the purge key."
+msgstr "Varnish parece activo, pero se rechazó la solicitud de purga. Verifique el VCL y la clave de purga."
+
+#: includes/dropins/object-cache.php:3271
+msgid "Error establishing a Redis connection"
+msgstr "Error al establecer una conexión de Redis"
+
+#. translators: %s = Formatted wp-config.php file name.
+#: includes/dropins/object-cache.php:3278
+#, php-format
+msgid "WordPress is unable to establish a connection to Redis. This means that the connection information in your %s file are incorrect, or that the Redis server is not reachable."
+msgstr "WordPress no puede establecer una conexión con Redis. Esto significa que la información de conexión en su archivo %s es incorrecta o que no se puede acceder al servidor Redis."
+
+#: includes/dropins/object-cache.php:3283
+msgid "Is the correct Redis host and port set?"
+msgstr "¿Están configurados el host y el puerto de Redis correctos?"
+
+#: includes/dropins/object-cache.php:3284
+msgid "Is the Redis server running?"
+msgstr "¿Está funcionando el servidor Redis?"
+
+#. translators: %s = Link to installation instructions.
+#: includes/dropins/object-cache.php:3289
+#, php-format
+msgid "If you need help, please read the <a href=\"%s\">installation instructions</a>."
+msgstr "Si necesita ayuda, lea las <a href=\"%s\">instrucciones de instalación</a>."
+
+#. translators: %1$s = Formatted object-cache.php file name, %2$s = Formatted wp-content directory name.
+#: includes/dropins/object-cache.php:3296
+#, php-format
+msgid "To disable Redis, delete the %1$s file in the %2$s directory."
+msgstr "Para deshabilitar Redis, elimine el archivo %1$s en el directorio %2$s."
+
+#: includes/ui/query-monitor.php:25
+msgid "Status"
+msgstr "Estado"
+
+#: includes/ui/query-monitor.php:30
+msgid "Hit Ratio"
+msgstr "Proporción de aciertos"
+
+#: includes/ui/query-monitor.php:35
+msgid "Hits"
+msgstr "Visitas"
+
+#: includes/ui/query-monitor.php:40
+msgid "Misses"
+msgstr "falla"
+
+#: includes/ui/query-monitor.php:55
+msgid "Errors"
+msgstr "Errores"
+
+#: includes/ui/query-monitor.php:78
+msgid "Global Groups"
+msgstr "Grupos globales"
+
+#: includes/ui/query-monitor.php:92
+msgid "Non-persistent Groups"
+msgstr "Grupos no persistentes"
+
+#: includes/ui/query-monitor.php:106
+msgid "Unflushable Groups"
+msgstr "Grupos no descartables"
+
+#: includes/ui/query-monitor.php:120
+msgid "Metadata"
+msgstr "Metadatos"
+
+#: includes/ui/settings.php:29
+msgid "More than one page cache is enabled:"
+msgstr "Más de una página de caché está habilitada:"
+
+#: includes/ui/settings.php:31
+msgid "Only one page cache backend can be active at a time. Disable the others below, or remove the constants in wp-config.php that force them."
+msgstr "Solo se puede activar un backend de caché de página a la vez. Deshabilite los demás a continuación o elimine las constantes en wp-config.php que los fuerzan."
+
+#: includes/ui/settings.php:84
+msgid "ICC.gg WordPress Super Cache - Redis object cache, Varnish Cache and nginx FastCGI page cache in one plugin. Enable, configure and purge each layer independently."
+msgstr "ICC.gg WordPress Super Cache: caché de objetos Redis, caché de Varnish y caché de páginas FastCGI de nginx en un solo complemento. Habilite, configure y purgue cada capa de forma independiente."
+
+#. translators: %s: New version number.
+#: includes/ui/settings.php:102
+#, php-format
+msgid "Update available: v%s"
+msgstr "Actualización disponible: v%s"
+
+#: includes/ui/tabs/diagnostics.php:22
+msgid "Copy diagnostics to clipboard"
+msgstr "Copiar diagnósticos al portapapeles"
+
+#: includes/ui/tabs/diagnostics.php:24
+msgid "Copied!"
+msgstr "¡Copiado!"
+
+#: includes/ui/tabs/images.php:28
+msgid "No image editor is available:"
+msgstr "No hay ningún editor de imágenes disponible:"
+
+#: includes/ui/tabs/images.php:29
+msgid "WordPress needs either the GD or the Imagick extension to optimize images."
+msgstr "WordPress necesita la extensión GD o Imagick para optimizar las imágenes."
+
+#: includes/ui/tabs/images.php:37 includes/ui/tabs/local.php:85
+#: includes/ui/tabs/redis.php:48 includes/ui/tabs/varnish.php:28
+msgid "Status:"
+msgstr "Estado:"
+
+#: includes/ui/tabs/images.php:47
+msgid "Library:"
+msgstr "Biblioteca:"
+
+#. translators: 1: Number of optimized images, 2: Total number of images.
+#: includes/ui/tabs/images.php:54 includes/ui/tabs/images.php:312
+#, php-format
+msgid "%1$s of %2$s images optimized"
+msgstr "%1$s de %2$s imágenes optimizadas"
+
+#. translators: %s = Human readable file size.
+#: includes/ui/tabs/images.php:68
+#, php-format
+msgid "About %s saved so far."
+msgstr "Acerca de %s guardado hasta el momento."
+
+#. translators: %d = Number of images pending optimization.
+#: includes/ui/tabs/images.php:81
+#, php-format
+msgid "%d image is still pending."
+msgid_plural "%d images are still pending."
+msgstr[0] "%d imagen aún está pendiente."
+msgstr[1] "%d imágenes aún están pendientes."
+
+#: includes/ui/tabs/images.php:91
+msgid "Supported Formats:"
+msgstr "Formatos admitidos:"
+
+#: includes/ui/tabs/images.php:99
+msgid "Detected from the image editor available on this server. Formats the editor cannot write are not offered."
+msgstr "Detectado desde el editor de imágenes disponible en este servidor. No se ofrecen formatos que el editor no puede escribir."
+
+#: includes/ui/tabs/images.php:102
+msgid "None"
+msgstr "Ninguno"
+
+#: includes/ui/tabs/images.php:109
+msgid "Optimization Settings"
+msgstr "Configuración de optimización"
+
+#: includes/ui/tabs/images.php:117
+msgid "Formats"
+msgstr "Formatos"
+
+#: includes/ui/tabs/images.php:135
+msgid "Leave every box checked to optimize all supported formats."
+msgstr "Deje todas las casillas marcadas para optimizar todos los formatos compatibles."
+
+#: includes/ui/tabs/images.php:143
+msgid "Compression Quality"
+msgstr "Calidad de compresión"
+
+#: includes/ui/tabs/images.php:159
+msgid "Higher values keep more detail and produce larger files. 82 is a good balance for JPEG and WebP."
+msgstr "Los valores más altos mantienen más detalles y producen archivos más grandes. 82 es un buen equilibrio para JPEG y WebP."
+
+#: includes/ui/tabs/images.php:165
+msgid "Maximum Dimensions"
+msgstr "Dimensiones máximas"
+
+#: includes/ui/tabs/images.php:175
+msgid "Maximum width in pixels"
+msgstr "Ancho máximo en píxeles"
+
+#: includes/ui/tabs/images.php:186
+msgid "Maximum height in pixels"
+msgstr "Altura máxima en píxeles"
+
+#: includes/ui/tabs/images.php:188
+msgid "pixels"
+msgstr "píxeles"
+
+#: includes/ui/tabs/images.php:191
+msgid "Set to 0 to keep the original dimensions. Resizing regenerates the thumbnail sizes of each image."
+msgstr "Establezca en 0 para mantener las dimensiones originales. Cambiar el tamaño regenera los tamaños de miniatura de cada imagen."
+
+#: includes/ui/tabs/images.php:199
+msgid "Maximum File Size"
+msgstr "Tamaño máximo de archivo"
+
+#: includes/ui/tabs/images.php:212
+msgid "MB"
+msgstr "MB"
+
+#: includes/ui/tabs/images.php:215
+msgid "Optional. Images heavier than this are re-compressed with a lower quality until they fit. Set to 0 to disable."
+msgstr "Opcional. Las imágenes más pesadas se vuelven a comprimir con una calidad más baja hasta que encajen. Establezca en 0 para desactivar."
+
+#: includes/ui/tabs/images.php:221 includes/ui/tabs/local.php:341
+msgid "Behaviour"
+msgstr "Comportamiento"
+
+#: includes/ui/tabs/images.php:232
+msgid "Optimize new uploads automatically"
+msgstr "Optimice las nuevas cargas automáticamente"
+
+#: includes/ui/tabs/images.php:245
+msgid "Keep a backup of the original images"
+msgstr "Mantenga una copia de seguridad de las imágenes originales."
+
+#: includes/ui/tabs/images.php:259
+msgid "Store new JPEG and PNG uploads as WebP"
+msgstr "Almacene nuevas cargas JPEG y PNG como WebP"
+
+#: includes/ui/tabs/images.php:272
+msgid "Images per batch"
+msgstr "Imágenes por lote"
+
+#: includes/ui/tabs/images.php:275
+msgid "images per batch"
+msgstr "imágenes por lote"
+
+#: includes/ui/tabs/images.php:279
+msgid "Backups are stored in wp-content/icc-gg-image-backups so an image can be restored later."
+msgstr "Las copias de seguridad se almacenan en wp-content/icc-gg-image-backups para que se pueda restaurar una imagen más tarde."
+
+#: includes/ui/tabs/images.php:287
+msgid "Save Image Settings"
+msgstr "Guardar configuración de imagen"
+
+#: includes/ui/tabs/images.php:292
+msgid "Optimize the Library"
+msgstr "Optimizar la biblioteca"
+
+#: includes/ui/tabs/images.php:295
+msgid "Runs through the media library in small batches, so you can close the tab at any time and continue later."
+msgstr "Se ejecuta en la biblioteca multimedia en pequeños lotes, por lo que puedes cerrar la pestaña en cualquier momento y continuar más tarde."
+
+#: includes/ui/tabs/images.php:326
+msgid "Pause"
+msgstr "Pausa"
+
+#: includes/ui/tabs/images.php:330
+msgid "Reset Progress"
+msgstr "Restablecer progreso"
+
+#: includes/ui/tabs/local.php:28
+msgid "Never expire"
+msgstr "Nunca caduque"
+
+#: includes/ui/tabs/local.php:29
+msgid "1 hour"
+msgstr "1 hora"
+
+#: includes/ui/tabs/local.php:30
+msgid "6 hours"
+msgstr "6 horas"
+
+#: includes/ui/tabs/local.php:31
+msgid "12 hours"
+msgstr "12 horas"
+
+#: includes/ui/tabs/local.php:32
+msgid "24 hours"
+msgstr "24 horas"
+
+#: includes/ui/tabs/local.php:33
+msgid "1 week"
+msgstr "1 semana"
+
+#: includes/ui/tabs/local.php:37
+msgid "advanced-cache.php drop-in (WP_CACHE)"
+msgstr "Acceso directo advanced-cache.php (WP_CACHE)"
+
+#: includes/ui/tabs/local.php:38
+msgid "Must-use plugin loader"
+msgstr "Cargador de complementos imprescindible"
+
+#: includes/ui/tabs/local.php:39
+msgid "No loader installed"
+msgstr "No hay cargador instalado"
+
+#: includes/ui/tabs/local.php:47
+msgid "Not installed"
+msgstr "No instalado"
+
+#: includes/ui/tabs/local.php:48
+msgid "Installed by another plugin"
+msgstr "Instalado por otro complemento"
+
+#: includes/ui/tabs/local.php:49
+msgid "Outdated, needs rewriting"
+msgstr "Anticuado, necesita ser reescrito"
+
+#: includes/ui/tabs/local.php:50
+msgid "Damaged or unreadable"
+msgstr "Dañado o ilegible"
+
+#: includes/ui/tabs/local.php:51
+msgid "Up to date"
+msgstr "actualizado"
+
+#: includes/ui/tabs/local.php:62
+msgid "The page cache is enabled but no loader is installed:"
+msgstr "La caché de la página está habilitada pero no hay ningún cargador instalado:"
+
+#: includes/ui/tabs/local.php:64
+msgid "wp-content/advanced-cache.php was installed by another plugin. Use \"Write / Rewrite advanced-cache.php\" in Maintenance to replace it; the current file is copied to a backup first."
+msgstr "wp-content/advanced-cache.php fue instalado por otro complemento. Utilice \"Escribir/Reescribir advanced-cache.php\" en Mantenimiento para reemplazarlo; el archivo actual se copia primero en una copia de seguridad."
+
+#: includes/ui/tabs/local.php:66
+msgid "wp-content/advanced-cache.php does not match this plugin version. Use \"Write / Rewrite advanced-cache.php\" in Maintenance to restore it; the current file is copied to a backup first."
+msgstr "wp-content/advanced-cache.php no coincide con la versión de este complemento. Utilice \"Escribir/Reescribir advanced-cache.php\" en Mantenimiento para restaurarlo; el archivo actual se copia primero en una copia de seguridad."
+
+#: includes/ui/tabs/local.php:68
+msgid "Save the settings or use \"Write / Rewrite advanced-cache.php\" in Maintenance so pages start being cached."
+msgstr "Guarde la configuración o use \"Escribir/Reescribir advanced-cache.php\" en Mantenimiento para que las páginas comiencen a almacenarse en caché."
+
+#: includes/ui/tabs/local.php:75
+msgid "The advanced-cache.php drop-in is not the one this plugin expects:"
+msgstr "El menú desplegable advanced-cache.php no es el que espera este complemento:"
+
+#: includes/ui/tabs/local.php:77
+msgid "WordPress loads that file on every request, so rewrite it from Maintenance; the current file is copied to a backup first."
+msgstr "WordPress carga ese archivo en cada solicitud, así que reescríbalo desde Mantenimiento; el archivo actual se copia primero en una copia de seguridad."
+
+#. translators: %s = Active page cache backend label.
+#: includes/ui/tabs/local.php:97
+#, php-format
+msgid "Active page cache backend: %s"
+msgstr "Backend de caché de página activa: %s"
+
+#: includes/ui/tabs/local.php:107
+msgid "Loader:"
+msgstr "Cargador:"
+
+#: includes/ui/tabs/local.php:113
+msgid "WP_CACHE could not be added to wp-config.php, so the cache is loaded from wp-content/mu-plugins/icc-gg-page-cache.php."
+msgstr "WP_CACHE no se pudo agregar a wp-config.php, por lo que el caché se carga desde wp-content/mu-plugins/icc-gg-page-cache.php."
+
+#: includes/ui/tabs/local.php:115
+msgid "Define WP_CACHE in wp-config.php to load the cache through advanced-cache.php, or let the plugin install the must-use plugin loader instead."
+msgstr "Defina WP_CACHE en wp-config.php para cargar el caché a través de advanced-cache.php, o deje que el complemento instale el cargador de complementos imprescindible."
+
+#. translators: %s = Path of the generated engine directory.
+#: includes/ui/tabs/local.php:124
+#, php-format
+msgid "Engine and configuration: <code>%1$s</code>"
+msgstr "Motor y configuración: <code>%1$s</code>"
+
+#: includes/ui/tabs/local.php:135
+msgid "advanced-cache.php:"
+msgstr "advanced-cache.php:"
+
+#: includes/ui/tabs/local.php:147
+msgid "Another plugin owns this file. Rewriting it replaces that plugin loader, so keep the backup until the site is confirmed to work."
+msgstr "Otro complemento posee este archivo. Reescribirlo reemplaza ese cargador de complementos, así que mantenga la copia de seguridad hasta que se confirme que el sitio funciona."
+
+#. translators: %s = Path of the advanced-cache.php backup.
+#: includes/ui/tabs/local.php:157
+#, php-format
+msgid "Backup of the replaced file: <code>%s</code>"
+msgstr "Copia de seguridad del archivo reemplazado: <code>%s</code>"
+
+#. translators: 1: State of the must-use plugin loader, 2: Path of the must-use plugin loader.
+#: includes/ui/tabs/local.php:172
+#, php-format
+msgid "Must-use plugin loader: %1$s (<code>%2$s</code>)"
+msgstr "Cargador de complementos imprescindible: %1$s (<code>%2$s</code>)"
+
+#: includes/ui/tabs/local.php:185
+msgid "WP_CACHE:"
+msgstr "WP_CACHE:"
+
+#: includes/ui/tabs/local.php:190
+msgid "Not defined"
+msgstr "No definido"
+
+#. translators: %s = Path of the wp-config.php backup.
+#: includes/ui/tabs/local.php:199
+#, php-format
+msgid "A backup of the original wp-config.php is stored at <code>%s</code>."
+msgstr "Una copia de seguridad del wp-config.php original se almacena en <code>%s</code>."
+
+#: includes/ui/tabs/local.php:211
+msgid "Cached Pages:"
+msgstr "Páginas almacenadas en caché:"
+
+#. translators: 1: Number of cached pages, 2: Cache size.
+#: includes/ui/tabs/local.php:221
+#, php-format
+msgid "%1$s page &mdash; %2$s"
+msgid_plural "%1$s pages &mdash; %2$s"
+msgstr[0] "%1$s página — %2$s"
+msgstr[1] "%1$s páginas — %2$s"
+
+#. translators: 1: Human readable time difference, 2: Human readable time difference.
+#: includes/ui/tabs/local.php:234
+#, php-format
+msgid "Newest entry %1$s ago, oldest entry %2$s ago."
+msgstr "Entrada más reciente hace %1$s, entrada más antigua hace %2$s."
+
+#: includes/ui/tabs/local.php:242
+msgid "No cached pages yet."
+msgstr "Aún no hay páginas almacenadas en caché."
+
+#: includes/ui/tabs/local.php:247
+msgid "The cache directory is not writable, so pages cannot be cached."
+msgstr "No se puede escribir en el directorio de caché, por lo que las páginas no se pueden almacenar en caché."
+
+#. translators: %d = Number of URLs waiting to be preloaded.
+#: includes/ui/tabs/local.php:257
+#, php-format
+msgid "%d URL is waiting to be preloaded."
+msgid_plural "%d URLs are waiting to be preloaded."
+msgstr[0] "%d URL está esperando ser precargada."
+msgstr[1] "Las URL %d están esperando ser precargadas."
+
+#: includes/ui/tabs/local.php:271
+msgid "Clear the cache when posts, comments, menus or themes change"
+msgstr "Borre el caché cuando cambien publicaciones, comentarios, menús o temas"
+
+#: includes/ui/tabs/local.php:272
+msgid "Store a gzipped copy of each page"
+msgstr "Almacene una copia comprimida con gzip de cada página"
+
+#: includes/ui/tabs/local.php:273
+msgid "Also cache URLs with query strings"
+msgstr "También almacenar en caché las URL con cadenas de consulta"
+
+#: includes/ui/tabs/local.php:274
+msgid "Keep separate copies for mobile devices"
+msgstr "Mantenga copias separadas para dispositivos móviles"
+
+#: includes/ui/tabs/local.php:275
+msgid "Send browser caching headers with cached pages"
+msgstr "Enviar encabezados de almacenamiento en caché del navegador con páginas almacenadas en caché"
+
+#: includes/ui/tabs/local.php:276
+msgid "Add an X-ICC-Page-Cache header to cached responses"
+msgstr "Agregue un encabezado X-ICC-Page-Cache a las respuestas almacenadas en caché"
+
+#: includes/ui/tabs/local.php:277
+msgid "Preload the cache automatically after it is cleared"
+msgstr "Precargue el caché automáticamente después de borrarlo"
+
+#: includes/ui/tabs/local.php:301
+msgid "Cache pages with the local PHP page cache"
+msgstr "Caché de páginas con el caché de páginas PHP local"
+
+#: includes/ui/tabs/local.php:305
+msgid "Only one page cache backend can be enabled at a time: enabling this one requires disabling the Varnish Cache and nginx FastCGI page caches first."
+msgstr "Solo se puede habilitar un backend de caché de página a la vez: habilitar este requiere deshabilitar primero los cachés de páginas de Varnish Cache y nginx FastCGI."
+
+#: includes/ui/tabs/local.php:310
+msgid "Overridden by the ICC_GG_SUPER_CACHE_LOCAL_ENABLED constant in wp-config.php."
+msgstr "Anulado por la constante ICC_GG_SUPER_CACHE_LOCAL_ENABLED en wp-config.php."
+
+#: includes/ui/tabs/local.php:319
+msgid "Cache Expiry"
+msgstr "Caducidad de la caché"
+
+#: includes/ui/tabs/local.php:335
+msgid "Cached pages older than this are regenerated on the next visit. Content changes always clear the cache immediately."
+msgstr "Las páginas almacenadas en caché anteriores a esta se regeneran en la siguiente visita. Los cambios de contenido siempre borran el caché inmediatamente."
+
+#: includes/ui/tabs/local.php:358
+msgid "(zlib is not available on this server)"
+msgstr "(zlib no está disponible en este servidor)"
+
+#: includes/ui/tabs/local.php:369
+msgid "Preload Batch Size"
+msgstr "Tamaño de lote de precarga"
+
+#: includes/ui/tabs/local.php:384
+msgid "Number of URLs requested per preload batch. Lower values are gentler on small servers."
+msgstr "Número de URL solicitadas por lote de precarga. Los valores más bajos son más suaves en servidores pequeños."
+
+#: includes/ui/tabs/local.php:391
+msgid "Exclusions"
+msgstr "Exclusiones"
+
+#: includes/ui/tabs/local.php:398
+msgid "URLs"
+msgstr "URL"
+
+#: includes/ui/tabs/local.php:410
+msgid "One path or URL per line, for example /cart/ or /my-account/*. Wildcards are supported, and a line can start with regex: to use a regular expression."
+msgstr "Una ruta o URL por línea, por ejemplo /carrito/ o /mi-cuenta/*. Se admiten comodines y una línea puede comenzar con regex: para usar una expresión regular."
+
+#: includes/ui/tabs/local.php:414
+msgid "The plugin already fills in the WordPress paths that should never be cached. The engine also skips /wp-admin, wp-login.php, wp-json, wp-cron.php, xmlrpc.php, feeds and trackbacks even when they are missing from this list."
+msgstr "El complemento ya completa las rutas de WordPress que nunca deberían almacenarse en caché. El motor también omite /wp-admin, wp-login.php, wp-json, wp-cron.php, xmlrpc.php, feeds y trackbacks incluso cuando no aparecen en esta lista."
+
+#: includes/ui/tabs/local.php:418
+msgid "These exclusions only apply to this local page cache. Varnish Cache and nginx FastCGI answer before WordPress runs, so they need the same paths in their own configuration; the snippets on their tabs are generated from this list."
+msgstr "Estas exclusiones solo se aplican a la caché de esta página local. Varnish Cache y nginx FastCGI responden antes de que se ejecute WordPress, por lo que necesitan las mismas rutas en su propia configuración; los fragmentos de sus pestañas se generan a partir de esta lista."
+
+#: includes/ui/tabs/local.php:423
+msgid "Restore default exclusions"
+msgstr "Restaurar exclusiones predeterminadas"
+
+#: includes/ui/tabs/local.php:428
+msgid "Restoring the defaults replaces the current list, including your own entries. Save the form first if you want to keep a copy."
+msgstr "Restaurar los valores predeterminados reemplaza la lista actual, incluidas sus propias entradas. Guarde el formulario primero si desea conservar una copia."
+
+#: includes/ui/tabs/local.php:436
+msgid "User Agents"
+msgstr "Agentes de usuario"
+
+#: includes/ui/tabs/local.php:448
+msgid "One user agent fragment per line, for example Googlebot or bot. Matching requests are never cached."
+msgstr "Un fragmento de agente de usuario por línea, por ejemplo Googlebot o bot. Las solicitudes coincidentes nunca se almacenan en caché."
+
+#: includes/ui/tabs/local.php:456
+msgid "Cookies"
+msgstr "galletas"
+
+#: includes/ui/tabs/local.php:468
+msgid "One cookie name per line. Requests carrying these cookies are never cached. Logged-in users, commenters and password protected posts are always excluded."
+msgstr "Un nombre de cookie por línea. Las solicitudes que contienen estas cookies nunca se almacenan en caché. Los usuarios que han iniciado sesión, los comentaristas y las publicaciones protegidas con contraseña siempre están excluidos."
+
+#: includes/ui/tabs/local.php:476
+msgid "Save Page Cache Settings"
+msgstr "Guardar configuración de caché de página"
+
+#: includes/ui/tabs/local.php:484
+msgid "Clear & Preload"
+msgstr "Borrar y precargar"
+
+#: includes/ui/tabs/local.php:491
+msgid "Clear Cache"
+msgstr "Borrar caché"
+
+#: includes/ui/tabs/local.php:494
+msgid "Clear everything at once, or purge only the pages that changed. Purging a URL also removes its gzipped copy and any empty directory left behind."
+msgstr "Borre todo de una vez o borre solo las páginas que cambiaron. Al purgar una URL también se elimina su copia comprimida con gzip y cualquier directorio vacío que quede."
+
+#: includes/ui/tabs/local.php:505 includes/ui/tabs/local.php:526
+msgid "Purge URLs"
+msgstr "Purgar URL"
+
+#: includes/ui/tabs/local.php:518
+msgid "One URL or path per line. Use a trailing * to purge everything below a path."
+msgstr "Una URL o ruta por línea. Utilice un * final para purgar todo lo que esté debajo de una ruta."
+
+#: includes/ui/tabs/local.php:531
+msgid "Maintenance"
+msgstr "Mantenimiento"
+
+#: includes/ui/tabs/local.php:535
+msgid "Regenerate Page Cache Loader"
+msgstr "Regenerar el cargador de caché de páginas"
+
+#: includes/ui/tabs/local.php:539
+msgid "Write / Rewrite advanced-cache.php"
+msgstr "Escribir/reescribir advanced-cache.php"
+
+#: includes/ui/tabs/local.php:544
+msgid "Revert wp-config.php Backup"
+msgstr "Revertir la copia de seguridad de wp-config.php"
+
+#: includes/ui/tabs/local.php:550
+msgid "\"Regenerate Page Cache Loader\" refreshes the engine files and rewrites the loader only when it already belongs to this plugin."
+msgstr "\"Regenerar cargador de caché de página\" actualiza los archivos del motor y reescribe el cargador solo cuando ya pertenece a este complemento."
+
+#: includes/ui/tabs/local.php:554
+msgid "\"Write / Rewrite advanced-cache.php\" writes the loader even when the file is missing, damaged, outdated or owned by another plugin. The current file is copied to advanced-cache.icc-gg-backup.php before it is replaced."
+msgstr "\"Escribir/Reescribir advanced-cache.php\" escribe el cargador incluso cuando el archivo falta, está dañado, está desactualizado o es propiedad de otro complemento. El archivo actual se copia en advanced-cache.icc-gg-backup.php antes de reemplazarlo."
+
+#: includes/ui/tabs/local.php:558
+msgid "When WP_CACHE cannot be added to wp-config.php, both buttons write the must-use plugin loader (wp-content/mu-plugins/icc-gg-page-cache.php) instead."
+msgstr "Cuando WP_CACHE no se puede agregar a wp-config.php, ambos botones escriben el cargador de complementos imprescindible (wp-content/mu-plugins/icc-gg-page-cache.php)."
+
+#: includes/ui/tabs/local.php:562
+msgid "The same values can be defined in wp-config.php with the ICC_GG_SUPER_CACHE_LOCAL_ENABLED, ICC_GG_SUPER_CACHE_LOCAL_AUTO_PURGE and ICC_GG_SUPER_CACHE_LOCAL_PATH constants."
+msgstr "Los mismos valores se pueden definir en wp-config.php con las constantes ICC_GG_SUPER_CACHE_LOCAL_ENABLED, ICC_GG_SUPER_CACHE_LOCAL_AUTO_PURGE e ICC_GG_SUPER_CACHE_LOCAL_PATH."
+
+#: includes/ui/tabs/redis.php:39
+msgid "Redis is unreachable:"
+msgstr "Redis no está accesible:"
+
+#: includes/ui/tabs/redis.php:65
+msgid "Filesystem:"
+msgstr "Sistema de archivos:"
+
+#: includes/ui/tabs/redis.php:76
+msgid "Not writeable"
+msgstr "No escribible"
+
+#: includes/ui/tabs/redis.php:82
+msgid "Writeable"
+msgstr "Escribible"
+
+#: includes/ui/tabs/redis.php:89
+msgid "Redis:"
+msgstr "Redis:"
+
+#: includes/ui/tabs/redis.php:94
+msgid "Reachable"
+msgstr "Accesible"
+
+#: includes/ui/tabs/redis.php:99
+msgid "Unreachable"
+msgstr "Inaccesible"
+
+#: includes/ui/tabs/redis.php:107
+msgid "Key Prefix:"
+msgstr "Prefijo de la clave:"
+
+#: includes/ui/tabs/redis.php:111
+msgid "(generated automatically)"
+msgstr "(generado automáticamente)"
+
+#. translators: 1: Example Redis key pattern, 2: WP_REDIS_PREFIX, 3: WP_CACHE_KEY_SALT.
+#: includes/ui/tabs/redis.php:119
+#, php-format
+msgid "Every key is stored as %1$s. The prefix comes from %2$s or %3$s. When neither constant is defined, the plugin generates a stable prefix for this site so cache flushes can stay scoped to it."
+msgstr "Cada clave se almacena como %1$s. El prefijo proviene de %2$s o %3$s. Cuando no se define ninguna constante, el complemento genera un prefijo estable para este sitio para que los vaciados de caché puedan limitarse a él."
+
+#: includes/ui/tabs/redis.php:132
+msgid "The configured prefix contained spaces or Redis glob metacharacters (such as *, ?, [, ], {, }, ( ) and |). They were removed automatically to keep selective flush patterns safe. Update WP_REDIS_PREFIX in wp-config.php to silence this warning."
+msgstr "El prefijo configurado contenía espacios o metacaracteres globales de Redis (como *, ?, [, ], {, }, ( ) y |). Se eliminaron automáticamente para mantener seguros los patrones de limpieza selectivos. Actualice WP_REDIS_PREFIX en wp-config.php para silenciar esta advertencia."
+
+#: includes/ui/tabs/redis.php:142
+msgid "Max. TTL:"
+msgstr "TTL máx.:"
+
+#: includes/ui/tabs/redis.php:148
+msgid "This doesn’t appear to be a valid number."
+msgstr "Este no parece ser un número válido."
+
+#: includes/ui/tabs/redis.php:158
+msgid "Flush Behavior"
+msgstr "Comportamiento de la limpieza"
+
+#: includes/ui/tabs/redis.php:166
+msgid "Selective Flush:"
+msgstr "Limpieza selectiva:"
+
+#: includes/ui/tabs/redis.php:179
+msgid "Flush only keys that belong to this site"
+msgstr "Limpiar solo las claves que pertenecen a este sitio"
+
+#. translators: %s = Name of the constant that locks the setting.
+#: includes/ui/tabs/redis.php:189
+#, php-format
+msgid "Defined as %s in wp-config.php (or by the environment). This setting is read-only here."
+msgstr "Definido como %s en wp-config.php (o por el entorno). Esta configuración es de solo lectura aquí."
+
+#: includes/ui/tabs/redis.php:199
+msgid "Enabled by default. When enabled, wp_cache_flush() uses SCAN + DEL and only deletes keys that start with this site's prefix. When disabled, it runs FLUSHDB and deletes every key in the Redis database, including keys from other sites that share the same database."
+msgstr "Habilitado de forma predeterminada. Cuando está habilitado, wp_cache_flush() usa SCAN + DEL y solo elimina claves que comienzan con el prefijo de este sitio. Cuando está deshabilitado, ejecuta FLUSHDB y elimina todas las claves de la base de datos de Redis, incluidas las claves de otros sitios que comparten la misma base de datos."
+
+#: includes/ui/tabs/redis.php:202
+msgid "Group flushes (wp_cache_flush_group()) always delete only the requested group and remain scoped to this site."
+msgstr "Los vaciados de grupos (wp_cache_flush_group()) siempre eliminan solo el grupo solicitado y permanecen en el ámbito de este sitio."
+
+#: includes/ui/tabs/redis.php:209
+msgid "Warning:"
+msgstr "Advertencia:"
+
+#: includes/ui/tabs/redis.php:210
+msgid "selective flush is disabled, so the next cache flush will delete every key in the Redis database. Only use this when Redis is dedicated to this site."
+msgstr "El vaciado selectivo está deshabilitado, por lo que el próximo vaciado de caché eliminará todas las claves de la base de datos de Redis. Úselo solo cuando Redis esté dedicado a este sitio."
+
+#: includes/ui/tabs/redis.php:220
+msgid "Save Redis Settings"
+msgstr "Guardar configuración de Redis"
+
+#: includes/ui/tabs/redis.php:228
+msgid "Connection"
+msgstr "Conexión"
+
+#: includes/ui/tabs/redis.php:235
+msgid "Client:"
+msgstr "Cliente:"
+
+#: includes/ui/tabs/redis.php:244
+msgid "Host:"
+msgstr "Anfitrión:"
+
+#: includes/ui/tabs/redis.php:251
+msgid "Cluster:"
+msgstr "Grupo:"
+
+#: includes/ui/tabs/redis.php:264
+msgid "Shards:"
+msgstr "Fragmentos:"
+
+#: includes/ui/tabs/redis.php:277
+msgid "Servers:"
+msgstr "Servidores:"
+
+#: includes/ui/tabs/redis.php:290
+msgid "Port:"
+msgstr "Puerto:"
+
+#: includes/ui/tabs/redis.php:297
+msgid "Username:"
+msgstr "Nombre de usuario:"
+
+#: includes/ui/tabs/redis.php:304
+msgid "Password:"
+msgstr "Contraseña:"
+
+#: includes/ui/tabs/redis.php:313
+msgid "Database:"
+msgstr "Base de datos:"
+
+#: includes/ui/tabs/redis.php:320
+msgid "Connection Timeout:"
+msgstr "Tiempo de espera de conexión:"
+
+#. translators: %s = Redis connection/read timeout in seconds.
+#: includes/ui/tabs/redis.php:326 includes/ui/tabs/redis.php:343
+#, php-format
+msgid "%ss"
+msgstr "%ss"
+
+#: includes/ui/tabs/redis.php:337
+msgid "Read Timeout:"
+msgstr "Tiempo de espera de lectura:"
+
+#: includes/ui/tabs/redis.php:354
+msgid "Retry Interval:"
+msgstr "Intervalo de reintento:"
+
+#. translators: %s = Redis retry interval in milliseconds.
+#: includes/ui/tabs/redis.php:360
+#, php-format
+msgid "%sms"
+msgstr "%sms"
+
+#: includes/ui/tabs/redis.php:371
+msgid "Redis Version:"
+msgstr "Versión de Redis:"
+
+#: includes/ui/tabs/redis.php:383
+msgid "Metrics"
+msgstr "Métricas"
+
+#: includes/ui/tabs/redis.php:390 includes/ui/widget.php:22
+msgid "The total amount of time (in milliseconds) it took Redis to return cache data."
+msgstr "La cantidad total de tiempo (en milisegundos) que le tomó a Redis devolver los datos de la caché."
+
+#: includes/ui/tabs/redis.php:395 includes/ui/widget.php:27
+msgid "The total amount of bytes that was retrieved from Redis."
+msgstr "La cantidad total de bytes que se recuperaron de Redis."
+
+#: includes/ui/tabs/redis.php:400 includes/ui/widget.php:32
+msgid "The hit/miss ratio of cache data that was already cached."
+msgstr "La proporción de aciertos/errores de los datos de la caché que ya estaban almacenados en la caché."
+
+#: includes/ui/tabs/redis.php:405 includes/ui/widget.php:37
+msgid "The total amount of commands sent to Redis."
+msgstr "La cantidad total de comandos enviados a Redis."
+
+#: includes/ui/tabs/redis.php:428
+msgid "Disable Object Cache"
+msgstr "Desactivar caché de objetos"
+
+#: includes/ui/tabs/redis.php:434 includes/ui/tabs/redis.php:438
+msgid "Enable Object Cache"
+msgstr "Activar caché de objetos"
+
+#: includes/ui/tabs/varnish.php:38
+msgid "Purge Endpoint:"
+msgstr "Punto final de purga:"
+
+#: includes/ui/tabs/varnish.php:43
+msgid "The plugin sends PURGE or BAN requests to this address, using the site host header so Varnish can match the virtual host."
+msgstr "El complemento envía solicitudes de PURGA o BAN a esta dirección, utilizando el encabezado del host del sitio para que Varnish pueda coincidir con el host virtual."
+
+#: includes/ui/tabs/varnish.php:50
+msgid "Last Test:"
+msgstr "Última prueba:"
+
+#: includes/ui/tabs/varnish.php:95
+msgid "Purge the Varnish cache in front of this site"
+msgstr "Purgue el caché de Varnish frente a este sitio"
+
+#: includes/ui/tabs/varnish.php:99
+msgid "Only one page cache backend can be enabled at a time: enabling Varnish Cache requires disabling the local page cache and the nginx FastCGI cache first."
+msgstr "Solo se puede habilitar un backend de caché de página a la vez: habilitar Varnish Cache requiere deshabilitar primero el caché de página local y el caché nginx FastCGI."
+
+#: includes/ui/tabs/varnish.php:104
+msgid "Overridden by the ICC_GG_SUPER_CACHE_VARNISH_ENABLED constant in wp-config.php."
+msgstr "Anulado por la constante ICC_GG_SUPER_CACHE_VARNISH_ENABLED en wp-config.php."
+
+#: includes/ui/tabs/varnish.php:113
+msgid "Varnish Host"
+msgstr "Anfitrión de barniz"
+
+#: includes/ui/tabs/varnish.php:128
+msgid "Port"
+msgstr "Puerto"
+
+#: includes/ui/tabs/varnish.php:142
+msgid "Address Varnish listens on. Inside a Docker network this is usually the service name, for example varnish."
+msgstr "Address Varnish sigue escuchando. Dentro de una red Docker, este suele ser el nombre del servicio, por ejemplo, barniz."
+
+#: includes/ui/tabs/varnish.php:149
+msgid "Purge Method"
+msgstr "Método de purga"
+
+#: includes/ui/tabs/varnish.php:157
+msgid "PURGE (single URL)"
+msgstr "PURGAR (URL única)"
+
+#: includes/ui/tabs/varnish.php:158
+msgid "BAN (pattern, Varnish 4+)"
+msgstr "BAN (patrón, Barniz 4+)"
+
+#: includes/ui/tabs/varnish.php:162
+msgid "Timeout (seconds)"
+msgstr "Tiempo de espera (segundos)"
+
+#: includes/ui/tabs/varnish.php:179
+msgid "Purge Key"
+msgstr "Clave de purga"
+
+#: includes/ui/tabs/varnish.php:194
+msgid "Optional. When set, it is sent as the X-Purge-Key header and the VCL snippet below rejects requests without it."
+msgstr "Opcional. Cuando se configura, se envía como encabezado X-Purge-Key y el fragmento de VCL a continuación rechaza las solicitudes sin él."
+
+#: includes/ui/tabs/varnish.php:212
+msgid "Purge Varnish when posts, comments, menus or themes change"
+msgstr "Purgar barniz cuando cambien publicaciones, comentarios, menús o temas"
+
+#: includes/ui/tabs/varnish.php:217
+msgid "Overridden by the ICC_GG_SUPER_CACHE_VARNISH_AUTO_PURGE constant in wp-config.php."
+msgstr "Anulado por la constante ICC_GG_SUPER_CACHE_VARNISH_AUTO_PURGE en wp-config.php."
+
+#: includes/ui/tabs/varnish.php:226
+msgid "Save Varnish Settings"
+msgstr "Guardar configuración de barniz"
+
+#: includes/ui/tabs/varnish.php:235
+msgid "Test Connection"
+msgstr "Conexión de prueba"
+
+#: includes/ui/tabs/varnish.php:241
+msgid "Varnish Cache Configuration"
+msgstr "Configuración de caché de barniz"
+
+#: includes/ui/tabs/varnish.php:244
+msgid "The plugin only sends purge requests; Varnish has to accept them. Add this to the vcl_recv subroutine of your VCL:"
+msgstr "El complemento sólo envía solicitudes de eliminación; El barniz tiene que aceptarlos. Agregue esto a la subrutina vcl_recv de su VCL:"
+
+#: includes/ui/tabs/varnish.php:249
+msgid "Varnish Cache Exclusions"
+msgstr "Exclusiones de caché de barniz"
+
+#: includes/ui/tabs/varnish.php:252
+msgid "Varnish answers before WordPress runs, so the URL exclusions on the Page Cache tab are not applied to it. Merge this into the same vcl_recv subroutine, before the lookups, so the excluded paths and logged in visitors always reach WordPress:"
+msgstr "Varnish responde antes de que se ejecute WordPress, por lo que las exclusiones de URL en la pestaña Caché de página no se le aplican. Combine esto en la misma subrutina vcl_recv, antes de las búsquedas, para que las rutas excluidas y los visitantes registrados siempre lleguen a WordPress:"
+
+#: includes/ui/tabs/varnish.php:258
+msgid "PURGE and BAN remove whatever Varnish stored; they do not respect the exclusion list either. The snippet above is generated from the saved exclusions, so update your VCL when you change them."
+msgstr "PURGAR y PROHIBIR eliminan cualquier barniz almacenado; tampoco respetan la lista de exclusión. El fragmento anterior se genera a partir de las exclusiones guardadas, así que actualice su VCL cuando las cambie."
+
+#: includes/ui/tabs/varnish.php:262
+msgid "The same values can be defined in wp-config.php with the ICC_GG_SUPER_CACHE_VARNISH_ENABLED, ICC_GG_SUPER_CACHE_VARNISH_HOST, ICC_GG_SUPER_CACHE_VARNISH_PORT, ICC_GG_SUPER_CACHE_VARNISH_KEY and ICC_GG_SUPER_CACHE_VARNISH_AUTO_PURGE constants."
+msgstr "Los mismos valores se pueden definir en wp-config.php con las constantes ICC_GG_SUPER_CACHE_VARNISH_ENABLED, ICC_GG_SUPER_CACHE_VARNISH_HOST, ICC_GG_SUPER_CACHE_VARNISH_PORT, ICC_GG_SUPER_CACHE_VARNISH_KEY e ICC_GG_SUPER_CACHE_VARNISH_AUTO_PURGE."
+
+#. translators: 1: plugin name, 2: required PHP version, 3: current PHP version.
+#: icc-gg-wordpress-super-cache.php:99
+#, php-format
+msgid "%1$s requires PHP %2$s or later. This site runs PHP %3$s, so the plugin has been deactivated."
+msgstr "%1$s requiere PHP %2$s o posterior. Este sitio ejecuta PHP %3$s, por lo que el complemento ha sido desactivado."
+

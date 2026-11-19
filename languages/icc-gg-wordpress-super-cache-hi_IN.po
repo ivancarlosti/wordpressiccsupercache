@@ -1,0 +1,1794 @@
+# ICC.gg WordPress Super Cache translation.
+# This file is distributed under the same license as the plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: ICC.gg WordPress Super Cache 2.1.0\n"
+"Language: hi_IN\n"
+"PO-Revision-Date: 2026-11-19 00:00+0000\n"
+"Last-Translator: ICC.gg <https://ivancarlos.com.br>\n"
+"Language-Team: ICC.gg\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: ICC.gg translation helper\n"
+
+#: includes/class-cli-commands.php:56
+msgid "Redis object cache already enabled."
+msgstr "Redis ऑब्जेक्ट कैश पहले से ही सक्षम है।"
+
+#: includes/class-cli-commands.php:58 includes/class-cli-commands.php:118
+msgid "A foreign object cache drop-in was found. To use Redis for object caching, run: `wp icc-gg-wordpress-super-cache update-dropin`."
+msgstr "एक विदेशी ऑब्जेक्ट कैश ड्रॉप-इन पाया गया। ऑब्जेक्ट कैशिंग के लिए Redis का उपयोग करने के लिए, चलाएँ: `wp icc-gg-wordpress-super-cache update-dropin`।"
+
+#. translators: %s = The Redis connection error message.
+#: includes/class-cli-commands.php:65
+#, php-format
+msgid "Object cache could not be enabled. Redis server is unreachable: %s"
+msgstr "ऑब्जेक्ट कैश सक्षम नहीं किया जा सका. Redis सर्वर पहुंच योग्य नहीं है: %s"
+
+#: includes/class-cli-commands.php:86 includes/class-plugin.php:1420
+msgid "Object cache enabled."
+msgstr "ऑब्जेक्ट कैश सक्षम किया गया."
+
+#: includes/class-cli-commands.php:88 includes/class-plugin.php:1426
+msgid "Object cache could not be enabled."
+msgstr "ऑब्जेक्ट कैश सक्षम नहीं किया जा सका."
+
+#: includes/class-cli-commands.php:112
+msgid "No object cache drop-in found."
+msgstr "कोई ऑब्जेक्ट कैश ड्रॉप-इन नहीं मिला."
+
+#: includes/class-cli-commands.php:137 includes/class-plugin.php:1450
+msgid "Object cache disabled."
+msgstr "ऑब्जेक्ट कैश अक्षम किया गया."
+
+#: includes/class-cli-commands.php:139 includes/class-plugin.php:1456
+msgid "Object cache could not be disabled."
+msgstr "ऑब्जेक्ट कैश अक्षम नहीं किया जा सका."
+
+#. translators: %s = The Redis connection error message.
+#: includes/class-cli-commands.php:183
+#, php-format
+msgid "Object cache drop-in could not be updated. Redis server is unreachable: %s"
+msgstr "ऑब्जेक्ट कैश ड्रॉप-इन अद्यतन नहीं किया जा सका. Redis सर्वर पहुंच योग्य नहीं है: %s"
+
+#: includes/class-cli-commands.php:186 includes/class-plugin.php:1481
+msgid "Updated object cache drop-in and enabled Redis object cache."
+msgstr "अद्यतन ऑब्जेक्ट कैश ड्रॉप-इन और सक्षम Redis ऑब्जेक्ट कैश।"
+
+#: includes/class-cli-commands.php:188 includes/class-plugin.php:1487
+msgid "Object cache drop-in could not be updated."
+msgstr "ऑब्जेक्ट कैश ड्रॉप-इन अद्यतन नहीं किया जा सका."
+
+#: includes/class-cli-commands.php:207 includes/class-page-cache.php:117
+#: includes/class-plugin.php:239
+msgid "nginx FastCGI"
+msgstr "nginx फास्टसीजीआई"
+
+#: includes/class-cli-commands.php:212
+msgid "Cache Zone Path"
+msgstr "कैश जोन पथ"
+
+#: includes/class-cli-commands.php:213
+msgid "(not set)"
+msgstr "(सेट नहीं)"
+
+#: includes/class-cli-commands.php:220 includes/ui/tabs/varnish.php:200
+msgid "Auto Purge"
+msgstr "ऑटो पर्ज"
+
+#: includes/class-cli-commands.php:221
+msgid "Enabled"
+msgstr "सक्षम"
+
+#: includes/class-cli-commands.php:221 includes/class-local-cache.php:432
+#: includes/class-nginx-cache.php:525 includes/class-plugin.php:656
+#: includes/class-qm-collector.php:79 includes/class-varnish-cache.php:326
+#: includes/ui/tabs/redis.php:71
+msgid "Disabled"
+msgstr "अक्षम"
+
+#: includes/class-cli-commands.php:225
+msgid "Files"
+msgstr "फ़ाइलें"
+
+#: includes/class-cli-commands.php:226 includes/ui/query-monitor.php:45
+msgid "Size"
+msgstr "आकार"
+
+#: includes/class-cli-commands.php:243 includes/class-plugin.php:1367
+msgid "nginx FastCGI cache purged."
+msgstr "nginx FastCGI कैश को शुद्ध किया गया।"
+
+#: includes/class-cli-commands.php:247 includes/class-plugin.php:1385
+msgid "nginx FastCGI cache purge was skipped."
+msgstr "nginx FastCGI कैश पर्ज को छोड़ दिया गया था।"
+
+#: includes/class-cli-commands.php:266 includes/class-page-cache.php:115
+#: includes/class-plugin.php:229 includes/ui/tabs/local.php:289
+msgid "Page Cache"
+msgstr "पेज कैश"
+
+#: includes/class-cli-commands.php:271
+msgid "Active Backend"
+msgstr "सक्रिय बैकएंड"
+
+#: includes/class-cli-commands.php:272
+msgid "(none)"
+msgstr "(कोई नहीं)"
+
+#: includes/class-cli-commands.php:279
+msgid "Conflicts"
+msgstr "संघर्ष"
+
+#: includes/class-cli-commands.php:284
+msgid "Local Page Cache"
+msgstr "स्थानीय पेज कैश"
+
+#: includes/class-cli-commands.php:285
+msgid "Loader"
+msgstr "लोडर"
+
+#: includes/class-cli-commands.php:286
+msgid "Cache Directory"
+msgstr "कैश निर्देशिका"
+
+#: includes/class-cli-commands.php:287
+msgid "Cached Pages"
+msgstr "कैश्ड पेज"
+
+#: includes/class-cli-commands.php:288
+msgid "Cache Files"
+msgstr "कैश फ़ाइलें"
+
+#: includes/class-cli-commands.php:289
+msgid "Cache Size"
+msgstr "कैश आकार"
+
+#: includes/class-cli-commands.php:290
+msgid "Preload Queue"
+msgstr "प्रीलोड कतार"
+
+#: includes/class-cli-commands.php:321
+msgid "Local page cache enabled."
+msgstr "स्थानीय पृष्ठ कैश सक्षम किया गया."
+
+#: includes/class-cli-commands.php:354
+msgid "Local page cache disabled."
+msgstr "स्थानीय पेज कैश अक्षम किया गया."
+
+#: includes/class-cli-commands.php:379
+msgid "Local page cache purged."
+msgstr "स्थानीय पृष्ठ कैश मिटाया गया."
+
+#. translators: %d = Number of purged cache entries.
+#: includes/class-cli-commands.php:389
+#, php-format
+msgid "%d cached entry purged."
+msgid_plural "%d cached entries purged."
+msgstr[0] "%d कैश्ड प्रविष्टि मिटा दी गई।"
+msgstr[1] "%d कैश्ड प्रविष्टियाँ मिटा दी गईं।"
+
+#: includes/class-cli-commands.php:409
+msgid "The local page cache is disabled."
+msgstr "स्थानीय पेज कैश अक्षम है."
+
+#. translators: 1: Number of queued URLs, 2: Number of URLs requested in this run.
+#: includes/class-cli-commands.php:418
+#, php-format
+msgid "%1$d URLs queued, %2$d requested now. The rest runs through WP-Cron."
+msgstr "%1$d URL कतारबद्ध हैं, %2$d का अभी अनुरोध किया गया है। बाकी WP-Cron के माध्यम से चलता है।"
+
+#: includes/class-cli-commands.php:439 includes/class-page-cache.php:116
+#: includes/class-plugin.php:234 includes/ui/tabs/varnish.php:83
+msgid "Varnish Cache"
+msgstr "Varnish कैश"
+
+#: includes/class-cli-commands.php:440
+msgid "Endpoint"
+msgstr "समापन बिंदु"
+
+#: includes/class-cli-commands.php:441
+msgid "Method"
+msgstr "विधि"
+
+#: includes/class-cli-commands.php:466 includes/class-varnish-cache.php:523
+msgid "Varnish could not be reached."
+msgstr "वार्निश तक नहीं पहुंचा जा सका."
+
+#: includes/class-cli-commands.php:469
+msgid "Varnish answered."
+msgstr "वार्निश ने उत्तर दिया."
+
+#: includes/class-cli-commands.php:495 includes/class-plugin.php:2045
+msgid "Varnish cache purged."
+msgstr "वार्निश कैश साफ़ किया गया."
+
+#. translators: 1: Processed images, 2: Failed images, 3: Pending images.
+#: includes/class-cli-commands.php:528
+#, php-format
+msgid "Processed %1$d, failed %2$d, pending %3$d."
+msgstr "संसाधित %1$d, विफल %2$d, लंबित %3$d."
+
+#: includes/class-cli-commands.php:540
+msgid "Image optimization finished."
+msgstr "छवि अनुकूलन समाप्त हुआ."
+
+#: includes/class-image-optimizer.php:157
+msgid "JPEG"
+msgstr "जेपीईजी"
+
+#: includes/class-image-optimizer.php:158
+msgid "PNG"
+msgstr "पीएनजी"
+
+#: includes/class-image-optimizer.php:159
+msgid "WebP"
+msgstr "वेबपी"
+
+#: includes/class-image-optimizer.php:160
+msgid "AVIF"
+msgstr "एवीआईएफ"
+
+#: includes/class-image-optimizer.php:284
+msgid "Manual optimization"
+msgstr "मैन्युअल अनुकूलन"
+
+#: includes/class-image-optimizer.php:287
+msgid "Optimizing new uploads"
+msgstr "नए अपलोड को अनुकूलित करना"
+
+#: includes/class-image-optimizer.php:402
+#: includes/class-image-optimizer.php:595
+msgid "The attached file could not be read."
+msgstr "संलग्न फ़ाइल पढ़ी नहीं जा सकी."
+
+#: includes/class-image-optimizer.php:411
+msgid "This image format is not optimized by the current settings."
+msgstr "यह छवि प्रारूप वर्तमान सेटिंग्स द्वारा अनुकूलित नहीं है।"
+
+#: includes/class-image-optimizer.php:558
+msgid "The backup directory could not be created."
+msgstr "बैकअप निर्देशिका नहीं बनाई जा सकी."
+
+#: includes/class-image-optimizer.php:565
+msgid "The original image could not be backed up."
+msgstr "मूल छवि का बैकअप नहीं लिया जा सका."
+
+#: includes/class-image-optimizer.php:586
+msgid "No backup was found for this image."
+msgstr "इस छवि के लिए कोई बैकअप नहीं मिला."
+
+#: includes/class-image-optimizer.php:602
+msgid "The original image could not be restored."
+msgstr "मूल छवि पुनर्स्थापित नहीं की जा सकी."
+
+#. translators: 1: attachment title, 2: attachment ID, 3: error message.
+#: includes/class-image-optimizer.php:775
+#, php-format
+msgid "%1$s (#%2$d): %3$s"
+msgstr "%1$s (#%2$d): %3$s"
+
+#: includes/class-local-cache.php:438
+msgid "Enabled, but no loader installed"
+msgstr "सक्षम है, लेकिन कोई लोडर स्थापित नहीं है"
+
+#: includes/class-local-cache.php:442
+msgid "Enabled (advanced-cache.php)"
+msgstr "सक्षम (advanced-cache.php)"
+
+#: includes/class-local-cache.php:443
+msgid "Enabled (must-use plugin loader)"
+msgstr "सक्षम (प्लगइन लोडर का उपयोग करना चाहिए)"
+
+#: includes/class-local-cache.php:897 includes/class-local-cache.php:952
+#: includes/class-local-cache.php:1042 includes/class-nginx-cache.php:294
+#: includes/class-nginx-cache.php:352
+msgid "Filesystem API could not be initialized."
+msgstr "फ़ाइल सिस्टम API प्रारंभ नहीं किया जा सका."
+
+#. translators: %s = Directory path.
+#: includes/class-local-cache.php:907
+#, php-format
+msgid "The directory %s could not be created."
+msgstr "निर्देशिका %s नहीं बनाई जा सकी."
+
+#. translators: %s = File path.
+#: includes/class-local-cache.php:920
+#, php-format
+msgid "The file %s could not be written."
+msgstr "फ़ाइल %s लिखी नहीं जा सकी."
+
+#. translators: %s = File path.
+#: includes/class-local-cache.php:933
+#, php-format
+msgid "The file %s could not be saved."
+msgstr "फ़ाइल %s सहेजी नहीं जा सकी."
+
+#: includes/class-local-cache.php:963
+msgid "The page cache engine file could not be read."
+msgstr "पेज कैश इंजन फ़ाइल पढ़ी नहीं जा सकी."
+
+#. translators: %s = Cache directory path.
+#: includes/class-local-cache.php:991
+#, php-format
+msgid "The cache directory %s could not be created."
+msgstr "कैश निर्देशिका %s नहीं बनाई जा सकी."
+
+#: includes/class-local-cache.php:1014
+msgid "The loader template could not be read."
+msgstr "लोडर टेम्प्लेट पढ़ा नहीं जा सका."
+
+#. translators: 1: Loader path, 2: Backup path.
+#: includes/class-local-cache.php:1111
+#, php-format
+msgid "The existing file %1$s could not be backed up to %2$s, so it was left untouched."
+msgstr "मौजूदा फ़ाइल %1$s का बैकअप %2$s तक नहीं किया जा सका, इसलिए इसे अछूता छोड़ दिया गया।"
+
+#: includes/class-local-cache.php:1188
+msgid "Editing wp-config.php is disabled by the ICC_GG_SUPER_CACHE_ALLOW_WP_CONFIG_EDIT constant."
+msgstr "wp-config.php का संपादन ICC_GG_SUPER_CACHE_ALLOW_WP_CONFIG_EDIT स्थिरांक द्वारा अक्षम है।"
+
+#: includes/class-local-cache.php:1199
+msgid "wp-config.php could not be located."
+msgstr "wp-config.php का पता नहीं लगाया जा सका."
+
+#: includes/class-local-cache.php:1203
+msgid "File modifications are not allowed on this installation."
+msgstr "इस संस्थापन पर फ़ाइल संशोधन की अनुमति नहीं है."
+
+#: includes/class-local-cache.php:1209
+msgid "WP_CONTENT_DIR is customized, so WP_CACHE has to be added to wp-config.php manually."
+msgstr "WP_CONTENT_DIR अनुकूलित है, इसलिए WP_CACHE को मैन्युअल रूप से wp-config.php में जोड़ना होगा।"
+
+#: includes/class-local-cache.php:1214
+msgid "wp-config.php is not writable."
+msgstr "wp-config.php लिखने योग्य नहीं है."
+
+#: includes/class-local-cache.php:1220
+msgid "wp-config.php could not be read."
+msgstr "wp-config.php पढ़ा नहीं जा सका."
+
+#: includes/class-local-cache.php:1240
+msgid "The WP_CACHE constant in wp-config.php could not be updated automatically."
+msgstr "wp-config.php में WP_CACHE स्थिरांक स्वचालित रूप से अद्यतन नहीं किया जा सका।"
+
+#: includes/class-local-cache.php:1255
+msgid "The wp-config.php layout was not recognized, so WP_CACHE was not added."
+msgstr "wp-config.php लेआउट पहचाना नहीं गया था, इसलिए WP_CACHE नहीं जोड़ा गया था।"
+
+#: includes/class-local-cache.php:1272
+msgid "wp-config.php could not be backed up."
+msgstr "wp-config.php का बैकअप नहीं लिया जा सका."
+
+#: includes/class-local-cache.php:1279
+msgid "The temporary wp-config.php file could not be written."
+msgstr "अस्थायी wp-config.php फ़ाइल लिखी नहीं जा सकी."
+
+#: includes/class-local-cache.php:1285
+msgid "wp-config.php could not be replaced."
+msgstr "wp-config.php को प्रतिस्थापित नहीं किया जा सका."
+
+#: includes/class-local-cache.php:1297
+msgid "The wp-config.php edit could not be verified and was reverted."
+msgstr "wp-config.php संपादन सत्यापित नहीं किया जा सका और वापस कर दिया गया।"
+
+#: includes/class-local-cache.php:1314
+msgid "No wp-config.php backup was found."
+msgstr "कोई wp-config.php बैकअप नहीं मिला."
+
+#: includes/class-local-cache.php:1318
+msgid "wp-config.php could not be restored from the backup."
+msgstr "wp-config.php को बैकअप से पुनर्स्थापित नहीं किया जा सका."
+
+#: includes/class-local-cache.php:1362
+msgid "Another plugin already installed an advanced-cache.php drop-in. Remove it before enabling the local page cache."
+msgstr "एक अन्य प्लगइन ने पहले से ही advanced-cache.php ड्रॉप-इन स्थापित किया है। स्थानीय पेज कैश सक्षम करने से पहले इसे हटा दें।"
+
+#: includes/class-local-cache.php:1369
+msgid "Another must-use plugin already uses the file wp-content/mu-plugins/icc-gg-page-cache.php. Remove it before enabling the local page cache."
+msgstr "एक अन्य अवश्य उपयोग किया जाने वाला प्लगइन पहले से ही फ़ाइल wp-content/mu-plugins/icc-gg-page-cache.php का उपयोग करता है। स्थानीय पेज कैश सक्षम करने से पहले इसे हटा दें।"
+
+#. translators: %s = Loader path.
+#: includes/class-local-cache.php:1466
+#, php-format
+msgid "The file %s was not created by this plugin and was left untouched."
+msgstr "फ़ाइल %s इस प्लगइन द्वारा नहीं बनाई गई थी और इसे अछूता छोड़ दिया गया था।"
+
+#. translators: %s = Loader path.
+#: includes/class-local-cache.php:1477
+#, php-format
+msgid "The file %s could not be removed."
+msgstr "फ़ाइल %s को हटाया नहीं जा सका."
+
+#: includes/class-nginx-cache.php:279
+msgid "The Nginx cache is disabled."
+msgstr "Nginx कैश अक्षम है."
+
+#: includes/class-nginx-cache.php:348
+msgid "\"Cache Zone Path\" is not set."
+msgstr "\"कैश जोन पथ\" सेट नहीं है."
+
+#: includes/class-nginx-cache.php:356
+msgid "\"Cache Zone Path\" does not exist."
+msgstr "\"कैश ज़ोन पथ\" मौजूद नहीं है."
+
+#: includes/class-nginx-cache.php:360
+msgid "\"Cache Zone Path\" is not a directory."
+msgstr "\"कैश ज़ोन पथ\" कोई निर्देशिका नहीं है."
+
+#: includes/class-nginx-cache.php:366
+msgid "\"Cache Zone Path\" does not appear to be an Nginx cache zone directory."
+msgstr "\"कैश ज़ोन पथ\" Nginx कैश ज़ोन निर्देशिका प्रतीत नहीं होता है।"
+
+#: includes/class-nginx-cache.php:370
+msgid "\"Cache Zone Path\" is not writable."
+msgstr "\"कैश ज़ोन पथ\" लिखने योग्य नहीं है."
+
+#. translators: %s = The cache zone path validation error.
+#: includes/class-nginx-cache.php:533
+#, php-format
+msgid "Enabled, but unusable: %s"
+msgstr "सक्षम, लेकिन अनुपयोगी: %s"
+
+#: includes/class-nginx-cache.php:539 includes/class-varnish-cache.php:330
+msgid "Enabled (auto purge)"
+msgstr "सक्षम (स्वतः शुद्ध)"
+
+#: includes/class-nginx-cache.php:540 includes/class-varnish-cache.php:331
+msgid "Enabled (manual purge)"
+msgstr "सक्षम (मैन्युअल पर्ज)"
+
+#. translators: 1: enabled page cache names, 2: page cache the user wants to enable.
+#: includes/class-page-cache.php:280
+#, php-format
+msgid "The %1$s page cache is enabled. Disable it before enabling the %2$s page cache."
+msgstr "%1$s पेज कैश सक्षम है. %2$s पेज कैश सक्षम करने से पहले इसे अक्षम करें।"
+
+#. translators: 1: forced backend name, 2: backend the user wants to enable.
+#: includes/class-page-cache.php:303
+#, php-format
+msgid "The %1$s cache is forced by the ICC_GG_SUPER_CACHE_PAGE_CACHE constant in wp-config.php, so the %2$s cache cannot be enabled."
+msgstr "%1$s कैश को wp-config.php में ICC_GG_SUPER_CACHE_PAGE_CACHE स्थिरांक द्वारा मजबूर किया जाता है, इसलिए %2$s कैश को सक्षम नहीं किया जा सकता है।"
+
+#: includes/class-page-cache.php:338
+msgid "Unknown page cache backend."
+msgstr "अज्ञात पेज कैश बैकएंड."
+
+#: includes/class-page-cache.php:565
+msgid "The page cache backend is not available."
+msgstr "पेज कैश बैकएंड उपलब्ध नहीं है."
+
+#: includes/class-page-cache.php:579
+msgid "This page cache backend cannot be purged."
+msgstr "इस पृष्ठ कैश बैकएंड को शुद्ध नहीं किया जा सकता."
+
+#: includes/class-page-cache.php:595
+msgid "No page cache is enabled."
+msgstr "कोई पेज कैश सक्षम नहीं है."
+
+#: includes/class-page-cache.php:612
+msgid "No page cache enabled"
+msgstr "कोई पेज कैश सक्षम नहीं है"
+
+#. translators: %s = Comma separated list of enabled page caches.
+#: includes/class-page-cache.php:618
+#, php-format
+msgid "Conflict: %s are enabled at the same time"
+msgstr "विरोध: %s एक ही समय में सक्षम हैं"
+
+#: includes/class-plugin.php:185 includes/class-plugin.php:273
+#: includes/ui/settings.php:21
+msgid "ICC.gg WordPress Super Cache"
+msgstr "ICC.gg वर्डप्रेस सुपर कैश"
+
+#: includes/class-plugin.php:186
+msgid "Super Cache"
+msgstr "सुपर कैश"
+
+#: includes/class-plugin.php:223
+msgid "Redis Object Cache"
+msgstr "Redis ऑब्जेक्ट कैश"
+
+#: includes/class-plugin.php:244 includes/class-plugin.php:1142
+#: includes/ui/tabs/images.php:322
+msgid "Optimize Images"
+msgstr "छवियाँ अनुकूलित करें"
+
+#: includes/class-plugin.php:249
+msgid "Diagnostics"
+msgstr "निदान"
+
+#: includes/class-plugin.php:303 includes/class-plugin.php:1124
+#: includes/ui/widget.php:43
+msgid "Settings"
+msgstr "सेटिंग्स"
+
+#: includes/class-plugin.php:330 includes/ui/settings.php:92
+msgid "Check for updates"
+msgstr "अपडेट जाँचें"
+
+#: includes/class-plugin.php:337 includes/class-plugin.php:1013
+#: includes/ui/settings.php:116
+msgid "Release notes"
+msgstr "रिलीज़ नोट्स"
+
+#: includes/class-plugin.php:352
+msgid "Sorry, you are not allowed to check for plugin updates on this site."
+msgstr "क्षमा करें, आपको इस साइट पर प्लगइन अपडेट की जांच करने की अनुमति नहीं है।"
+
+#: includes/class-plugin.php:358
+msgid "The update checker is not available."
+msgstr "अद्यतन जांचकर्ता उपलब्ध नहीं है."
+
+#: includes/class-plugin.php:453 includes/ui/tabs/redis.php:391
+#: includes/ui/widget.php:23
+msgid "Time"
+msgstr "समय"
+
+#: includes/class-plugin.php:454 includes/ui/tabs/redis.php:396
+#: includes/ui/widget.php:28
+msgid "Bytes"
+msgstr "बाइट्स"
+
+#: includes/class-plugin.php:455 includes/ui/tabs/redis.php:401
+#: includes/ui/widget.php:33
+msgid "Ratio"
+msgstr "अनुपात"
+
+#: includes/class-plugin.php:456 includes/ui/tabs/redis.php:406
+#: includes/ui/widget.php:38
+msgid "Calls"
+msgstr "कॉल"
+
+#: includes/class-plugin.php:457
+msgid "Not enough data collected, yet."
+msgstr "अभी तक पर्याप्त डेटा एकत्र नहीं किया गया है."
+
+#: includes/class-plugin.php:458
+msgid "Enable object cache to collect data."
+msgstr "डेटा एकत्र करने के लिए ऑब्जेक्ट कैश सक्षम करें।"
+
+#: includes/class-plugin.php:459
+msgid "Optimizing…"
+msgstr "अनुकूलन…"
+
+#: includes/class-plugin.php:460
+msgid "All images were optimized."
+msgstr "सभी छवियाँ अनुकूलित की गईं."
+
+#: includes/class-plugin.php:461
+msgid "The images could not be optimized."
+msgstr "छवियाँ अनुकूलित नहीं की जा सकीं."
+
+#: includes/class-plugin.php:660
+msgid "Not enabled"
+msgstr "सक्षम नहीं"
+
+#: includes/class-plugin.php:664
+msgid "Drop-in is outdated"
+msgstr "ड्रॉप-इन पुराना है"
+
+#: includes/class-plugin.php:668
+msgid "Drop-in is invalid"
+msgstr "ड्रॉप-इन अमान्य है"
+
+#: includes/class-plugin.php:673
+msgid "Connected"
+msgstr "कनेक्टेड"
+
+#: includes/class-plugin.php:674
+msgid "Not connected"
+msgstr "कनेक्टेड नहीं"
+
+#: includes/class-plugin.php:677 includes/ui/tabs/redis.php:372
+msgid "Unknown"
+msgstr "अज्ञात"
+
+#. translators: %s = Action link to update the drop-in.
+#: includes/class-plugin.php:946
+#, php-format
+msgid "The Redis object cache drop-in is outdated. Please <a href=\"%s\">update the drop-in</a>."
+msgstr "Redis ऑब्जेक्ट कैश ड्रॉप-इन पुराना है। कृपया <a href=\"%s\">ड्रॉप-इन अपडेट करें</a>।"
+
+#. translators: %s = Link to settings page.
+#: includes/class-plugin.php:953
+#, php-format
+msgid "A foreign object cache drop-in was found. To use Redis for object caching, please <a href=\"%s\">enable the drop-in</a>."
+msgstr "एक विदेशी ऑब्जेक्ट कैश ड्रॉप-इन पाया गया। ऑब्जेक्ट कैशिंग के लिए Redis का उपयोग करने के लिए, कृपया <a href=\"%s\">ड्रॉप-इन सक्षम करें</a>।"
+
+#. translators: 1: New version number, 2: Installed version number.
+#: includes/class-plugin.php:994
+#, php-format
+msgid "<strong>ICC.gg WordPress Super Cache %1$s is available.</strong> You are running version %2$s."
+msgstr "<strong>ICC.gg वर्डप्रेस सुपर कैश %1$s उपलब्ध है।</strong> आप संस्करण %2$s चला रहे हैं।"
+
+#: includes/class-plugin.php:1005 includes/ui/settings.php:110
+msgid "Update now"
+msgstr "अभी अपडेट करें"
+
+#. translators: %s: Installed version number.
+#: includes/class-plugin.php:1032
+#, php-format
+msgid "ICC.gg WordPress Super Cache is up to date (version %s)."
+msgstr "ICC.gg वर्डप्रेस सुपर कैश अद्यतित है (संस्करण %s)।"
+
+#: includes/class-plugin.php:1043
+msgid "The update check could not reach GitHub. Please try again in a few minutes."
+msgstr "अद्यतन जांच GitHub तक नहीं पहुंच सकी. कुछ ही मिनटों में पुनः प्रयास करें।"
+
+#: includes/class-plugin.php:1064 includes/class-qm-collector.php:34
+#: includes/class-qm-output.php:40
+msgid "Object Cache"
+msgstr "ऑब्जेक्ट कैश"
+
+#: includes/class-plugin.php:1085 includes/ui/tabs/redis.php:421
+msgid "Flush Cache"
+msgstr "कैश फ़्लश करें"
+
+#: includes/class-plugin.php:1098 includes/ui/tabs/local.php:480
+msgid "Clear Page Cache"
+msgstr "पेज कैश साफ़ करें"
+
+#: includes/class-plugin.php:1107 includes/ui/tabs/varnish.php:230
+msgid "Purge Varnish Cache"
+msgstr "Varnish कैश फ़्लश करें"
+
+#: includes/class-plugin.php:1116
+msgid "Purge nginx FastCGI Cache"
+msgstr "nginx FastCGI कैश फ़्लश करें"
+
+#: includes/class-plugin.php:1139 includes/ui/tabs/local.php:281
+msgid "Page Cache Settings"
+msgstr "पेज कैश सेटिंग्स"
+
+#: includes/class-plugin.php:1140 includes/ui/tabs/varnish.php:75
+msgid "Varnish Cache Settings"
+msgstr "वार्निश कैश सेटिंग्स"
+
+#: includes/class-plugin.php:1141
+msgid "nginx FastCGI Settings"
+msgstr "nginx फास्टसीजीआई सेटिंग्स"
+
+#. translators: %s = The status of the Redis connection.
+#: includes/class-plugin.php:1166
+#, php-format
+msgid "Status: %s"
+msgstr "स्थिति: %s"
+
+#. translators: 1: Hit ratio, 2: Hits, 3: Misses. 4: Human-readable size of cache.
+#: includes/class-plugin.php:1186
+#, php-format
+msgid "(Current page) Hit Ratio: %1$s%%, Hits %2$s, Misses: %3$s, Size: %4$s"
+msgstr "(वर्तमान पृष्ठ) हिट अनुपात: %1$s%%, हिट्स %2$s, चूके: %3$s, आकार: %4$s"
+
+#: includes/class-plugin.php:1236
+msgid "Flushing cache..."
+msgstr "कैश फ़्लश हो रहा है..."
+
+#: includes/class-plugin.php:1349 includes/class-plugin.php:2322
+msgid "Object cache flushed."
+msgstr "ऑब्जेक्ट कैश फ़्लश हो गया।"
+
+#: includes/class-plugin.php:1355 includes/class-plugin.php:2324
+msgid "Object cache could not be flushed."
+msgstr "ऑब्जेक्ट कैश फ़्लश नहीं हो सका।"
+
+#. translators: %s = The reason the nginx FastCGI cache could not be purged.
+#: includes/class-plugin.php:1376
+#, php-format
+msgid "nginx FastCGI cache could not be purged: %s"
+msgstr "nginx FastCGI कैश को शुद्ध नहीं किया जा सका: %s"
+
+#: includes/class-plugin.php:1530
+msgid "Selective flush is defined in wp-config.php and cannot be changed from this screen. Remove the WP_REDIS_SELECTIVE_FLUSH constant to manage it here."
+msgstr "चयनात्मक फ्लश को wp-config.php में परिभाषित किया गया है और इसे इस स्क्रीन से नहीं बदला जा सकता है। इसे यहां प्रबंधित करने के लिए WP_REDIS_SELECTIVE_FLUSH स्थिरांक को हटा दें।"
+
+#: includes/class-plugin.php:1553
+msgid "Selective flush enabled. Cache flushes now delete only keys that belong to this site."
+msgstr "चयनात्मक फ्लश सक्षम. कैश फ्लश अब केवल वे कुंजियाँ हटाता है जो इस साइट से संबंधित हैं।"
+
+#: includes/class-plugin.php:1554
+msgid "Selective flush disabled. Cache flushes now run FLUSHDB and delete every key in the Redis database, including other sites."
+msgstr "चयनात्मक फ्लश अक्षम. कैश फ्लश अब FLUSHDB चलाते हैं और अन्य साइटों सहित Redis डेटाबेस की प्रत्येक कुंजी को हटा देते हैं।"
+
+#. translators: %s = The cache zone path validation error.
+#: includes/class-plugin.php:1607
+#, php-format
+msgid "nginx FastCGI cache settings saved, but the cache zone is unusable: %s"
+msgstr "nginx FastCGI कैश सेटिंग्स सहेजी गईं, लेकिन कैश ज़ोन अनुपयोगी है: %s"
+
+#: includes/class-plugin.php:1616
+msgid "nginx FastCGI cache settings saved."
+msgstr "nginx FastCGI कैश सेटिंग्स सहेजी गईं।"
+
+#. translators: %s = The reason the loader could not be installed.
+#: includes/class-plugin.php:1760
+#, php-format
+msgid "The page cache was enabled, but its loader could not be installed: %s"
+msgstr "पेज कैश सक्षम किया गया था, लेकिन इसका लोडर इंस्टॉल नहीं किया जा सका: %s"
+
+#: includes/class-plugin.php:1769
+msgid "Use \"Write / Rewrite advanced-cache.php\" in the Maintenance section of the Page Cache tab to replace it; the current file is copied to a backup first."
+msgstr "इसे बदलने के लिए पेज कैश टैब के रखरखाव अनुभाग में \"लिखें/पुनः लिखें advanced-cache.php\" का उपयोग करें; वर्तमान फ़ाइल को पहले बैकअप में कॉपी किया जाता है।"
+
+#: includes/class-plugin.php:1779
+msgid "The local page cache is enabled."
+msgstr "स्थानीय पेज कैश सक्षम है."
+
+#. translators: %s = The reason wp-config.php could not be edited.
+#: includes/class-plugin.php:1790 includes/class-plugin.php:2153
+#, php-format
+msgid "WP_CACHE was not added to wp-config.php (%s); the must-use plugin loader was installed instead."
+msgstr "WP_CACHE को wp-config.php (%s) में नहीं जोड़ा गया था; इसके बजाय आवश्यक प्लगइन लोडर स्थापित किया गया था।"
+
+#: includes/class-plugin.php:1812
+msgid "The local page cache is disabled and its loader was removed."
+msgstr "स्थानीय पेज कैश अक्षम कर दिया गया है और उसका लोडर हटा दिया गया है।"
+
+#: includes/class-plugin.php:1823
+msgid "The local page cache was purged."
+msgstr "स्थानीय पेज कैश को साफ़ कर दिया गया था।"
+
+#: includes/class-plugin.php:1833
+msgid "The local page cache is disabled, so it cannot be preloaded."
+msgstr "स्थानीय पृष्ठ कैश अक्षम है, इसलिए इसे पहले से लोड नहीं किया जा सकता."
+
+#: includes/class-plugin.php:1849
+#, php-format
+msgid "%d URL was queued for preloading."
+msgid_plural "%d URLs were queued for preloading."
+msgstr[0] "%d URL प्रीलोडिंग के लिए कतारबद्ध था।"
+msgstr[1] "%d यूआरएल प्रीलोडिंग के लिए कतारबद्ध थे।"
+
+#: includes/class-plugin.php:1872
+msgid "The page cache loader was regenerated."
+msgstr "पेज कैश लोडर को पुनर्जीवित किया गया था।"
+
+#: includes/class-plugin.php:1892
+msgid "The must-use plugin loader was written because WP_CACHE could not be added to wp-config.php."
+msgstr "अवश्य उपयोग होने वाला प्लगइन लोडर इसलिए लिखा गया क्योंकि WP_CACHE को wp-config.php में नहीं जोड़ा जा सका।"
+
+#: includes/class-plugin.php:1898
+msgid "advanced-cache.php was written."
+msgstr "advanced-cache.php लिखा गया था."
+
+#. translators: %s = Path of the backup file.
+#: includes/class-plugin.php:1910
+#, php-format
+msgid "The previous file was backed up to %s."
+msgstr "पिछली फ़ाइल का बैकअप %s पर लिया गया था।"
+
+#: includes/class-plugin.php:1920
+msgid "The page cache is disabled, so caching stays off until it is enabled."
+msgstr "पृष्ठ कैश अक्षम है, इसलिए सक्षम होने तक कैशिंग बंद रहती है।"
+
+#: includes/class-plugin.php:1938
+msgid "The default URL exclusions were restored."
+msgstr "डिफ़ॉल्ट URL बहिष्करण पुनर्स्थापित कर दिए गए."
+
+#: includes/class-plugin.php:1955
+msgid "wp-config.php was restored from the backup. The page cache keeps working through the must-use plugin loader."
+msgstr "wp-config.php को बैकअप से पुनर्स्थापित किया गया था। पेज कैश अवश्य उपयोग होने वाले प्लगइन लोडर के माध्यम से काम करता रहता है।"
+
+#: includes/class-plugin.php:1997
+msgid "Varnish is enabled."
+msgstr "वार्निश सक्षम है."
+
+#: includes/class-plugin.php:2020
+msgid "Varnish is disabled."
+msgstr "वार्निश अक्षम है."
+
+#. translators: %s = The reason the purge failed.
+#: includes/class-plugin.php:2034
+#, php-format
+msgid "Varnish could not be purged: %s"
+msgstr "वार्निश को शुद्ध नहीं किया जा सका: %s"
+
+#: includes/class-plugin.php:2080
+msgid "The image optimization progress was reset."
+msgstr "छवि अनुकूलन प्रगति रीसेट कर दी गई थी।"
+
+#. translators: %s = The reason the loader could not be written.
+#: includes/class-plugin.php:2134
+#, php-format
+msgid "Settings saved, but the page cache loader could not be written: %s"
+msgstr "सेटिंग्स सहेजी गईं, लेकिन पेज कैश लोडर नहीं लिखा जा सका: %s"
+
+#: includes/class-plugin.php:2142
+msgid "Page cache settings saved."
+msgstr "पेज कैश सेटिंग सहेजी गईं."
+
+#: includes/class-plugin.php:2190
+#, php-format
+msgid "%d cached entry was purged."
+msgid_plural "%d cached entries were purged."
+msgstr[0] "%d कैश्ड प्रविष्टि को मिटा दिया गया था।"
+msgstr[1] "%d कैश्ड प्रविष्टियाँ मिटा दी गईं।"
+
+#: includes/class-plugin.php:2242
+msgid "Varnish settings saved."
+msgstr "वार्निश सेटिंग सहेजी गईं."
+
+#: includes/class-plugin.php:2275
+msgid "Image optimization settings saved."
+msgstr "छवि अनुकूलन सेटिंग्स सहेजी गईं।"
+
+#: includes/class-plugin.php:2295
+msgid "You are not allowed to optimize images."
+msgstr "आपको छवियों को अनुकूलित करने की अनुमति नहीं है."
+
+#: includes/class-plugin.php:2320
+msgid "Invalid Nonce."
+msgstr "अमान्य नॉन्स."
+
+#. translators: %1$d = number of objects. %2$s = human-readable size of cache. %3$s = name of the used client.
+#: includes/class-plugin.php:2447
+#, php-format
+msgid "Retrieved %1$d objects (%2$s) from Redis using %3$s."
+msgstr "%3$s का उपयोग करके Redis से %1$d ऑब्जेक्ट (%2$s) पुनर्प्राप्त किए गए।"
+
+#: includes/class-plugin.php:2567
+msgid "File modifications are not allowed."
+msgstr "फ़ाइल संशोधन की अनुमति नहीं है."
+
+#: includes/class-plugin.php:2571
+msgid "Could not initialize filesystem."
+msgstr "फ़ाइल सिस्टम प्रारंभ नहीं किया जा सका."
+
+#: includes/class-plugin.php:2582
+msgid "Object cache drop-in is not writable."
+msgstr "ऑब्जेक्ट कैश ड्रॉप-इन लिखने योग्य नहीं है।"
+
+#: includes/class-plugin.php:2592
+msgid "Object cache file doesn’t exist."
+msgstr "ऑब्जेक्ट कैश फ़ाइल मौजूद नहीं है."
+
+#: includes/class-plugin.php:2597
+msgid "Test file exists, but couldn’t be deleted."
+msgstr "परीक्षण फ़ाइल मौजूद है, लेकिन हटाया नहीं जा सका."
+
+#: includes/class-plugin.php:2602
+msgid "Content directory is not writable."
+msgstr "सामग्री निर्देशिका लिखने योग्य नहीं है."
+
+#: includes/class-plugin.php:2606
+msgid "Failed to copy test file."
+msgstr "परीक्षण फ़ाइल की प्रतिलिपि बनाने में विफल."
+
+#: includes/class-plugin.php:2610
+msgid "Copied test file doesn’t exist."
+msgstr "कॉपी की गई परीक्षण फ़ाइल मौजूद नहीं है."
+
+#: includes/class-plugin.php:2616
+msgid "Couldn’t verify test file contents."
+msgstr "परीक्षण फ़ाइल सामग्री सत्यापित नहीं की जा सकी."
+
+#: includes/class-plugin.php:2620
+msgid "Copied test file couldn’t be deleted."
+msgstr "कॉपी की गई परीक्षण फ़ाइल को हटाया नहीं जा सका."
+
+#: includes/class-qm-collector.php:79
+msgid "Yes"
+msgstr "हाँ"
+
+#: includes/class-qm-output.php:108
+msgid "The Redis Object Cache drop-in is not installed. Use WP CLI or go to \"Settings -> Redis\" to enable drop-in."
+msgstr "Redis ऑब्जेक्ट कैश ड्रॉप-इन स्थापित नहीं है। ड्रॉप-इन सक्षम करने के लिए WP CLI का उपयोग करें या \"सेटिंग्स -> Redis\" पर जाएं।"
+
+#: includes/class-qm-output.php:119
+msgid "WordPress is using a foreign object cache drop-in and Redis Object Cache is not being used. Use WP CLI or go to \"Settings -> Redis\" to enable drop-in."
+msgstr "वर्डप्रेस एक विदेशी ऑब्जेक्ट कैश ड्रॉप-इन का उपयोग कर रहा है और Redis ऑब्जेक्ट कैश का उपयोग नहीं किया जा रहा है। ड्रॉप-इन सक्षम करने के लिए WP CLI का उपयोग करें या \"सेटिंग्स -> Redis\" पर जाएं।"
+
+#. translators: %s = Tab label.
+#: includes/class-ui-tab.php:163
+#, php-format
+msgid "%s are disabled for this site."
+msgstr "इस साइट के लिए %s अक्षम हैं।"
+
+#: includes/class-varnish-cache.php:297
+msgid "The URL to purge is not valid."
+msgstr "शुद्ध करने का URL मान्य नहीं है."
+
+#: includes/class-varnish-cache.php:343
+msgid "The Varnish cache is disabled."
+msgstr "वार्निश कैश अक्षम है."
+
+#. translators: 1: HTTP status code, 2: HTTP method.
+#: includes/class-varnish-cache.php:399
+#, php-format
+msgid "Varnish answered with HTTP %1$d to the %2$s request."
+msgstr "वार्निश ने %2$s अनुरोध का HTTP %1$d से उत्तर दिया।"
+
+#: includes/class-varnish-cache.php:487
+msgid "Varnish headers were found in the response."
+msgstr "प्रतिक्रिया में वार्निश हेडर पाए गए।"
+
+#: includes/class-varnish-cache.php:488
+msgid "No Varnish headers were found in the response."
+msgstr "प्रतिक्रिया में कोई वार्निश हेडर नहीं मिला।"
+
+#: includes/class-varnish-cache.php:511
+msgid "The purge request was accepted."
+msgstr "शुद्धिकरण अनुरोध स्वीकार कर लिया गया।"
+
+#: includes/class-varnish-cache.php:517
+msgid "Varnish is in front of the site and answers purge requests."
+msgstr "वार्निश साइट के सामने है और पर्ज अनुरोधों का उत्तर देता है।"
+
+#: includes/class-varnish-cache.php:519
+msgid "Varnish answers purge requests, but its headers were not visible on the home page."
+msgstr "वार्निश पर्ज अनुरोधों का उत्तर देता है, लेकिन इसके हेडर होम पेज पर दिखाई नहीं दे रहे थे।"
+
+#: includes/class-varnish-cache.php:521
+msgid "Varnish looks active, but the purge request was rejected. Check the VCL and the purge key."
+msgstr "वार्निश सक्रिय दिखता है, लेकिन शुद्धिकरण अनुरोध अस्वीकार कर दिया गया था। वीसीएल और पर्ज कुंजी की जांच करें।"
+
+#: includes/dropins/object-cache.php:3271
+msgid "Error establishing a Redis connection"
+msgstr "Redis कनेक्शन स्थापित करने में त्रुटि"
+
+#. translators: %s = Formatted wp-config.php file name.
+#: includes/dropins/object-cache.php:3278
+#, php-format
+msgid "WordPress is unable to establish a connection to Redis. This means that the connection information in your %s file are incorrect, or that the Redis server is not reachable."
+msgstr "वर्डप्रेस Redis से कनेक्शन स्थापित करने में असमर्थ है। इसका मतलब है कि आपकी %s फ़ाइल में कनेक्शन जानकारी गलत है, या Redis सर्वर तक नहीं पहुंचा जा सकता है।"
+
+#: includes/dropins/object-cache.php:3283
+msgid "Is the correct Redis host and port set?"
+msgstr "क्या Redis होस्ट और पोर्ट सही ढंग से सेट है?"
+
+#: includes/dropins/object-cache.php:3284
+msgid "Is the Redis server running?"
+msgstr "क्या Redis सर्वर चल रहा है?"
+
+#. translators: %s = Link to installation instructions.
+#: includes/dropins/object-cache.php:3289
+#, php-format
+msgid "If you need help, please read the <a href=\"%s\">installation instructions</a>."
+msgstr "यदि आपको सहायता की आवश्यकता है, तो कृपया <a href=\"%s\">इंस्टॉलेशन निर्देश</a> पढ़ें।"
+
+#. translators: %1$s = Formatted object-cache.php file name, %2$s = Formatted wp-content directory name.
+#: includes/dropins/object-cache.php:3296
+#, php-format
+msgid "To disable Redis, delete the %1$s file in the %2$s directory."
+msgstr "Redis को अक्षम करने के लिए, %2$s निर्देशिका में %1$s फ़ाइल को हटाएं।"
+
+#: includes/ui/query-monitor.php:25
+msgid "Status"
+msgstr "स्थिति"
+
+#: includes/ui/query-monitor.php:30
+msgid "Hit Ratio"
+msgstr "हिट अनुपात"
+
+#: includes/ui/query-monitor.php:35
+msgid "Hits"
+msgstr "हिट्स"
+
+#: includes/ui/query-monitor.php:40
+msgid "Misses"
+msgstr "याद आती है"
+
+#: includes/ui/query-monitor.php:55
+msgid "Errors"
+msgstr "त्रुटियाँ"
+
+#: includes/ui/query-monitor.php:78
+msgid "Global Groups"
+msgstr "वैश्विक समूह"
+
+#: includes/ui/query-monitor.php:92
+msgid "Non-persistent Groups"
+msgstr "गैर-निरंतर समूह"
+
+#: includes/ui/query-monitor.php:106
+msgid "Unflushable Groups"
+msgstr "न उतारने योग्य समूह"
+
+#: includes/ui/query-monitor.php:120
+msgid "Metadata"
+msgstr "मेटाडेटा"
+
+#: includes/ui/settings.php:29
+msgid "More than one page cache is enabled:"
+msgstr "एक से अधिक पेज कैश सक्षम है:"
+
+#: includes/ui/settings.php:31
+msgid "Only one page cache backend can be active at a time. Disable the others below, or remove the constants in wp-config.php that force them."
+msgstr "एक समय में केवल एक पेज कैश बैकएंड सक्रिय हो सकता है। नीचे दिए गए अन्य को अक्षम करें, या wp-config.php में उन स्थिरांकों को हटा दें जो उन्हें बाध्य करते हैं।"
+
+#: includes/ui/settings.php:84
+msgid "ICC.gg WordPress Super Cache - Redis object cache, Varnish Cache and nginx FastCGI page cache in one plugin. Enable, configure and purge each layer independently."
+msgstr "ICC.gg वर्डप्रेस सुपर कैश - Redis ऑब्जेक्ट कैश, वार्निश कैश और nginx फास्टसीजीआई पेज कैश एक प्लगइन में। प्रत्येक परत को स्वतंत्र रूप से सक्षम, कॉन्फ़िगर और शुद्ध करें।"
+
+#. translators: %s: New version number.
+#: includes/ui/settings.php:102
+#, php-format
+msgid "Update available: v%s"
+msgstr "अद्यतन उपलब्ध: v%s"
+
+#: includes/ui/tabs/diagnostics.php:22
+msgid "Copy diagnostics to clipboard"
+msgstr "डायग्नोस्टिक्स को क्लिपबोर्ड पर कॉपी करें"
+
+#: includes/ui/tabs/diagnostics.php:24
+msgid "Copied!"
+msgstr "नकल की गई!"
+
+#: includes/ui/tabs/images.php:28
+msgid "No image editor is available:"
+msgstr "कोई छवि संपादक उपलब्ध नहीं है:"
+
+#: includes/ui/tabs/images.php:29
+msgid "WordPress needs either the GD or the Imagick extension to optimize images."
+msgstr "छवियों को अनुकूलित करने के लिए वर्डप्रेस को या तो जीडी या इमेजिक एक्सटेंशन की आवश्यकता होती है।"
+
+#: includes/ui/tabs/images.php:37 includes/ui/tabs/local.php:85
+#: includes/ui/tabs/redis.php:48 includes/ui/tabs/varnish.php:28
+msgid "Status:"
+msgstr "स्थिति:"
+
+#: includes/ui/tabs/images.php:47
+msgid "Library:"
+msgstr "पुस्तकालय:"
+
+#. translators: 1: Number of optimized images, 2: Total number of images.
+#: includes/ui/tabs/images.php:54 includes/ui/tabs/images.php:312
+#, php-format
+msgid "%1$s of %2$s images optimized"
+msgstr "%2$s में से %1$s छवियाँ अनुकूलित"
+
+#. translators: %s = Human readable file size.
+#: includes/ui/tabs/images.php:68
+#, php-format
+msgid "About %s saved so far."
+msgstr "अब तक सहेजे गए %s के बारे में।"
+
+#. translators: %d = Number of images pending optimization.
+#: includes/ui/tabs/images.php:81
+#, php-format
+msgid "%d image is still pending."
+msgid_plural "%d images are still pending."
+msgstr[0] "%d छवि अभी भी लंबित है."
+msgstr[1] "%d छवियां अभी भी लंबित हैं।"
+
+#: includes/ui/tabs/images.php:91
+msgid "Supported Formats:"
+msgstr "समर्थित प्रारूप:"
+
+#: includes/ui/tabs/images.php:99
+msgid "Detected from the image editor available on this server. Formats the editor cannot write are not offered."
+msgstr "इस सर्वर पर उपलब्ध छवि संपादक से पता लगाया गया। संपादक जिस प्रारूप को नहीं लिख सकता, उसकी पेशकश नहीं की जाती है।"
+
+#: includes/ui/tabs/images.php:102
+msgid "None"
+msgstr "कोई नहीं"
+
+#: includes/ui/tabs/images.php:109
+msgid "Optimization Settings"
+msgstr "अनुकूलन सेटिंग्स"
+
+#: includes/ui/tabs/images.php:117
+msgid "Formats"
+msgstr "प्रारूप"
+
+#: includes/ui/tabs/images.php:135
+msgid "Leave every box checked to optimize all supported formats."
+msgstr "सभी समर्थित प्रारूपों को अनुकूलित करने के लिए प्रत्येक बॉक्स को चेक किया हुआ छोड़ दें।"
+
+#: includes/ui/tabs/images.php:143
+msgid "Compression Quality"
+msgstr "संपीड़न गुणवत्ता"
+
+#: includes/ui/tabs/images.php:159
+msgid "Higher values keep more detail and produce larger files. 82 is a good balance for JPEG and WebP."
+msgstr "उच्च मान अधिक विवरण रखते हैं और बड़ी फ़ाइलें उत्पन्न करते हैं। 82 JPEG और WebP के लिए एक अच्छा संतुलन है।"
+
+#: includes/ui/tabs/images.php:165
+msgid "Maximum Dimensions"
+msgstr "अधिकतम आयाम"
+
+#: includes/ui/tabs/images.php:175
+msgid "Maximum width in pixels"
+msgstr "पिक्सेल में अधिकतम चौड़ाई"
+
+#: includes/ui/tabs/images.php:186
+msgid "Maximum height in pixels"
+msgstr "पिक्सेल में अधिकतम ऊंचाई"
+
+#: includes/ui/tabs/images.php:188
+msgid "pixels"
+msgstr "पिक्सेल"
+
+#: includes/ui/tabs/images.php:191
+msgid "Set to 0 to keep the original dimensions. Resizing regenerates the thumbnail sizes of each image."
+msgstr "मूल आयाम बनाए रखने के लिए 0 पर सेट करें। आकार बदलने से प्रत्येक छवि के थंबनेल आकार पुन: उत्पन्न हो जाते हैं।"
+
+#: includes/ui/tabs/images.php:199
+msgid "Maximum File Size"
+msgstr "अधिकतम फ़ाइल आकार"
+
+#: includes/ui/tabs/images.php:212
+msgid "MB"
+msgstr "एमबी"
+
+#: includes/ui/tabs/images.php:215
+msgid "Optional. Images heavier than this are re-compressed with a lower quality until they fit. Set to 0 to disable."
+msgstr "वैकल्पिक. इससे भारी छवियों को कम गुणवत्ता के साथ फिर से संपीड़ित किया जाता है जब तक कि वे फिट न हो जाएं। अक्षम करने के लिए 0 पर सेट करें."
+
+#: includes/ui/tabs/images.php:221 includes/ui/tabs/local.php:341
+msgid "Behaviour"
+msgstr "व्यवहार"
+
+#: includes/ui/tabs/images.php:232
+msgid "Optimize new uploads automatically"
+msgstr "नए अपलोड स्वचालित रूप से अनुकूलित करें"
+
+#: includes/ui/tabs/images.php:245
+msgid "Keep a backup of the original images"
+msgstr "मूल छवियों का बैकअप रखें"
+
+#: includes/ui/tabs/images.php:259
+msgid "Store new JPEG and PNG uploads as WebP"
+msgstr "नए JPEG और PNG अपलोड को WebP के रूप में संग्रहीत करें"
+
+#: includes/ui/tabs/images.php:272
+msgid "Images per batch"
+msgstr "छवियाँ प्रति बैच"
+
+#: includes/ui/tabs/images.php:275
+msgid "images per batch"
+msgstr "प्रति बैच छवियाँ"
+
+#: includes/ui/tabs/images.php:279
+msgid "Backups are stored in wp-content/icc-gg-image-backups so an image can be restored later."
+msgstr "बैकअप को wp-content/icc-gg-image-backups में संग्रहित किया जाता है ताकि किसी छवि को बाद में पुनर्स्थापित किया जा सके।"
+
+#: includes/ui/tabs/images.php:287
+msgid "Save Image Settings"
+msgstr "छवि सेटिंग्स सहेजें"
+
+#: includes/ui/tabs/images.php:292
+msgid "Optimize the Library"
+msgstr "लाइब्रेरी को अनुकूलित करें"
+
+#: includes/ui/tabs/images.php:295
+msgid "Runs through the media library in small batches, so you can close the tab at any time and continue later."
+msgstr "मीडिया लाइब्रेरी के माध्यम से छोटे बैचों में चलता है, इसलिए आप किसी भी समय टैब बंद कर सकते हैं और बाद में जारी रख सकते हैं।"
+
+#: includes/ui/tabs/images.php:326
+msgid "Pause"
+msgstr "विराम"
+
+#: includes/ui/tabs/images.php:330
+msgid "Reset Progress"
+msgstr "प्रगति रीसेट करें"
+
+#: includes/ui/tabs/local.php:28
+msgid "Never expire"
+msgstr "कभी समाप्त न हो"
+
+#: includes/ui/tabs/local.php:29
+msgid "1 hour"
+msgstr "1 घंटा"
+
+#: includes/ui/tabs/local.php:30
+msgid "6 hours"
+msgstr "6 घंटे"
+
+#: includes/ui/tabs/local.php:31
+msgid "12 hours"
+msgstr "12 घंटे"
+
+#: includes/ui/tabs/local.php:32
+msgid "24 hours"
+msgstr "24 घंटे"
+
+#: includes/ui/tabs/local.php:33
+msgid "1 week"
+msgstr "1 सप्ताह"
+
+#: includes/ui/tabs/local.php:37
+msgid "advanced-cache.php drop-in (WP_CACHE)"
+msgstr "advanced-cache.php ड्रॉप-इन (WP_CACHE)"
+
+#: includes/ui/tabs/local.php:38
+msgid "Must-use plugin loader"
+msgstr "प्लगइन लोडर का अवश्य उपयोग करें"
+
+#: includes/ui/tabs/local.php:39
+msgid "No loader installed"
+msgstr "कोई लोडर स्थापित नहीं है"
+
+#: includes/ui/tabs/local.php:47
+msgid "Not installed"
+msgstr "स्थापित नहीं"
+
+#: includes/ui/tabs/local.php:48
+msgid "Installed by another plugin"
+msgstr "किसी अन्य प्लगइन द्वारा इंस्टॉल किया गया"
+
+#: includes/ui/tabs/local.php:49
+msgid "Outdated, needs rewriting"
+msgstr "पुराना हो गया है, पुनः लिखने की आवश्यकता है"
+
+#: includes/ui/tabs/local.php:50
+msgid "Damaged or unreadable"
+msgstr "क्षतिग्रस्त या अपठनीय"
+
+#: includes/ui/tabs/local.php:51
+msgid "Up to date"
+msgstr "अप टू डेट"
+
+#: includes/ui/tabs/local.php:62
+msgid "The page cache is enabled but no loader is installed:"
+msgstr "पेज कैश सक्षम है लेकिन कोई लोडर स्थापित नहीं है:"
+
+#: includes/ui/tabs/local.php:64
+msgid "wp-content/advanced-cache.php was installed by another plugin. Use \"Write / Rewrite advanced-cache.php\" in Maintenance to replace it; the current file is copied to a backup first."
+msgstr "wp-content/advanced-cache.php किसी अन्य प्लगइन द्वारा स्थापित किया गया था। इसे बदलने के लिए रखरखाव में \"लिखें/पुनः लिखें advanced-cache.php\" का उपयोग करें; वर्तमान फ़ाइल को पहले बैकअप में कॉपी किया जाता है।"
+
+#: includes/ui/tabs/local.php:66
+msgid "wp-content/advanced-cache.php does not match this plugin version. Use \"Write / Rewrite advanced-cache.php\" in Maintenance to restore it; the current file is copied to a backup first."
+msgstr "wp-content/advanced-cache.php इस प्लगइन संस्करण से मेल नहीं खाता। इसे पुनर्स्थापित करने के लिए रखरखाव में \"लिखें/पुनः लिखें advanced-cache.php\" का उपयोग करें; वर्तमान फ़ाइल को पहले बैकअप में कॉपी किया जाता है।"
+
+#: includes/ui/tabs/local.php:68
+msgid "Save the settings or use \"Write / Rewrite advanced-cache.php\" in Maintenance so pages start being cached."
+msgstr "सेटिंग्स सहेजें या रखरखाव में \"लिखें/पुनः लिखें advanced-cache.php\" का उपयोग करें ताकि पेज कैश होना शुरू हो जाएं।"
+
+#: includes/ui/tabs/local.php:75
+msgid "The advanced-cache.php drop-in is not the one this plugin expects:"
+msgstr "advanced-cache.php ड्रॉप-इन वह नहीं है जिसकी यह प्लगइन अपेक्षा करता है:"
+
+#: includes/ui/tabs/local.php:77
+msgid "WordPress loads that file on every request, so rewrite it from Maintenance; the current file is copied to a backup first."
+msgstr "वर्डप्रेस हर अनुरोध पर उस फ़ाइल को लोड करता है, इसलिए इसे रखरखाव से फिर से लिखें; वर्तमान फ़ाइल को पहले बैकअप में कॉपी किया जाता है।"
+
+#. translators: %s = Active page cache backend label.
+#: includes/ui/tabs/local.php:97
+#, php-format
+msgid "Active page cache backend: %s"
+msgstr "सक्रिय पेज कैश बैकएंड: %s"
+
+#: includes/ui/tabs/local.php:107
+msgid "Loader:"
+msgstr "लोडर:"
+
+#: includes/ui/tabs/local.php:113
+msgid "WP_CACHE could not be added to wp-config.php, so the cache is loaded from wp-content/mu-plugins/icc-gg-page-cache.php."
+msgstr "WP_CACHE को wp-config.php में नहीं जोड़ा जा सका, इसलिए कैश को wp-content/mu-plugins/icc-gg-page-cache.php से लोड किया गया है।"
+
+#: includes/ui/tabs/local.php:115
+msgid "Define WP_CACHE in wp-config.php to load the cache through advanced-cache.php, or let the plugin install the must-use plugin loader instead."
+msgstr "advanced-cache.php के माध्यम से कैश लोड करने के लिए wp-config.php में WP_CACHE को परिभाषित करें, या इसके बजाय प्लगइन को आवश्यक प्लगइन लोडर स्थापित करने दें।"
+
+#. translators: %s = Path of the generated engine directory.
+#: includes/ui/tabs/local.php:124
+#, php-format
+msgid "Engine and configuration: <code>%1$s</code>"
+msgstr "इंजन और कॉन्फ़िगरेशन: <code>%1$s</code>"
+
+#: includes/ui/tabs/local.php:135
+msgid "advanced-cache.php:"
+msgstr "advanced-cache.php:"
+
+#: includes/ui/tabs/local.php:147
+msgid "Another plugin owns this file. Rewriting it replaces that plugin loader, so keep the backup until the site is confirmed to work."
+msgstr "एक अन्य प्लगइन इस फ़ाइल का स्वामी है। इसे दोबारा लिखने से वह प्लगइन लोडर बदल जाता है, इसलिए जब तक साइट के काम करने की पुष्टि नहीं हो जाती तब तक बैकअप रखें।"
+
+#. translators: %s = Path of the advanced-cache.php backup.
+#: includes/ui/tabs/local.php:157
+#, php-format
+msgid "Backup of the replaced file: <code>%s</code>"
+msgstr "प्रतिस्थापित फ़ाइल का बैकअप: <code>%s</code>"
+
+#. translators: 1: State of the must-use plugin loader, 2: Path of the must-use plugin loader.
+#: includes/ui/tabs/local.php:172
+#, php-format
+msgid "Must-use plugin loader: %1$s (<code>%2$s</code>)"
+msgstr "प्लगइन लोडर का अवश्य उपयोग करें: %1$s (<code>%2$s</code>)"
+
+#: includes/ui/tabs/local.php:185
+msgid "WP_CACHE:"
+msgstr "WP_CACHE:"
+
+#: includes/ui/tabs/local.php:190
+msgid "Not defined"
+msgstr "परिभाषित नहीं"
+
+#. translators: %s = Path of the wp-config.php backup.
+#: includes/ui/tabs/local.php:199
+#, php-format
+msgid "A backup of the original wp-config.php is stored at <code>%s</code>."
+msgstr "मूल wp-config.php का बैकअप <code>%s</code> पर संग्रहीत है।"
+
+#: includes/ui/tabs/local.php:211
+msgid "Cached Pages:"
+msgstr "कैश्ड पेज:"
+
+#. translators: 1: Number of cached pages, 2: Cache size.
+#: includes/ui/tabs/local.php:221
+#, php-format
+msgid "%1$s page &mdash; %2$s"
+msgid_plural "%1$s pages &mdash; %2$s"
+msgstr[0] "%1$s पेज — %2$s"
+msgstr[1] "%1$s पृष्ठ — %2$s"
+
+#. translators: 1: Human readable time difference, 2: Human readable time difference.
+#: includes/ui/tabs/local.php:234
+#, php-format
+msgid "Newest entry %1$s ago, oldest entry %2$s ago."
+msgstr "नवीनतम प्रविष्टि %1$s पहले, सबसे पुरानी प्रविष्टि %2$s पहले।"
+
+#: includes/ui/tabs/local.php:242
+msgid "No cached pages yet."
+msgstr "अभी तक कोई कैश्ड पेज नहीं."
+
+#: includes/ui/tabs/local.php:247
+msgid "The cache directory is not writable, so pages cannot be cached."
+msgstr "कैश निर्देशिका लिखने योग्य नहीं है, इसलिए पृष्ठों को कैश नहीं किया जा सकता है।"
+
+#. translators: %d = Number of URLs waiting to be preloaded.
+#: includes/ui/tabs/local.php:257
+#, php-format
+msgid "%d URL is waiting to be preloaded."
+msgid_plural "%d URLs are waiting to be preloaded."
+msgstr[0] "%d URL प्रीलोड होने की प्रतीक्षा कर रहा है।"
+msgstr[1] "%d यूआरएल प्रीलोड होने की प्रतीक्षा कर रहे हैं।"
+
+#: includes/ui/tabs/local.php:271
+msgid "Clear the cache when posts, comments, menus or themes change"
+msgstr "पोस्ट, टिप्पणियाँ, मेनू या थीम बदलने पर कैशे साफ़ करें"
+
+#: includes/ui/tabs/local.php:272
+msgid "Store a gzipped copy of each page"
+msgstr "प्रत्येक पृष्ठ की एक gzipped प्रति संग्रहीत करें"
+
+#: includes/ui/tabs/local.php:273
+msgid "Also cache URLs with query strings"
+msgstr "क्वेरी स्ट्रिंग के साथ URL भी कैश करें"
+
+#: includes/ui/tabs/local.php:274
+msgid "Keep separate copies for mobile devices"
+msgstr "मोबाइल उपकरणों के लिए अलग प्रतियां रखें"
+
+#: includes/ui/tabs/local.php:275
+msgid "Send browser caching headers with cached pages"
+msgstr "कैश्ड पेजों के साथ ब्राउज़र कैशिंग हेडर भेजें"
+
+#: includes/ui/tabs/local.php:276
+msgid "Add an X-ICC-Page-Cache header to cached responses"
+msgstr "कैश्ड प्रतिक्रियाओं में एक X-ICC-पेज-कैश हेडर जोड़ें"
+
+#: includes/ui/tabs/local.php:277
+msgid "Preload the cache automatically after it is cleared"
+msgstr "कैश साफ़ होने के बाद स्वचालित रूप से प्रीलोड करें"
+
+#: includes/ui/tabs/local.php:301
+msgid "Cache pages with the local PHP page cache"
+msgstr "स्थानीय PHP पेज कैश के साथ कैश पेज"
+
+#: includes/ui/tabs/local.php:305
+msgid "Only one page cache backend can be enabled at a time: enabling this one requires disabling the Varnish Cache and nginx FastCGI page caches first."
+msgstr "एक समय में केवल एक पेज कैश बैकएंड को सक्षम किया जा सकता है: इसे सक्षम करने के लिए पहले वार्निश कैश और nginx फास्टसीजीआई पेज कैश को अक्षम करना आवश्यक है।"
+
+#: includes/ui/tabs/local.php:310
+msgid "Overridden by the ICC_GG_SUPER_CACHE_LOCAL_ENABLED constant in wp-config.php."
+msgstr "wp-config.php में ICC_GG_SUPER_CACHE_LOCAL_ENABLED स्थिरांक द्वारा ओवरराइड किया गया।"
+
+#: includes/ui/tabs/local.php:319
+msgid "Cache Expiry"
+msgstr "कैश समाप्ति"
+
+#: includes/ui/tabs/local.php:335
+msgid "Cached pages older than this are regenerated on the next visit. Content changes always clear the cache immediately."
+msgstr "इससे पुराने कैश्ड पेज अगली विज़िट पर पुनर्जीवित हो जाते हैं। सामग्री परिवर्तन हमेशा कैश को तुरंत साफ़ करते हैं।"
+
+#: includes/ui/tabs/local.php:358
+msgid "(zlib is not available on this server)"
+msgstr "(zlib इस सर्वर पर उपलब्ध नहीं है)"
+
+#: includes/ui/tabs/local.php:369
+msgid "Preload Batch Size"
+msgstr "प्रीलोड बैच आकार"
+
+#: includes/ui/tabs/local.php:384
+msgid "Number of URLs requested per preload batch. Lower values are gentler on small servers."
+msgstr "प्रति प्रीलोड बैच में अनुरोधित यूआरएल की संख्या। छोटे सर्वर पर कम मूल्य अधिक अच्छे होते हैं।"
+
+#: includes/ui/tabs/local.php:391
+msgid "Exclusions"
+msgstr "बहिष्करण"
+
+#: includes/ui/tabs/local.php:398
+msgid "URLs"
+msgstr "यूआरएल"
+
+#: includes/ui/tabs/local.php:410
+msgid "One path or URL per line, for example /cart/ or /my-account/*. Wildcards are supported, and a line can start with regex: to use a regular expression."
+msgstr "प्रति पंक्ति एक पथ या URL, उदाहरण के लिए /cart/ या /my-account/*। वाइल्डकार्ड समर्थित हैं, और एक लाइन रेगेक्स से शुरू हो सकती है: रेगुलर एक्सप्रेशन का उपयोग करने के लिए।"
+
+#: includes/ui/tabs/local.php:414
+msgid "The plugin already fills in the WordPress paths that should never be cached. The engine also skips /wp-admin, wp-login.php, wp-json, wp-cron.php, xmlrpc.php, feeds and trackbacks even when they are missing from this list."
+msgstr "प्लगइन पहले से ही वर्डप्रेस पथ भरता है जिसे कभी भी कैश नहीं किया जाना चाहिए। इंजन /wp-admin, wp-login.php, wp-json, wp-cron.php, xmlrpc.php, फ़ीड और ट्रैकबैक को भी छोड़ देता है, भले ही वे इस सूची से गायब हों।"
+
+#: includes/ui/tabs/local.php:418
+msgid "These exclusions only apply to this local page cache. Varnish Cache and nginx FastCGI answer before WordPress runs, so they need the same paths in their own configuration; the snippets on their tabs are generated from this list."
+msgstr "ये बहिष्करण केवल इस स्थानीय पृष्ठ कैश पर लागू होते हैं। वार्निश कैश और nginx FastCGI वर्डप्रेस चलने से पहले जवाब देते हैं, इसलिए उन्हें अपने कॉन्फ़िगरेशन में समान पथ की आवश्यकता होती है; उनके टैब पर स्निपेट इस सूची से उत्पन्न होते हैं।"
+
+#: includes/ui/tabs/local.php:423
+msgid "Restore default exclusions"
+msgstr "डिफ़ॉल्ट बहिष्करण पुनर्स्थापित करें"
+
+#: includes/ui/tabs/local.php:428
+msgid "Restoring the defaults replaces the current list, including your own entries. Save the form first if you want to keep a copy."
+msgstr "डिफ़ॉल्ट को पुनर्स्थापित करने से आपकी स्वयं की प्रविष्टियों सहित वर्तमान सूची बदल जाती है। यदि आप एक प्रति रखना चाहते हैं तो पहले फॉर्म को सेव करें।"
+
+#: includes/ui/tabs/local.php:436
+msgid "User Agents"
+msgstr "उपयोगकर्ता एजेंट"
+
+#: includes/ui/tabs/local.php:448
+msgid "One user agent fragment per line, for example Googlebot or bot. Matching requests are never cached."
+msgstr "प्रति पंक्ति एक उपयोगकर्ता एजेंट खंड, उदाहरण के लिए Googlebot या बॉट। मिलान अनुरोध कभी भी कैश नहीं किए जाते."
+
+#: includes/ui/tabs/local.php:456
+msgid "Cookies"
+msgstr "कुकीज़"
+
+#: includes/ui/tabs/local.php:468
+msgid "One cookie name per line. Requests carrying these cookies are never cached. Logged-in users, commenters and password protected posts are always excluded."
+msgstr "प्रति पंक्ति एक कुकी नाम. इन कुकीज़ को ले जाने वाले अनुरोधों को कभी भी कैश नहीं किया जाता है। लॉग-इन किए गए उपयोगकर्ता, टिप्पणीकार और पासवर्ड से सुरक्षित पोस्ट को हमेशा बाहर रखा जाता है।"
+
+#: includes/ui/tabs/local.php:476
+msgid "Save Page Cache Settings"
+msgstr "पेज कैश सेटिंग सहेजें"
+
+#: includes/ui/tabs/local.php:484
+msgid "Clear & Preload"
+msgstr "साफ़ करें और प्रीलोड करें"
+
+#: includes/ui/tabs/local.php:491
+msgid "Clear Cache"
+msgstr "कैश साफ़ करें"
+
+#: includes/ui/tabs/local.php:494
+msgid "Clear everything at once, or purge only the pages that changed. Purging a URL also removes its gzipped copy and any empty directory left behind."
+msgstr "सब कुछ एक बार में साफ़ करें, या केवल उन पृष्ठों को शुद्ध करें जो बदल गए हैं। किसी URL को शुद्ध करने से उसकी gzipped प्रतिलिपि और पीछे छोड़ी गई कोई भी खाली निर्देशिका भी हट जाती है।"
+
+#: includes/ui/tabs/local.php:505 includes/ui/tabs/local.php:526
+msgid "Purge URLs"
+msgstr "यूआरएल शुद्ध करें"
+
+#: includes/ui/tabs/local.php:518
+msgid "One URL or path per line. Use a trailing * to purge everything below a path."
+msgstr "प्रति पंक्ति एक यूआरएल या पथ. पथ के नीचे की सभी चीज़ों को शुद्ध करने के लिए अनुगामी * का उपयोग करें।"
+
+#: includes/ui/tabs/local.php:531
+msgid "Maintenance"
+msgstr "रख-रखाव"
+
+#: includes/ui/tabs/local.php:535
+msgid "Regenerate Page Cache Loader"
+msgstr "पेज कैश लोडर को पुनर्जीवित करें"
+
+#: includes/ui/tabs/local.php:539
+msgid "Write / Rewrite advanced-cache.php"
+msgstr "advanced-cache.php लिखें/पुनः लिखें"
+
+#: includes/ui/tabs/local.php:544
+msgid "Revert wp-config.php Backup"
+msgstr "wp-config.php बैकअप वापस लाएं"
+
+#: includes/ui/tabs/local.php:550
+msgid "\"Regenerate Page Cache Loader\" refreshes the engine files and rewrites the loader only when it already belongs to this plugin."
+msgstr "\"रीजेनरेट पेज कैश लोडर\" इंजन फ़ाइलों को ताज़ा करता है और लोडर को केवल तभी फिर से लिखता है जब वह पहले से ही इस प्लगइन से संबंधित हो।"
+
+#: includes/ui/tabs/local.php:554
+msgid "\"Write / Rewrite advanced-cache.php\" writes the loader even when the file is missing, damaged, outdated or owned by another plugin. The current file is copied to advanced-cache.icc-gg-backup.php before it is replaced."
+msgstr "\"लिखें/पुनः लिखें advanced-cache.php\" लोडर तब भी लिखता है जब फ़ाइल गुम हो, क्षतिग्रस्त हो, पुरानी हो या किसी अन्य प्लगइन के स्वामित्व में हो। वर्तमान फ़ाइल को प्रतिस्थापित करने से पहले advanced-cache.icc-gg-backup.php पर कॉपी किया जाता है।"
+
+#: includes/ui/tabs/local.php:558
+msgid "When WP_CACHE cannot be added to wp-config.php, both buttons write the must-use plugin loader (wp-content/mu-plugins/icc-gg-page-cache.php) instead."
+msgstr "जब WP_CACHE को wp-config.php में नहीं जोड़ा जा सकता है, तो दोनों बटन इसके बजाय आवश्यक प्लगइन लोडर (wp-content/mu-plugins/icc-gg-page-cache.php) लिखते हैं।"
+
+#: includes/ui/tabs/local.php:562
+msgid "The same values can be defined in wp-config.php with the ICC_GG_SUPER_CACHE_LOCAL_ENABLED, ICC_GG_SUPER_CACHE_LOCAL_AUTO_PURGE and ICC_GG_SUPER_CACHE_LOCAL_PATH constants."
+msgstr "समान मानों को wp-config.php में ICC_GG_SUPER_CACHE_LOCAL_ENABLED, ICC_GG_SUPER_CACHE_LOCAL_AUTO_PURGE और ICC_GG_SUPER_CACHE_LOCAL_PATH स्थिरांक के साथ परिभाषित किया जा सकता है।"
+
+#: includes/ui/tabs/redis.php:39
+msgid "Redis is unreachable:"
+msgstr "Redis पहुँच योग्य नहीं है:"
+
+#: includes/ui/tabs/redis.php:65
+msgid "Filesystem:"
+msgstr "फ़ाइल सिस्टम:"
+
+#: includes/ui/tabs/redis.php:76
+msgid "Not writeable"
+msgstr "लिखने योग्य नहीं"
+
+#: includes/ui/tabs/redis.php:82
+msgid "Writeable"
+msgstr "लिखने योग्य"
+
+#: includes/ui/tabs/redis.php:89
+msgid "Redis:"
+msgstr "Redis:"
+
+#: includes/ui/tabs/redis.php:94
+msgid "Reachable"
+msgstr "पहुँच योग्य"
+
+#: includes/ui/tabs/redis.php:99
+msgid "Unreachable"
+msgstr "अपहुँच योग्य"
+
+#: includes/ui/tabs/redis.php:107
+msgid "Key Prefix:"
+msgstr "कुंजी उपसर्ग:"
+
+#: includes/ui/tabs/redis.php:111
+msgid "(generated automatically)"
+msgstr "(स्वचालित रूप से जनरेट किया गया)"
+
+#. translators: 1: Example Redis key pattern, 2: WP_REDIS_PREFIX, 3: WP_CACHE_KEY_SALT.
+#: includes/ui/tabs/redis.php:119
+#, php-format
+msgid "Every key is stored as %1$s. The prefix comes from %2$s or %3$s. When neither constant is defined, the plugin generates a stable prefix for this site so cache flushes can stay scoped to it."
+msgstr "प्रत्येक कुंजी %1$s के रूप में संग्रहीत है। उपसर्ग %2$s या %3$s से आता है। जब किसी भी स्थिरांक को परिभाषित नहीं किया जाता है, तो प्लगइन इस साइट के लिए एक स्थिर उपसर्ग उत्पन्न करता है ताकि कैश फ्लश इसके दायरे में रह सके।"
+
+#: includes/ui/tabs/redis.php:132
+msgid "The configured prefix contained spaces or Redis glob metacharacters (such as *, ?, [, ], {, }, ( ) and |). They were removed automatically to keep selective flush patterns safe. Update WP_REDIS_PREFIX in wp-config.php to silence this warning."
+msgstr "कॉन्फ़िगर किए गए उपसर्ग में रिक्त स्थान या Redis ग्लोब मेटाकैरेक्टर (जैसे *, ?, [, ], {, }, ( ) और |) शामिल हैं। चुनिंदा फ्लश पैटर्न को सुरक्षित रखने के लिए उन्हें स्वचालित रूप से हटा दिया गया था। इस चेतावनी को शांत करने के लिए wp-config.php में WP_REDIS_PREFIX को अपडेट करें।"
+
+#: includes/ui/tabs/redis.php:142
+msgid "Max. TTL:"
+msgstr "अधिकतम TTL:"
+
+#: includes/ui/tabs/redis.php:148
+msgid "This doesn’t appear to be a valid number."
+msgstr "यह कोई मान्य संख्या प्रतीत नहीं होती."
+
+#: includes/ui/tabs/redis.php:158
+msgid "Flush Behavior"
+msgstr "फ़्लश व्यवहार"
+
+#: includes/ui/tabs/redis.php:166
+msgid "Selective Flush:"
+msgstr "चयनात्मक फ़्लश:"
+
+#: includes/ui/tabs/redis.php:179
+msgid "Flush only keys that belong to this site"
+msgstr "केवल इस साइट की कुंजियाँ फ़्लश करें"
+
+#. translators: %s = Name of the constant that locks the setting.
+#: includes/ui/tabs/redis.php:189
+#, php-format
+msgid "Defined as %s in wp-config.php (or by the environment). This setting is read-only here."
+msgstr "wp-config.php में %s के रूप में परिभाषित (या पर्यावरण द्वारा)। यह सेटिंग यहां केवल पढ़ने के लिए है।"
+
+#: includes/ui/tabs/redis.php:199
+msgid "Enabled by default. When enabled, wp_cache_flush() uses SCAN + DEL and only deletes keys that start with this site's prefix. When disabled, it runs FLUSHDB and deletes every key in the Redis database, including keys from other sites that share the same database."
+msgstr "डिफ़ॉल्ट रूप से सक्षम. सक्षम होने पर, wp_cache_flush() SCAN + DEL का उपयोग करता है और केवल इस साइट के उपसर्ग से शुरू होने वाली कुंजियों को हटाता है। अक्षम होने पर, यह FLUSHDB चलाता है और Redis डेटाबेस की प्रत्येक कुंजी को हटा देता है, जिसमें समान डेटाबेस साझा करने वाली अन्य साइटों की कुंजी भी शामिल है।"
+
+#: includes/ui/tabs/redis.php:202
+msgid "Group flushes (wp_cache_flush_group()) always delete only the requested group and remain scoped to this site."
+msgstr "समूह फ्लश (wp_cache_flush_group()) हमेशा केवल अनुरोधित समूह को हटाता है और इस साइट पर सीमित रहता है।"
+
+#: includes/ui/tabs/redis.php:209
+msgid "Warning:"
+msgstr "चेतावनी:"
+
+#: includes/ui/tabs/redis.php:210
+msgid "selective flush is disabled, so the next cache flush will delete every key in the Redis database. Only use this when Redis is dedicated to this site."
+msgstr "चयनात्मक फ्लश अक्षम है, इसलिए अगला कैश फ्लश Redis डेटाबेस में प्रत्येक कुंजी को हटा देगा। इसका उपयोग केवल तभी करें जब Redis इस साइट के लिए समर्पित हो।"
+
+#: includes/ui/tabs/redis.php:220
+msgid "Save Redis Settings"
+msgstr "Redis सेटिंग्स सहेजें"
+
+#: includes/ui/tabs/redis.php:228
+msgid "Connection"
+msgstr "कनेक्शन"
+
+#: includes/ui/tabs/redis.php:235
+msgid "Client:"
+msgstr "ग्राहक:"
+
+#: includes/ui/tabs/redis.php:244
+msgid "Host:"
+msgstr "मेज़बान:"
+
+#: includes/ui/tabs/redis.php:251
+msgid "Cluster:"
+msgstr "क्लस्टर:"
+
+#: includes/ui/tabs/redis.php:264
+msgid "Shards:"
+msgstr "शार्ड्स:"
+
+#: includes/ui/tabs/redis.php:277
+msgid "Servers:"
+msgstr "सर्वर:"
+
+#: includes/ui/tabs/redis.php:290
+msgid "Port:"
+msgstr "पोर्ट:"
+
+#: includes/ui/tabs/redis.php:297
+msgid "Username:"
+msgstr "उपयोगकर्ता नाम:"
+
+#: includes/ui/tabs/redis.php:304
+msgid "Password:"
+msgstr "पासवर्ड:"
+
+#: includes/ui/tabs/redis.php:313
+msgid "Database:"
+msgstr "डेटाबेस:"
+
+#: includes/ui/tabs/redis.php:320
+msgid "Connection Timeout:"
+msgstr "कनेक्शन टाइमआउट:"
+
+#. translators: %s = Redis connection/read timeout in seconds.
+#: includes/ui/tabs/redis.php:326 includes/ui/tabs/redis.php:343
+#, php-format
+msgid "%ss"
+msgstr "%ss"
+
+#: includes/ui/tabs/redis.php:337
+msgid "Read Timeout:"
+msgstr "टाइमआउट पढ़ें:"
+
+#: includes/ui/tabs/redis.php:354
+msgid "Retry Interval:"
+msgstr "पुनः प्रयास करें अंतराल:"
+
+#. translators: %s = Redis retry interval in milliseconds.
+#: includes/ui/tabs/redis.php:360
+#, php-format
+msgid "%sms"
+msgstr "%sms"
+
+#: includes/ui/tabs/redis.php:371
+msgid "Redis Version:"
+msgstr "Redis संस्करण:"
+
+#: includes/ui/tabs/redis.php:383
+msgid "Metrics"
+msgstr "मेट्रिक्स"
+
+#: includes/ui/tabs/redis.php:390 includes/ui/widget.php:22
+msgid "The total amount of time (in milliseconds) it took Redis to return cache data."
+msgstr "Redis द्वारा कैश डेटा लौटाने में लगा कुल समय (मिलीसेकंड में)।"
+
+#: includes/ui/tabs/redis.php:395 includes/ui/widget.php:27
+msgid "The total amount of bytes that was retrieved from Redis."
+msgstr "Redis से प्राप्त बाइट्स की कुल मात्रा।"
+
+#: includes/ui/tabs/redis.php:400 includes/ui/widget.php:32
+msgid "The hit/miss ratio of cache data that was already cached."
+msgstr "कैश डेटा का हिट/मिस अनुपात जो पहले से ही कैश किया गया था।"
+
+#: includes/ui/tabs/redis.php:405 includes/ui/widget.php:37
+msgid "The total amount of commands sent to Redis."
+msgstr "Redis को भेजे गए आदेशों की कुल मात्रा।"
+
+#: includes/ui/tabs/redis.php:428
+msgid "Disable Object Cache"
+msgstr "ऑब्जेक्ट कैश अक्षम करें"
+
+#: includes/ui/tabs/redis.php:434 includes/ui/tabs/redis.php:438
+msgid "Enable Object Cache"
+msgstr "ऑब्जेक्ट कैश सक्षम करें"
+
+#: includes/ui/tabs/varnish.php:38
+msgid "Purge Endpoint:"
+msgstr "पर्ज समापनबिंदु:"
+
+#: includes/ui/tabs/varnish.php:43
+msgid "The plugin sends PURGE or BAN requests to this address, using the site host header so Varnish can match the virtual host."
+msgstr "प्लगइन साइट होस्ट हेडर का उपयोग करके इस पते पर PURGE या BAN अनुरोध भेजता है ताकि वार्निश वर्चुअल होस्ट से मेल खा सके।"
+
+#: includes/ui/tabs/varnish.php:50
+msgid "Last Test:"
+msgstr "अंतिम टेस्ट:"
+
+#: includes/ui/tabs/varnish.php:95
+msgid "Purge the Varnish cache in front of this site"
+msgstr "इस साइट के सामने वार्निश कैश को शुद्ध करें"
+
+#: includes/ui/tabs/varnish.php:99
+msgid "Only one page cache backend can be enabled at a time: enabling Varnish Cache requires disabling the local page cache and the nginx FastCGI cache first."
+msgstr "एक समय में केवल एक पेज कैश बैकएंड को सक्षम किया जा सकता है: वार्निश कैश को सक्षम करने के लिए पहले स्थानीय पेज कैश और nginx फास्टसीजीआई कैश को अक्षम करना आवश्यक है।"
+
+#: includes/ui/tabs/varnish.php:104
+msgid "Overridden by the ICC_GG_SUPER_CACHE_VARNISH_ENABLED constant in wp-config.php."
+msgstr "wp-config.php में ICC_GG_SUPER_CACHE_VARNISH_ENABLED स्थिरांक द्वारा ओवरराइड किया गया।"
+
+#: includes/ui/tabs/varnish.php:113
+msgid "Varnish Host"
+msgstr "वार्निश होस्ट"
+
+#: includes/ui/tabs/varnish.php:128
+msgid "Port"
+msgstr "बंदरगाह"
+
+#: includes/ui/tabs/varnish.php:142
+msgid "Address Varnish listens on. Inside a Docker network this is usually the service name, for example varnish."
+msgstr "पता वार्निश सुनता है। डॉकर नेटवर्क के अंदर यह आमतौर पर सेवा का नाम होता है, उदाहरण के लिए वार्निश।"
+
+#: includes/ui/tabs/varnish.php:149
+msgid "Purge Method"
+msgstr "शुद्धिकरण विधि"
+
+#: includes/ui/tabs/varnish.php:157
+msgid "PURGE (single URL)"
+msgstr "पर्ज (एकल यूआरएल)"
+
+#: includes/ui/tabs/varnish.php:158
+msgid "BAN (pattern, Varnish 4+)"
+msgstr "प्रतिबंध (पैटर्न, वार्निश 4+)"
+
+#: includes/ui/tabs/varnish.php:162
+msgid "Timeout (seconds)"
+msgstr "टाइमआउट (सेकंड)"
+
+#: includes/ui/tabs/varnish.php:179
+msgid "Purge Key"
+msgstr "पर्ज कुंजी"
+
+#: includes/ui/tabs/varnish.php:194
+msgid "Optional. When set, it is sent as the X-Purge-Key header and the VCL snippet below rejects requests without it."
+msgstr "वैकल्पिक. सेट होने पर, इसे X-Purge-Key हेडर के रूप में भेजा जाता है और नीचे दिया गया VCL स्निपेट इसके बिना अनुरोधों को अस्वीकार कर देता है।"
+
+#: includes/ui/tabs/varnish.php:212
+msgid "Purge Varnish when posts, comments, menus or themes change"
+msgstr "पोस्ट, टिप्पणियाँ, मेनू या थीम बदलने पर वार्निश को पर्ज करें"
+
+#: includes/ui/tabs/varnish.php:217
+msgid "Overridden by the ICC_GG_SUPER_CACHE_VARNISH_AUTO_PURGE constant in wp-config.php."
+msgstr "wp-config.php में ICC_GG_SUPER_CACHE_VARNISH_AUTO_PURGE स्थिरांक द्वारा ओवरराइड किया गया।"
+
+#: includes/ui/tabs/varnish.php:226
+msgid "Save Varnish Settings"
+msgstr "वार्निश सेटिंग्स सहेजें"
+
+#: includes/ui/tabs/varnish.php:235
+msgid "Test Connection"
+msgstr "परीक्षण कनेक्शन"
+
+#: includes/ui/tabs/varnish.php:241
+msgid "Varnish Cache Configuration"
+msgstr "वार्निश कैश कॉन्फ़िगरेशन"
+
+#: includes/ui/tabs/varnish.php:244
+msgid "The plugin only sends purge requests; Varnish has to accept them. Add this to the vcl_recv subroutine of your VCL:"
+msgstr "प्लगइन केवल पर्ज अनुरोध भेजता है; वार्निश को उन्हें स्वीकार करना होगा. इसे अपने VCL के vcl_recv सबरूटीन में जोड़ें:"
+
+#: includes/ui/tabs/varnish.php:249
+msgid "Varnish Cache Exclusions"
+msgstr "वार्निश कैश बहिष्करण"
+
+#: includes/ui/tabs/varnish.php:252
+msgid "Varnish answers before WordPress runs, so the URL exclusions on the Page Cache tab are not applied to it. Merge this into the same vcl_recv subroutine, before the lookups, so the excluded paths and logged in visitors always reach WordPress:"
+msgstr "वर्डप्रेस चलने से पहले वार्निश उत्तर देता है, इसलिए पेज कैश टैब पर यूआरएल बहिष्करण उस पर लागू नहीं होते हैं। लुकअप से पहले इसे उसी vcl_recv सबरूटीन में मर्ज करें, ताकि बहिष्कृत पथ और लॉग इन विज़िटर हमेशा वर्डप्रेस तक पहुंचें:"
+
+#: includes/ui/tabs/varnish.php:258
+msgid "PURGE and BAN remove whatever Varnish stored; they do not respect the exclusion list either. The snippet above is generated from the saved exclusions, so update your VCL when you change them."
+msgstr "पर्ज और बैन जो भी वार्निश संग्रहित है उसे हटा दें; वे बहिष्करण सूची का भी सम्मान नहीं करते हैं। उपरोक्त स्निपेट सहेजे गए बहिष्करणों से उत्पन्न हुआ है, इसलिए जब आप उन्हें बदलें तो अपने वीसीएल को अपडेट करें।"
+
+#: includes/ui/tabs/varnish.php:262
+msgid "The same values can be defined in wp-config.php with the ICC_GG_SUPER_CACHE_VARNISH_ENABLED, ICC_GG_SUPER_CACHE_VARNISH_HOST, ICC_GG_SUPER_CACHE_VARNISH_PORT, ICC_GG_SUPER_CACHE_VARNISH_KEY and ICC_GG_SUPER_CACHE_VARNISH_AUTO_PURGE constants."
+msgstr "समान मानों को ICC_GG_SUPER_CACHE_VARNISH_ENABLED, ICC_GG_SUPER_CACHE_VARNISH_HOST, ICC_GG_SUPER_CACHE_VARNISH_PORT, ICC_GG_SUPER_CACHE_VARNISH_KEY और ICC_GG_SUPER_CACHE_VARNISH_AUTO_PURGE स्थिरांक के साथ wp-config.php में परिभाषित किया जा सकता है।"
+
+#. translators: 1: plugin name, 2: required PHP version, 3: current PHP version.
+#: icc-gg-wordpress-super-cache.php:99
+#, php-format
+msgid "%1$s requires PHP %2$s or later. This site runs PHP %3$s, so the plugin has been deactivated."
+msgstr "%1$s को PHP %2$s या बाद के संस्करण की आवश्यकता है। यह साइट PHP %3$s चलाती है, इसलिए प्लगइन निष्क्रिय कर दिया गया है।"
+

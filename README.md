@@ -23,6 +23,8 @@ A WordPress plugin that provides a persistent object cache backend powered by Re
 - **Multiple Clients** — Works with [Predis](https://github.com/predis/predis/) (bundled), [PhpRedis (PECL)](https://github.com/phpredis/phpredis) and [Relay](https://relaycache.com)
 - **High Availability** — Supports replication, sentinels, clustering and sharding
 - **One-Click Management** — Enable, disable, flush and update the object cache drop-in from **Settings → Super Cache**
+- **Selective Flush by Default** — `wp_cache_flush()` deletes only keys that belong to this site instead of running `FLUSHDB`, so a shared Redis database is not wiped by other sites. The behaviour can be changed on the **Redis Object Cache** tab or forced in `wp-config.php`
+- **Translations & RTL** — English fallback plus `pt-BR`, `es-MX`, `fr-FR`, `zh-CN`, `hi-IN` and `ar-SA` (right-to-left)
 - **Local Page Cache** — Store pages as static HTML in `wp-content` and serve them before WordPress boots, configured on its own tab with clear cache, purge by URL and preload
 - **Recoverable Loader** — Report the state of `advanced-cache.php` and rewrite it on demand, with a backup, when the file is missing, damaged, outdated or owned by another plugin
 - **Varnish Cache Support** — Send `PURGE`/`BAN` requests to a Varnish instance, test the connection and copy the matching VCL snippets (purges and exclusions)
@@ -97,6 +99,31 @@ reached the last known answer is kept while retries are throttled for one hour.
 
 The plugin defaults to connecting to `127.0.0.1:6379` with database `0` when no connection constants are defined.
 
+## Translations
+
+The plugin ships its own catalogs in [`languages`](languages). English (`en-US`) is the source language and the fallback; the following locales are bundled:
+
+| Code | WordPress locale | Notes |
+|---|---|---|
+| `en-US` | `en_US` | Fallback language |
+| `pt-BR` | `pt_BR` | |
+| `es-MX` | `es_MX` | |
+| `fr-FR` | `fr_FR` | |
+| `zh-CN` | `zh_CN` | Mandarin (Simplified) |
+| `hi-IN` | `hi_IN` | |
+| `ar-SA` | `ar` | Right-to-left; sets `dir="rtl"` on `<html>` and the `rtl` admin body class |
+
+The locale is selected by **Settings → General → Site Language** (or the per-user language). Arabic variants (`ar_SA`, `ar_AE`, …) use the `ar` catalog. The tab labels and the Redis settings, including the selective-flush control, are translated; technical names such as `WP_REDIS_PREFIX`, `SCAN` and `FLUSHDB` are intentionally kept as-is.
+
+To update a catalog, edit the matching `.po` file and rebuild the `.mo` file:
+
+```bash
+msgfmt --check -o languages/icc-gg-wordpress-super-cache-pt_BR.mo \
+  languages/icc-gg-wordpress-super-cache-pt_BR.po
+```
+
+The source template is [`languages/icc-gg-wordpress-super-cache.pot`](languages/icc-gg-wordpress-super-cache.pot).
+
 ## Configuration
 
 All settings can be defined as PHP constants in `wp-config.php` for added security and CI/CD support.
@@ -127,11 +154,27 @@ All settings can be defined as PHP constants in `wp-config.php` for added securi
 
 ### Keys & Expiration
 
-| Constant | Description |
-|---|---|
-| `WP_REDIS_PREFIX` | Key prefix for this site's cache |
-| `WP_REDIS_SELECTIVE_FLUSH` | Flush only keys with `WP_REDIS_PREFIX` when set to `true` |
-| `WP_REDIS_MAXTTL` | Maximum time-to-live for cache keys, in seconds |
+| Constant | Description | Default |
+|---|---|---|
+| `WP_REDIS_PREFIX` | Key prefix for this site's cache. Redis glob metacharacters and whitespace are removed automatically; when neither this constant nor `WP_CACHE_KEY_SALT` is defined, a stable prefix is generated from the site's database and installation path | Generated |
+| `WP_REDIS_SELECTIVE_FLUSH` | Flush only keys with the effective site prefix. Defaults to `true`; set it to `false` only when Redis is dedicated to this site. Defining it makes the setting read-only on the Redis tab | `true` |
+| `WP_REDIS_MAXTTL` | Maximum time-to-live for cache keys, in seconds | — |
+
+### Selective flush and key prefixes
+
+Every key is stored as `<prefix><blog>:<group>:<key>`, where `<blog>` is `$table_prefix` on a single site or the blog ID on multisite. The plugin does **not** derive the prefix from `wp:options:alloptions` or from existing Redis keys: the `wp:`/`id:` part is just the WordPress table prefix appended after the configured prefix.
+
+`wp_cache_flush()` is **selective by default**. It scans and deletes only keys that start with the effective site prefix:
+
+- The value comes from `WP_REDIS_PREFIX`, `WP_CACHE_KEY_SALT`, the `WP_REDIS_PREFIX` environment variable, or Cloudways' `HTTP_X_APP_USER`.
+- Spaces and Redis glob metacharacters (`*`, `?`, `[`, `]`, `{`, `}`, `(`, `)`, `|`, `@`, `!`, `+`, `\`) are removed before the prefix is used, so it cannot turn into a wider `SCAN` pattern.
+- When no prefix is configured, a stable per-site prefix (`icc` + hash of database name and installation path) is generated.
+- If `WP_REDIS_SELECTIVE_FLUSH` is defined in `wp-config.php` (or the environment), the checkbox on the **Redis Object Cache** tab is read-only. Otherwise the tab stores the preference, defaulting to `true`.
+- Setting it to `false` makes `wp_cache_flush()` run `FLUSHDB`, deleting **every key in the Redis database**, including keys from other sites that share it. Only use this when Redis is dedicated to the site.
+- `wp_cache_flush_group()` always deletes only the requested group and is scoped to the current site. On multisite, global groups are shared by the network, while every other group belongs to the current blog.
+- On multisite, the key prefix is shared by the whole network, so `wp_cache_flush()` clears the object cache of every blog in the network while still leaving other installations that share the same Redis database untouched.
+
+Changing the effective prefix — because characters were sanitized or because a prefix is generated for the first time — starts a new key namespace. Keys written under the previous prefix are no longer read and expire according to their TTL, so expect one round of cache misses after upgrading a site whose prefix contained glob characters.
 
 ### Groups
 

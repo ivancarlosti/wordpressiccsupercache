@@ -19,6 +19,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 $status = $roc->get_redis_status();
 $redis_client = $roc->get_redis_client_name();
 $redis_prefix = $roc->get_redis_prefix();
+$redis_prefix_generated = $roc->is_redis_prefix_generated();
+$redis_prefix_sanitized = $roc->is_redis_prefix_sanitized();
+$selective_flush = $roc->is_selective_flush_enabled();
+$selective_flush_locked = $roc->is_selective_flush_locked();
 $redis_maxttl = $roc->get_redis_maxttl();
 $redis_version = $roc->get_redis_version();
 $redis_connection = $roc->check_redis_connection();
@@ -103,6 +107,32 @@ $diagnostics = $roc->get_diagnostics();
 			<th><?php esc_html_e( 'Key Prefix:', 'icc-gg-wordpress-super-cache' ); ?></th>
 			<td>
 				<code><?php echo esc_html( $redis_prefix ); ?></code>
+				<?php if ( $redis_prefix_generated ) : ?>
+					<span class="description"><?php esc_html_e( '(generated automatically)', 'icc-gg-wordpress-super-cache' ); ?></span>
+				<?php endif; ?>
+
+				<p class="description">
+					<?php
+					echo wp_kses(
+						sprintf(
+							// translators: 1: Example Redis key pattern, 2: WP_REDIS_PREFIX, 3: WP_CACHE_KEY_SALT.
+							__( 'Every key is stored as %1$s. The prefix comes from %2$s or %3$s. When neither constant is defined, the plugin generates a stable prefix for this site so cache flushes can stay scoped to it.', 'icc-gg-wordpress-super-cache' ),
+							'<code>&lt;prefix&gt;&lt;blog&gt;:&lt;group&gt;:&lt;key&gt;</code>',
+							'<code>WP_REDIS_PREFIX</code>',
+							'<code>WP_CACHE_KEY_SALT</code>'
+						),
+						[ 'code' => [] ]
+					);
+					?>
+				</p>
+
+				<?php if ( $redis_prefix_sanitized ) : ?>
+					<div class="notice notice-warning inline">
+						<p>
+							<?php esc_html_e( 'The configured prefix contained spaces or Redis glob metacharacters (such as *, ?, [, ], {, }, ( ) and |). They were removed automatically to keep selective flush patterns safe. Update WP_REDIS_PREFIX in wp-config.php to silence this warning.', 'icc-gg-wordpress-super-cache' ); ?>
+						</p>
+					</div>
+				<?php endif; ?>
 			</td>
 		</tr>
 	<?php endif; ?>
@@ -123,6 +153,77 @@ $diagnostics = $roc->get_diagnostics();
 	<?php endif; ?>
 
 </table>
+
+<h2 class="title">
+	<?php esc_html_e( 'Flush Behavior', 'icc-gg-wordpress-super-cache' ); ?>
+</h2>
+
+<form method="post" action="">
+	<?php wp_nonce_field( 'icc_gg_wordpress_super_cache_redis' ); ?>
+
+	<table class="form-table">
+		<tr>
+			<th><?php esc_html_e( 'Selective Flush:', 'icc-gg-wordpress-super-cache' ); ?></th>
+			<td>
+				<?php if ( ! $selective_flush_locked ) : ?>
+					<input type="hidden" name="icc_gg_wordpress_super_cache_redis[selective_flush]" value="0">
+				<?php endif; ?>
+
+				<label>
+					<input
+						type="checkbox"
+						<?php if ( ! $selective_flush_locked ) : ?>
+							name="icc_gg_wordpress_super_cache_redis[selective_flush]"
+							value="1"
+						<?php else : ?>
+							disabled
+						<?php endif; ?>
+						<?php checked( $selective_flush ); ?>
+					>
+					<?php esc_html_e( 'Flush only keys that belong to this site', 'icc-gg-wordpress-super-cache' ); ?>
+				</label>
+
+				<?php if ( $selective_flush_locked ) : ?>
+					<p class="description">
+						<span class="dashicons dashicons-lock"></span>
+						<?php
+						echo wp_kses(
+							sprintf(
+								// translators: %s = Name of the constant that locks the setting.
+								__( 'Defined as %s in wp-config.php (or by the environment). This setting is read-only here.', 'icc-gg-wordpress-super-cache' ),
+								'<code>WP_REDIS_SELECTIVE_FLUSH</code>'
+							),
+							[ 'code' => [] ]
+						);
+						?>
+					</p>
+				<?php else : ?>
+					<p class="description">
+						<?php esc_html_e( 'Enabled by default. When enabled, wp_cache_flush() uses SCAN + DEL and only deletes keys that start with this site\'s prefix. When disabled, it runs FLUSHDB and deletes every key in the Redis database, including keys from other sites that share the same database.', 'icc-gg-wordpress-super-cache' ); ?>
+					</p>
+					<p class="description">
+						<?php esc_html_e( 'Group flushes (wp_cache_flush_group()) always delete only the requested group and remain scoped to this site.', 'icc-gg-wordpress-super-cache' ); ?>
+					</p>
+				<?php endif; ?>
+
+				<?php if ( ! $selective_flush ) : ?>
+					<div class="notice notice-error inline">
+						<p>
+							<strong><?php esc_html_e( 'Warning:', 'icc-gg-wordpress-super-cache' ); ?></strong>
+							<?php esc_html_e( 'selective flush is disabled, so the next cache flush will delete every key in the Redis database. Only use this when Redis is dedicated to this site.', 'icc-gg-wordpress-super-cache' ); ?>
+						</p>
+					</div>
+				<?php endif; ?>
+			</td>
+		</tr>
+	</table>
+
+	<?php if ( ! $selective_flush_locked ) : ?>
+		<p class="submit">
+			<?php submit_button( __( 'Save Redis Settings', 'icc-gg-wordpress-super-cache' ), 'primary', 'submit', false ); ?>
+		</p>
+	<?php endif; ?>
+</form>
 
 <?php if ( $status ) : ?>
 

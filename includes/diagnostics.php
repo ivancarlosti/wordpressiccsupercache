@@ -22,6 +22,12 @@ $disabled = defined( 'WP_REDIS_DISABLED' ) && WP_REDIS_DISABLED;
 
 $info['Status'] = $roc->get_status();
 $info['Client'] = $roc->get_redis_client_name();
+$effective_prefix = $roc->get_redis_prefix();
+$info['Key Prefix'] = ( null !== $effective_prefix && '' !== $effective_prefix ) ? $effective_prefix : '(none)';
+$info['Key Prefix Source'] = $roc->is_redis_prefix_generated() ? 'Generated' : 'Defined';
+$info['Key Prefix Sanitized'] = $roc->is_redis_prefix_sanitized() ? 'Yes' : 'No';
+$info['Selective Flush'] = $roc->is_selective_flush_enabled() ? 'Enabled' : 'Disabled';
+$info['Selective Flush Locked'] = $roc->is_selective_flush_locked() ? 'Yes (WP_REDIS_SELECTIVE_FLUSH)' : 'No';
 
 $info['Drop-in'] = $roc->object_cache_dropin_exists()
 	? ( $dropin ? 'Valid' : 'Invalid' )

@@ -140,7 +140,12 @@ class ICC_GG_WordPress_Super_Cache_Predis
 	}
 
 	/**
-	 * Flushes the entire Redis database using the `WP_REDIS_FLUSH_TIMEOUT`.
+	 * Flushes the Redis cache using the `WP_REDIS_FLUSH_TIMEOUT`.
+	 *
+	 * By default only keys belonging to this site's effective prefix are
+	 * deleted. The entire database is flushed only when selective flush is
+	 * explicitly disabled in wp-config.php, in the environment or in the Redis
+	 * tab.
 	 *
 	 * @param bool $throw_exception Whether to throw exception on error.
 	 * @return bool
@@ -166,24 +171,24 @@ class ICC_GG_WordPress_Super_Cache_Predis
 			}
 		}
 
-		if ( defined( 'WP_REDIS_CLUSTER' ) ) {
-			try {
-				foreach ( $this->redis->getIterator() as $master ) {
-					$master->flushdb();
-				}
-			} catch ( Exception $exception ) {
-				if ( $throw_exception ) {
-					throw $exception;
-				}
-
-				return false;
-			}
-
-			return true;
-		}
+		$prefix = ICC_GG_WordPress_Super_Cache_Key_Prefix::resolve();
+		$selective = ICC_GG_WordPress_Super_Cache_Key_Prefix::selective_flush_enabled() && '' !== $prefix;
+		$script = $selective ? $this->get_selective_flush_script( $prefix ) : null;
 
 		try {
-			$this->redis->flushdb();
+			if ( defined( 'WP_REDIS_CLUSTER' ) ) {
+				foreach ( $this->redis->getIterator() as $master ) {
+					if ( $selective ) {
+						$master->eval( $script, 0 );
+					} else {
+						$master->flushdb();
+					}
+				}
+			} elseif ( $selective ) {
+				$this->redis->eval( $script, 0 );
+			} else {
+				$this->redis->flushdb();
+			}
 		} catch ( Exception $exception ) {
 			if ( $throw_exception ) {
 				throw $exception;
@@ -193,6 +198,42 @@ class ICC_GG_WordPress_Super_Cache_Predis
 		}
 
 		return true;
+	}
+
+	/**
+	 * Builds the Lua script used to delete only this site's keys.
+	 *
+	 * The script mirrors the drop-in implementation: `SCAN` avoids blocking
+	 * Redis while `DEL` removes the keys in batches. The prefix is sanitized and
+	 * quoted so it cannot act as a glob pattern.
+	 *
+	 * @param string $prefix Effective key prefix.
+	 * @return string
+	 */
+	protected function get_selective_flush_script( $prefix )
+	{
+		$pattern = ICC_GG_WordPress_Super_Cache_Key_Prefix::escape_lua_string(
+			ICC_GG_WordPress_Super_Cache_Key_Prefix::glob_quote( $prefix ) . '*'
+		);
+
+		// phpcs:disable Squiz.PHP.Heredoc.NotAllowed
+		return <<<LUA
+			local cur = 0
+			local i = 0
+			local tmp
+			repeat
+				tmp = redis.call('SCAN', cur, 'MATCH', '{$pattern}')
+				cur = tonumber(tmp[1])
+				if tmp[2] then
+					for _, v in pairs(tmp[2]) do
+						redis.call('del', v)
+						i = i + 1
+					end
+				end
+			until 0 == cur
+			return i
+LUA;
+		// phpcs:enable Squiz.PHP.Heredoc.NotAllowed
 	}
 
 	/**

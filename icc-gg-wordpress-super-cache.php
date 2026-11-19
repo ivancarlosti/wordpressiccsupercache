@@ -22,12 +22,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin Name:       ICC.gg WordPress Super Cache
  * Plugin URI:        https://github.com/ivancarlosti/wordpressiccsupercache
  * Description:       Redis object cache, Varnish Cache and nginx FastCGI page cache in one plugin. Enable, configure and purge each layer independently.
- * Version:           2.0.0
+ * Version:           2.1.0
  * Requires at least: 5.0
  * Requires PHP:      8.2
  * Author:            ivancarlosti
  * Author URI:        https://ivancarlos.com.br
  * Text Domain:       icc-gg-wordpress-super-cache
+ * Domain Path:       /languages
  * License:           GPL-3.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-3.0.txt
  */
@@ -132,7 +133,103 @@ define( 'ICC_GG_WORDPRESS_SUPER_CACHE_FILE', __FILE__ );
 define( 'ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME', plugin_basename( ICC_GG_WORDPRESS_SUPER_CACHE_FILE ) );
 define( 'ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_DIR', plugin_dir_url( ICC_GG_WORDPRESS_SUPER_CACHE_FILE ) );
 define( 'ICC_GG_WORDPRESS_SUPER_CACHE_PLUGIN_PATH', __DIR__ );
-define( 'ICC_GG_WORDPRESS_SUPER_CACHE_VERSION', '2.0.0' );
+define( 'ICC_GG_WORDPRESS_SUPER_CACHE_VERSION', '2.1.0' );
+
+/**
+ * Loads the bundled translations.
+ *
+ * WordPress only auto-loads language packs installed under
+ * `wp-content/languages/plugins`. The plugin ships its own catalogs, so they
+ * must be loaded explicitly.
+ *
+ * @return void
+ */
+function icc_gg_wordpress_super_cache_load_textdomain() {
+	load_plugin_textdomain(
+		'icc-gg-wordpress-super-cache',
+		false,
+		dirname( ICC_GG_WORDPRESS_SUPER_CACHE_BASENAME ) . '/languages'
+	);
+}
+add_action( 'plugins_loaded', 'icc_gg_wordpress_super_cache_load_textdomain', 5 );
+
+/**
+ * Maps the locales supported by the bundled catalogs to WordPress locales.
+ *
+ * WordPress reports locales with underscores (`pt_BR`), while the documented
+ * codes use hyphens (`pt-BR`). Arabic variants are mapped to `ar` so the RTL
+ * catalog is used for `ar_SA`, `ar_AE` and similar locales.
+ *
+ * @param string $locale Locale requested by WordPress.
+ * @param string $domain Text domain being loaded.
+ * @return string
+ */
+function icc_gg_wordpress_super_cache_plugin_locale( $locale, $domain ) {
+	if ( 'icc-gg-wordpress-super-cache' !== $domain ) {
+		return $locale;
+	}
+
+	$normalized = str_replace( '-', '_', (string) $locale );
+
+	$supported = [ 'en_US', 'pt_BR', 'es_MX', 'fr_FR', 'zh_CN', 'hi_IN' ];
+
+	if ( in_array( $normalized, $supported, true ) ) {
+		return $normalized;
+	}
+
+	if ( preg_match( '/^ar([_-]|$)/i', $normalized ) ) {
+		return 'ar';
+	}
+
+	return $locale;
+}
+add_filter( 'plugin_locale', 'icc_gg_wordpress_super_cache_plugin_locale', 10, 2 );
+
+/**
+ * Tells whether the current locale is written right-to-left.
+ *
+ * @return bool
+ */
+function icc_gg_wordpress_super_cache_is_rtl_locale() {
+	$locale = function_exists( 'determine_locale' ) ? determine_locale() : get_locale();
+
+	return (bool) preg_match( '/^(ar|fa|he|ur|ckb|dv|ps|sd|ug|yi)([_-]|$)/i', (string) $locale );
+}
+
+/**
+ * Adds `dir="rtl"` when the active locale is right-to-left.
+ *
+ * WordPress core does this for locales it ships, but `ar_SA` and other Arabic
+ * variants may not be recognised. The filter is defensive: it never overrides
+ * a direction that core already set.
+ *
+ * @param string $output  Language attributes.
+ * @param string $doctype Document type.
+ * @return string
+ */
+function icc_gg_wordpress_super_cache_language_attributes( $output, $doctype ) {
+	if ( icc_gg_wordpress_super_cache_is_rtl_locale() && false === stripos( $output, 'dir=' ) ) {
+		$output .= ' dir="rtl"';
+	}
+
+	return $output;
+}
+add_filter( 'language_attributes', 'icc_gg_wordpress_super_cache_language_attributes', 10, 2 );
+
+/**
+ * Adds the `rtl` body class for right-to-left locales.
+ *
+ * @param string $classes Space-separated list of body classes.
+ * @return string
+ */
+function icc_gg_wordpress_super_cache_admin_body_class( $classes ) {
+	if ( icc_gg_wordpress_super_cache_is_rtl_locale() && false === strpos( $classes, 'rtl' ) ) {
+		$classes .= ' rtl';
+	}
+
+	return $classes;
+}
+add_filter( 'admin_body_class', 'icc_gg_wordpress_super_cache_admin_body_class' );
 
 // Backward-compatible aliases for the legacy bootstrap constants.
 if ( ! defined( 'WP_REDIS_FILE' ) ) {
@@ -178,7 +275,7 @@ class ICC_GG_WordPress_Super_Cache {
 	 *
 	 * @var string
 	 */
-	const VERSION = '2.0.0';
+	const VERSION = '2.1.0';
 
 	/**
 	 * Simple autoloader.

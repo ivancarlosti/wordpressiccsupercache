@@ -148,6 +148,26 @@ port is not, so run the probe through a bridge that forwards the site URL to the
 example `socat TCP-LISTEN:<site-port>,fork,reuseaddr TCP:varnish:80` in the WordPress network namespace),
 otherwise **Test Connection** correctly falls back to "purge accepted, headers not visible".
 
+## Selective flush and translations
+
+Validate the prefix and catalog changes before a release:
+
+```bash
+# Prefix sanitization, generation and Lua escaping (standalone harness).
+php -r 'define("ABSPATH", "/tmp/"); define("DB_NAME", "demo"); $GLOBALS["table_prefix"] = "wp_"; require "includes/class-key-prefix.php"; $c = "ICC_GG_WordPress_Super_Cache_Key_Prefix"; echo $c::resolve(), PHP_EOL; echo var_export($c::selective_flush_enabled(), true), PHP_EOL;'
+
+# Every catalog must compile without format-string errors.
+for po in languages/*.po; do msgfmt --check -o "${po%.po}.mo" "$po" || exit 1; done
+```
+
+On the **Redis Object Cache** tab:
+
+1. With no `WP_REDIS_SELECTIVE_FLUSH` in `wp-config.php`, the checkbox must be enabled and editable; unchecking it must show the red warning and, after saving, `wp_cache_flush()` must run `FLUSHDB`.
+2. Define `WP_REDIS_SELECTIVE_FLUSH` as `true` or `false`: the checkbox must be disabled and the screen must explain that the value is read-only.
+3. Define `WP_REDIS_PREFIX` with spaces or glob characters (for example `demo*{site}`): the screen must show the sanitized prefix and the warning about removed characters, and a selective flush must delete only keys that start with the sanitized prefix.
+4. Remove `WP_REDIS_PREFIX`: the screen must show an auto-generated `icc…-` prefix and selective flush must keep working.
+5. Switch the site language to each bundled locale and confirm the Redis tab is translated; for Arabic confirm `<html dir="rtl">` and the `rtl` body class.
+
 ## Manual checks before a release
 
 - Enable the page cache on a site where `wp-config.php` is **not** writable: the must-use plugin loader

@@ -1,0 +1,23 @@
+#icc-gg-wordpress-super-cache .form-table th {
+    text-align: right;
+}
+
+#icc-gg-wordpress-super-cache .card ul {
+    padding-right: 25px;
+    padding-left: 0;
+}
+
+#icc-gg-wordpress-super-cache .tab-pane-nginx pre.icc-gg-wordpress-super-cache-code,
+#icc-gg-wordpress-super-cache .tab-pane-varnish pre.icc-gg-wordpress-super-cache-code,
+#icc-gg-wordpress-super-cache .tab-pane-local pre.icc-gg-wordpress-super-cache-code {
+    border-left: 1px solid #c3c4c7;
+    border-right: 4px solid #dba617;
+}
+
+#icc-gg-wordpress-super-cache .notice.inline {
+    margin: 8px 0 0;
+}
+
+#icc-gg-wordpress-super-cache .notice.inline p {
+    margin: 0.5em 0;
+}

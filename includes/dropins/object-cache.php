@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Plugin Name: ICC.gg WordPress Super Cache Drop-In
  * Plugin URI: https://github.com/ivancarlosti/wordpressiccsupercache
  * Description: A persistent object cache backend powered by Redis. Supports Predis, PhpRedis, Relay, replication, sentinels, clustering and WP-CLI.
- * Version: 2.0.0
+ * Version: 2.1.0
  * Author: ivancarlosti
  * Author URI: https://ivancarlos.com.br
  * License: GPL-3.0-or-later
@@ -146,8 +146,11 @@ function wp_cache_delete_multiple( array $keys, $group = '' )
 }
 
 /**
- * Invalidate all items in the cache. If `WP_REDIS_SELECTIVE_FLUSH` is `true`,
- * only keys prefixed with the `WP_REDIS_PREFIX` are flushed.
+ * Invalidate all items in the cache.
+ *
+ * By default only keys that start with the effective site prefix are deleted.
+ * Set `WP_REDIS_SELECTIVE_FLUSH` to `false` (or disable selective flush on the
+ * Redis tab) to run `FLUSHDB` instead.
  *
  * @return bool       Returns TRUE on success or FALSE on failure.
  */
@@ -245,12 +248,27 @@ function wp_cache_init()
 {
 	global $wp_object_cache;
 
-	if ( ! defined( 'WP_REDIS_PREFIX' ) && getenv( 'WP_REDIS_PREFIX' ) ) {
-		define( 'WP_REDIS_PREFIX', getenv( 'WP_REDIS_PREFIX' ) );
+	$env_prefix = getenv( 'WP_REDIS_PREFIX' );
+
+	if ( ! defined( 'WP_REDIS_PREFIX' ) && false !== $env_prefix && '' !== trim( (string) $env_prefix ) ) {
+		define( 'WP_REDIS_PREFIX', $env_prefix );
 	}
 
-	if ( ! defined( 'WP_REDIS_SELECTIVE_FLUSH' ) && getenv( 'WP_REDIS_SELECTIVE_FLUSH' ) ) {
-		define( 'WP_REDIS_SELECTIVE_FLUSH', (bool) getenv( 'WP_REDIS_SELECTIVE_FLUSH' ) );
+	$env_selective = getenv( 'WP_REDIS_SELECTIVE_FLUSH' );
+
+	if ( ! defined( 'WP_REDIS_SELECTIVE_FLUSH' ) && false !== $env_selective ) {
+		/*
+		 * `(bool) 'false'` is true in PHP, so parse common environment values
+		 * explicitly. An empty value means "not configured".
+		 */
+		$env_selective = strtolower( trim( (string) $env_selective ) );
+
+		if ( '' !== $env_selective ) {
+			define(
+				'WP_REDIS_SELECTIVE_FLUSH',
+				! in_array( $env_selective, [ '0', 'false', 'no', 'off', 'disabled' ], true )
+			);
+		}
 	}
 
 	// Backwards compatibility: map `WP_CACHE_KEY_SALT` constant to `WP_REDIS_PREFIX`.
@@ -260,7 +278,11 @@ function wp_cache_init()
 
 	// Set unique prefix for sites hosted on Cloudways
 	if ( ! defined( 'WP_REDIS_PREFIX' ) && isset( $_SERVER['cw_allowed_ip'] ) )  {
-		define( 'WP_REDIS_PREFIX', getenv( 'HTTP_X_APP_USER' ) );
+		$cloudways_prefix = getenv( 'HTTP_X_APP_USER' );
+
+		if ( false !== $cloudways_prefix && '' !== trim( (string) $cloudways_prefix ) ) {
+			define( 'WP_REDIS_PREFIX', $cloudways_prefix );
+		}
 	}
 
 	if ( ! ( $wp_object_cache instanceof WP_Object_Cache ) ) {
@@ -522,6 +544,20 @@ class WP_Object_Cache
 	public $cache_time = 0;
 
 	/**
+	 * Effective, sanitized key prefix. Calculated on first use.
+	 *
+	 * @var string|null
+	 */
+	protected $key_prefix = null;
+
+	/**
+	 * Where the effective key prefix came from (`defined` or `generated`).
+	 *
+	 * @var string|null
+	 */
+	protected $key_prefix_source = null;
+
+	/**
 	 * Instantiate the Redis class.
 	 *
 	 * @param bool $fail_gracefully Handles and logs errors if true throws exceptions otherwise.
@@ -594,6 +630,157 @@ class WP_Object_Cache
 			$this->global_prefix = is_multisite() ? '' : $table_prefix;
 			$this->blog_prefix = is_multisite() ? $blog_id : $table_prefix;
 		}
+	}
+
+	/**
+	 * Returns the effective key prefix.
+	 *
+	 * The configured `WP_REDIS_PREFIX` (or `WP_CACHE_KEY_SALT`, mapped above) is
+	 * sanitized before use. Redis glob metacharacters are removed because the
+	 * prefix is interpolated into `SCAN MATCH` patterns by the selective flush
+	 * routines. When no usable prefix is configured, a deterministic per-site
+	 * prefix is generated so selective flush remains scoped.
+	 *
+	 * Keep this logic in sync with
+	 * `ICC_GG_WordPress_Super_Cache_Key_Prefix::resolve()`.
+	 *
+	 * @return string
+	 */
+	public function get_key_prefix()
+	{
+		if ( null === $this->key_prefix ) {
+			$configured = defined( 'WP_REDIS_PREFIX' )
+				? $this->sanitize_key_prefix( WP_REDIS_PREFIX )
+				: '';
+
+			if ( '' !== $configured ) {
+				$this->key_prefix = $configured;
+				$this->key_prefix_source = 'defined';
+			} else {
+				$this->key_prefix = $this->generate_key_prefix();
+				$this->key_prefix_source = 'generated';
+			}
+		}
+
+		return $this->key_prefix;
+	}
+
+	/**
+	 * Tells whether the effective prefix was defined or generated.
+	 *
+	 * @return string Either `defined` or `generated`.
+	 */
+	public function get_key_prefix_source()
+	{
+		$this->get_key_prefix();
+
+		return $this->key_prefix_source;
+	}
+
+	/**
+	 * Removes Redis glob metacharacters, whitespace and control characters.
+	 *
+	 * Keep this logic in sync with
+	 * `ICC_GG_WordPress_Super_Cache_Key_Prefix::sanitize()`.
+	 *
+	 * @param mixed $prefix Prefix to sanitize.
+	 * @return string
+	 */
+	public function sanitize_key_prefix( $prefix )
+	{
+		$prefix = (string) $prefix;
+
+		if ( '' === $prefix ) {
+			return '';
+		}
+
+		$clean = preg_replace( '/[\x00-\x20\x7F]/', '', $prefix );
+
+		if ( null !== $clean ) {
+			$prefix = $clean;
+		}
+
+		return str_replace(
+			[ '\\', '*', '?', '[', ']', '{', '}', '(', ')', '|', '@', '!', '+' ],
+			'',
+			$prefix
+		);
+	}
+
+	/**
+	 * Builds a deterministic, site-specific prefix.
+	 *
+	 * Keep this logic in sync with
+	 * `ICC_GG_WordPress_Super_Cache_Key_Prefix::generate()`.
+	 *
+	 * @return string
+	 */
+	protected function generate_key_prefix()
+	{
+		global $table_prefix;
+
+		$seed = [
+			defined( 'DB_NAME' ) ? DB_NAME : '',
+			defined( 'ABSPATH' ) ? ABSPATH : '',
+			isset( $table_prefix ) ? $table_prefix : '',
+		];
+
+		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+			$seed[] = 'multisite';
+		}
+
+		return 'icc' . substr( md5( implode( '|', $seed ) ), 0, 12 ) . '-';
+	}
+
+	/**
+	 * Tells whether `wp_cache_flush()` should only delete this site's keys.
+	 *
+	 * Defaults to `true` so a shared Redis database is not wiped by mistake.
+	 * The setting can be overridden in wp-config.php, by the environment, or by
+	 * the Redis tab (through `ICC_GG_SUPER_CACHE_SELECTIVE_FLUSH`).
+	 *
+	 * @return bool
+	 */
+	public function is_selective_flush()
+	{
+		if ( defined( 'WP_REDIS_SELECTIVE_FLUSH' ) ) {
+			return $this->parse_bool( WP_REDIS_SELECTIVE_FLUSH );
+		}
+
+		if ( defined( 'ICC_GG_SUPER_CACHE_SELECTIVE_FLUSH' ) ) {
+			return $this->parse_bool( ICC_GG_SUPER_CACHE_SELECTIVE_FLUSH );
+		}
+
+		if ( function_exists( 'apply_filters' ) ) {
+			$value = apply_filters( 'icc_gg_wordpress_super_cache_selective_flush', null );
+
+			if ( null !== $value ) {
+				return $this->parse_bool( $value );
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Normalizes a boolean coming from a constant or environment variable.
+	 *
+	 * @param mixed $value Value to normalize.
+	 * @return bool
+	 */
+	protected function parse_bool( $value )
+	{
+		if ( is_bool( $value ) ) {
+			return $value;
+		}
+
+		if ( is_string( $value ) ) {
+			$value = strtolower( trim( $value ) );
+
+			return ! in_array( $value, [ '', '0', 'false', 'no', 'off', 'disabled' ], true );
+		}
+
+		return (bool) $value;
 	}
 
 	/**
@@ -1671,8 +1858,11 @@ class WP_Object_Cache
 	}
 
 	/**
-	 * Invalidate all items in the cache. If `WP_REDIS_SELECTIVE_FLUSH` is `true`,
-	 * only keys prefixed with the `WP_REDIS_PREFIX` are flushed.
+	 * Invalidate all items in the cache.
+	 *
+	 * By default only keys that start with the effective site prefix are
+	 * deleted. `FLUSHDB` is used only when selective flush is explicitly
+	 * disabled.
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -1682,12 +1872,12 @@ class WP_Object_Cache
 		$this->cache = [];
 
 		if ( $this->redis_status() ) {
-			$salt = defined( 'WP_REDIS_PREFIX' ) ? trim( WP_REDIS_PREFIX ) : null;
-			$selective = defined( 'WP_REDIS_SELECTIVE_FLUSH' ) ? WP_REDIS_SELECTIVE_FLUSH : null;
+			$salt = $this->get_key_prefix();
+			$selective = $this->is_selective_flush() && '' !== $salt;
 
 			$start_time = microtime( true );
 
-			if ( $salt && $selective ) {
+			if ( '' !== $salt && $selective ) {
 				$script = $this->get_flush_closure( $salt );
 				$results = $this->execute_lua_script( $script );
 
@@ -1744,7 +1934,7 @@ class WP_Object_Cache
 		}
 
 		foreach ( $results as $result ) {
-			if ( ! $result ) {
+			if ( false === $result ) {
 				return false;
 			}
 		}
@@ -1765,12 +1955,16 @@ class WP_Object_Cache
 		}
 
 		$san_group = $this->sanitize_key_part( $group );
+		$prefix = $this->get_key_prefix();
 
-		if ( is_multisite() && ! $this->is_global_group( $san_group ) ) {
-			$salt = str_replace( "{$this->blog_prefix}:{$san_group}", "*:{$san_group}", $this->fast_build_key( '*', $san_group ) );
-		} else {
-			$salt = $this->fast_build_key( '*', $san_group );
-		}
+		/*
+		 * Global groups are shared by the network and have no blog prefix.
+		 * Every other group belongs to the current site only, so a group flush
+		 * must never delete the same group from another blog.
+		 */
+		$key_prefix = $this->is_global_group( $san_group ) ? $this->global_prefix : $this->blog_prefix;
+		$key_prefix = trim( (string) $key_prefix, '_-:$' );
+		$salt = $this->glob_quote( "{$prefix}{$key_prefix}" ) . $this->glob_quote( ":{$san_group}:" ) . '*';
 
 		foreach ( $this->cache as $key => $value ) {
 			if ( strpos( $key, "{$san_group}:" ) === 0 || strpos( $key, ":{$san_group}:" ) !== false ) {
@@ -1809,7 +2003,7 @@ class WP_Object_Cache
 		}
 
 		foreach ( $results as $result ) {
-			if ( ! $result ) {
+			if ( false === $result ) {
 				return false;
 			}
 		}
@@ -1840,17 +2034,46 @@ class WP_Object_Cache
 	 */
 	protected function glob_quote( $string )
 	{
-		$characters = [ '*', '+', '?', '!', '{', '}', '[', ']', '(', ')', '|', '@' ];
+		/*
+		 * `strtr()` performs all replacements in a single pass. Using
+		 * `str_replace()` with a list would quote the brackets inserted by an
+		 * earlier replacement, turning `*` into `[[[]]*[]]`.
+		 */
+		return strtr(
+			(string) $string,
+			[
+				'\\' => '\\\\',
+				'*' => '[*]',
+				'+' => '[+]',
+				'?' => '[?]',
+				'!' => '[!]',
+				'{' => '[{]',
+				'}' => '[}]',
+				'[' => '[[]',
+				']' => '[]]',
+				'(' => '[(]',
+				')' => '[)]',
+				'|' => '[|]',
+				'@' => '[@]',
+			]
+		);
+	}
 
+	/**
+	 * Escapes a value interpolated inside a single-quoted Lua string.
+	 *
+	 * Prefixes may legally contain quotes or backslashes. Without escaping they
+	 * would break the generated `EVAL` script.
+	 *
+	 * @param string $string String to escape.
+	 * @return string
+	 */
+	protected function escape_lua_string( $string )
+	{
 		return str_replace(
-			$characters,
-			array_map(
-				function ( $character ) {
-					return "[{$character}]";
-				},
-				$characters
-			),
-			$string
+			[ '\\', "'", "\r", "\n" ],
+			[ '\\\\', "\\'", '', '' ],
+			(string) $string
 		);
 	}
 
@@ -1864,6 +2087,7 @@ class WP_Object_Cache
 	protected function lua_flush_closure( $salt, $escape = true )
 	{
 		$salt = $escape ? $this->glob_quote( $salt ) : $salt;
+		$salt = $this->escape_lua_string( $salt );
 
 		return function () use ( $salt ) {
 			// phpcs:disable Squiz.PHP.Heredoc.NotAllowed
@@ -1902,10 +2126,10 @@ LUA;
 	 */
 	protected function lua_flush_extended_closure( $salt )
 	{
-		$salt = $this->glob_quote( $salt );
+		$salt_length = strlen( $salt );
+		$salt = $this->escape_lua_string( $this->glob_quote( $salt ) );
 
-		return function () use ( $salt ) {
-			$salt_length = strlen( $salt );
+		return function () use ( $salt, $salt_length ) {
 
 			$unflushable = array_map(
 				function ( $group ) {
@@ -2640,7 +2864,7 @@ LUA;
 			$group = 'default';
 		}
 
-		$salt = defined( 'WP_REDIS_PREFIX' ) ? trim( WP_REDIS_PREFIX ) : '';
+		$salt = $this->get_key_prefix();
 
 		$prefix = $this->is_global_group( $group ) ? $this->global_prefix : $this->blog_prefix;
 		$prefix = trim( (string) $prefix, '_-:$' );
